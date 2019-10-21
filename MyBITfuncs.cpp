@@ -271,7 +271,6 @@ integer_t BIT_CycleLeft_inBytes(integer_t x, unsigned int shift)
   while (shift)
   {
     integer_t bits_7_to_0 = (x & bit_mask_87) >> 7;
-  
     x <<= 1;
     x &= (integer_t)0b1111111011111110111111101111111011111110111111101111111011111110;
     x |= bits_7_to_0;

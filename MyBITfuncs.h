@@ -10,7 +10,6 @@
  typedef unsigned long integer_t; 
 // typedef unsigned long long integer_t;
 
-
 // тип для ввода / вывода
 typedef unsigned long long MaxInt;
 

@@ -1,4 +1,4 @@
-п»ї// BIT_2.c
+// BIT_2.c
 
 #include <stdio.h>
 #include <locale.h>
@@ -11,14 +11,14 @@ int main()
   setlocale(LC_ALL, "Russian");
   do
   {
-    // Р’РІРѕРґ
+    // Ввод
     x = BIT_Input();
-    unsigned dec_width = BIT_count_dec_width(x);  // С€РёСЂРёРЅР° РІ РґРµСЃСЏС‚РёС‡РЅРѕРј РІРёРґРµ
+    unsigned dec_width = BIT_count_dec_width(x);  // ширина в десятичном виде
     unsigned operand2;
-    printf(" Р’РІРµРґРёС‚Рµ РѕРїРµСЂР°РЅРґ : ");
+    printf(" Введите операнд : ");
     scanf("%d", &operand2);
 
-    // Р Р°СЃС‡С‘С‚С‹
+    // Расчёты
     integer_t x_1reverse = BIT_reverse_bit_blocks(x, 1);
     dec_width = max_2u(dec_width, BIT_count_dec_width(x_1reverse));
     integer_t x_2reverse = BIT_reverse_bit_blocks(x, 2);
@@ -42,23 +42,23 @@ int main()
     integer_t x_cycleR_b = BIT_CycleRight_inBytes(x, operand2);
     dec_width = max_2u(dec_width, BIT_count_dec_width(x_cycleR_b));
 
-    // Р Р°СЃРїРµС‡Р°С‚РєР°
-    BIT_Print("        Р’С‹ РІРІРµР»Рё+:", x, dec_width);
-    BIT_Print(" Р РµРІРµСЂСЃ РїРѕ Р±РёС‚Р°Рј+:", x_1reverse, dec_width);
-    BIT_Print(" Р РµРІРµСЂСЃ РїРѕ 2 Р±РёС‚+:", x_2reverse, dec_width);
-    BIT_Print(" Р РµРІРµСЂСЃ РїРѕ 4 Р±РёС‚ :", x_4reverse, dec_width);
-    BIT_Print(" Р РµРІРµСЂСЃ РїРѕР±Р°Р№С‚РЅРѕ :", x_8reverse, dec_width);
-    BIT_Print(" РћР±РјРµРЅ Р±РёС‚ РІ 2РєРµ+:", x_swap2, dec_width);
-    BIT_Print(" РћР±РјРµРЅ Р±РёС‚ РІ 4РєРµ+:", x_swap4, dec_width);
-    BIT_Print(" РћР±РјРµРЅ Р±РёС‚ РІ 8РєРµ+:", x_swap8, dec_width);
-    BIT_Print("   Р¦РёРєР» << С‡РёСЃР»Р°+:", x_cycleL, dec_width);
-    BIT_Print("   Р¦РёРєР» >> С‡РёСЃР»Р°+:", x_cycleR, dec_width);
-    BIT_Print("Р¦РёРєР» << РІ Р±Р°Р№С‚Р°С…+:", x_cycleL_b, dec_width);
-    BIT_Print("Р¦РёРєР» >> РІ Р±Р°Р№С‚Р°С… :", x_cycleR_b, dec_width);
+    // Распечатка
+    BIT_Print("        Вы ввели+:", x, dec_width);
+    BIT_Print(" Реверс по битам+:", x_1reverse, dec_width);
+    BIT_Print(" Реверс по 2 бит+:", x_2reverse, dec_width);
+    BIT_Print(" Реверс по 4 бит :", x_4reverse, dec_width);
+    BIT_Print(" Реверс побайтно :", x_8reverse, dec_width);
+    BIT_Print(" Обмен бит в 2ке+:", x_swap2, dec_width);
+    BIT_Print(" Обмен бит в 4ке+:", x_swap4, dec_width);
+    BIT_Print(" Обмен бит в 8ке+:", x_swap8, dec_width);
+    BIT_Print("   Цикл << числа+:", x_cycleL, dec_width);
+    BIT_Print("   Цикл >> числа+:", x_cycleR, dec_width);
+    BIT_Print("Цикл << в байтах+:", x_cycleL_b, dec_width);
+    BIT_Print("Цикл >> в байтах :", x_cycleR_b, dec_width);
 
     printf("\n");
 
-  } while (x); // СѓСЃР»РѕРІРёРµ РІС‹С…РѕРґР° РёР· С†РёРєР»Р° -> С‡РёСЃР»Рѕ == 0
+  } while (x); // условие выхода из цикла -> число == 0
 
   return 0;
 }
