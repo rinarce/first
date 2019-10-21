@@ -154,18 +154,22 @@ integer_t BIT_2Reverse(integer_t x)
 
 integer_t BIT_4Reverse(integer_t x)
 { // обращает порядок четвёрок битов в Х
+  integer_t result = 0;
 
 // XXXXXXXXXXXXXXXXXX --- ещё не реализовано --- XXXXXXXXXXXXXXX
 
-  return x;
+  return result;
 }
 
 integer_t BIT_8Reverse(integer_t x)
 { // обращает порядок байтов в Х
+  if (sizeof(integer_t) == 1) 
+    return x; // для однобайтового числа перестановка байт не нужна
+  integer_t result = 0;
 
 // XXXXXXXXXXXXXXXXXX --- ещё не реализовано --- XXXXXXXXXXXXXXX
 
-  return x;
+  return result;
 }
 
 integer_t BIT_Swap2(integer_t x)
@@ -267,7 +271,9 @@ integer_t BIT_CycleLeft_inBytes(integer_t x, unsigned int shift)
   while (shift)
   {
     integer_t bits_7_to_0 = (x & bit_mask_87) >> 7;
+  
     x <<= 1;
+    x &= (integer_t)0b1111111011111110111111101111111011111110111111101111111011111110;
     x |= bits_7_to_0;
     shift--;
   }
@@ -281,7 +287,7 @@ integer_t BIT_CycleRight_inBytes(integer_t x, unsigned int shift)
   
   while (shift)
   {
-    integer_t bits_0_to_7 = 0;
+    integer_t bits_0_to_7;
       
  // XXXXXXXXXXXXXXXXXX --- ещё не реализовано --- XXXXXXXXXXXXXXX
 

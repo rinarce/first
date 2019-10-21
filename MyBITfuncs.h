@@ -3,8 +3,6 @@
 #define BIT_ZERO_SYM '.'        // для вывода на экран
 #define BIT_ONE_SYM '#'
 
-
-
 // вариации целочисленых беззнаковых типов ------------------------------------------------
 // typedef unsigned char integer_t;       // разкомментить только один из них
 // typedef unsigned short integer_t;
