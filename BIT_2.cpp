@@ -4,6 +4,7 @@
 #include <locale.h>
 #include "MyBITfuncs.h"
 
+
 int main()
 {
   integer_t x;
