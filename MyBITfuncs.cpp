@@ -4,7 +4,7 @@
 
 
 // битовые маски на все случаи ------------------------------------------------------------
-// для реверса блоками --------------------------------------------------------------------
+// для реверса блоками, выделяют нужный блок  ---------------------------------------------
 const integer_t bit_mask_LOW = ((integer_t)0b00000001);
 const integer_t bit_mask_HIGH = ((integer_t)0b10000000) << ((sizeof(integer_t) - 1) * 8);
 
@@ -17,7 +17,7 @@ const integer_t bit_mask_REV4_H = ((integer_t)0b11110000) << ((sizeof(integer_t)
 const integer_t bit_mask_REV8_L = ((integer_t)0b11111111);
 const integer_t bit_mask_REV8_H = ((integer_t)0b11111111) << ((sizeof(integer_t) - 1) * 8);
 
-// для реверса внутри блоков --------------------------------------------------------------
+// для реверса внутри блоков --- выделяют нужные биты в каждом блоке ---------------------------------------
 const integer_t bit_mask_20 = (integer_t)0b0101010101010101010101010101010101010101010101010101010101010101;
 const integer_t bit_mask_21 = (integer_t)0b1010101010101010101010101010101010101010101010101010101010101010;
 
@@ -85,7 +85,8 @@ integer_t BIT_Input()
 unsigned int BIT_count_dec_width(integer_t x)
 { 
   unsigned int dec_width = 1;  // 1 в любом случае
-  while (x /= 10) dec_width++;
+  while (x /= 10)              // пока от деления на 10 получаем не 0
+    dec_width++;               // значит нужны ещё позиции для 10 записи числа
   return dec_width;
 }
 
@@ -94,7 +95,8 @@ unsigned int max_2u(unsigned int x1, unsigned int x2)    // находит максимальное
 
 // печатает Х в разных представлениях по условию задачи
 void BIT_Print(const char text[], integer_t x, unsigned int size_in_dec)
-{ // size_in_dec - получает извне, остальные рассчитывает
+{ // text - пояснительный текст до числа
+  // size_in_dec - получает извне, остальные рассчитывает
   // пример 163 = 0xA3 = 10100011         ДЕС = НЕХ = БИН
   const int size_in_bytes = sizeof(integer_t);
   const int size_in_hexes = sizeof(integer_t) * 2;
@@ -109,45 +111,46 @@ void BIT_Print(const char text[], integer_t x, unsigned int size_in_dec)
   { bits[i] = (bit_mask_LOW & x) ? BIT_ONE_SYM : BIT_ZERO_SYM;
     x >>= 1;
   }
-  // печать битов, для очень длинных - с новой строки
+  // печать битов, для очень длинных (>32 бит) - с новой строки
   printf("%s%s\n", 
         ((sizeof(integer_t)>4) ? "\n               " : ""), bits);
 }
 
 integer_t BIT_1Reverse(integer_t x)
 { // обращает порядок битов в Х
-  integer_t mask_high = bit_mask_HIGH;
-  integer_t mask_low = bit_mask_LOW;
-  integer_t result = 0;
-  while (mask_high > mask_low)
-  {   
+  integer_t mask_high = bit_mask_HIGH;   // выделяет левый бит  (старший)
+  integer_t mask_low = bit_mask_LOW;     // выделяет правый бит (младший)
+  integer_t result = 0;                  // для накопления результата
+  while (mask_high > mask_low)           // пока маски не пересекли друг друга
+  {                                      // выделяем 2 бита
     integer_t new_bits_L = (x & mask_high) ? mask_low : 0;
     integer_t new_bits_H = (x & mask_low) ? mask_high : 0;
-
-    result = result | new_bits_H | new_bits_L;
-
-    mask_high >>= 1;
-    mask_low <<= 1;
+                                               
+    result = result | new_bits_H | new_bits_L;    // формируем результат
+                                         // сдвигаем маски навстречу, к середине числа
+    mask_high >>= 1;                     // левую - вправо
+    mask_low <<= 1;                      // правую - влево
   }
   return result;
 }
 
 integer_t BIT_2Reverse(integer_t x)
 { // обращает порядок пар битов в Х
-  integer_t mask_low  = bit_mask_REV2_L;
-  integer_t mask_high = bit_mask_REV2_H;
+  integer_t mask_low  = bit_mask_REV2_L; // выделяет 2 левых бит  (старших)
+  integer_t mask_high = bit_mask_REV2_H; // выделяет 2 правых бит (младших)
   integer_t result = 0;
   int delta = sizeof(integer_t) * 8 - 2; // на сколько сдвигать первоначально
   while (delta > 0)
-  {
+  { // биты выделяются и сразу сдвигаю на нужное расстояние
     integer_t new_bits_L = (x & mask_high) >> delta;
     integer_t new_bits_H = (x & mask_low) << delta;
 
+    // добавить к результату очередную порцию 
     result =  result | new_bits_H | new_bits_L;
 
     mask_high >>= 2;
     mask_low <<= 2;
-    delta -= 4;
+    delta -= 4;         // маски сходятся => сдвигать меньше
   }
   return result;
 }
@@ -174,29 +177,30 @@ integer_t BIT_8Reverse(integer_t x)
 
 integer_t BIT_Swap2(integer_t x)
 { // меняет биты попарно bit0<->bit1, bit2<->bit3 ...
-  integer_t bits0 = x & bit_mask_20;
-  integer_t bits1 = x & bit_mask_21;
+  integer_t bits0 = x & bit_mask_20;       // тут  чётные биты Х
+  integer_t bits1 = x & bit_mask_21;       // тут нечётные биты Х
   
-  integer_t new_bits1 = bits0 << 1;
-  integer_t new_bits0 = bits1 >> 1;
+  integer_t new_bits1 = bits0 << 1;        // чётные биты стали нечётными
+  integer_t new_bits0 = bits1 >> 1;        // и наоборот, нечет -> чет
   
-  integer_t new_x = new_bits1 | new_bits0;
+  integer_t new_x = new_bits1 | new_bits0; // сливаем их вместе
 
   return new_x;
 }
 
 integer_t BIT_Swap4(integer_t x)
 { // меняет биты в каждой 4ке реверс bit0 < ->bit3, bit1 < ->bit2 ...
-  integer_t bits0 = x & bit_mask_40;
+  integer_t bits0 = x & bit_mask_40;    // в каждой четвёрке выделю биты 3 2 1 0
   integer_t bits1 = x & bit_mask_41;
   integer_t bits2 = x & bit_mask_42;
   integer_t bits3 = x & bit_mask_43;
 
-  integer_t new_bits0 = bits3 >> 3;
-  integer_t new_bits1 = bits2 >> 1;
+  integer_t new_bits0 = bits3 >> 3;     // меняем местами (пока только сдвигаю)
+  integer_t new_bits1 = bits2 >> 1;     // 3 <-> 0    2<->1
   integer_t new_bits2 = bits1 << 1;
   integer_t new_bits3 = bits0 << 3;
 
+  // биты на своём месте, можно их соединить в новое число
   integer_t new_x = new_bits3 | new_bits2 | new_bits1 | new_bits0;
 
   return new_x;
@@ -204,10 +208,10 @@ integer_t BIT_Swap4(integer_t x)
 
 integer_t BIT_Swap8(integer_t x)
 { // меняет биты в каждой 8ке реверс bit0 < ->bit7, bit1 < ->bit6 ...
-  return (integer_t) (x & bit_mask_80) << 7
-                   | (x & bit_mask_81) << 5
-                   | (x & bit_mask_82) << 3
-                   | (x & bit_mask_83) << 1
+  return (integer_t) (x & bit_mask_80) << 7  // нулевые биты станут 7ми
+                   | (x & bit_mask_81) << 5  // 1е -> 6ми
+                   | (x & bit_mask_82) << 3  // 2е -> 5ми и т.д.
+                   | (x & bit_mask_83) << 1 
                    | (x & bit_mask_84) >> 1
                    | (x & bit_mask_85) >> 3
                    | (x & bit_mask_86) >> 5
@@ -247,7 +251,7 @@ integer_t BIT_CycleLeft(integer_t x, unsigned int shift)
   for (; shift > 0; shift--)
   {                       // запомним удаляемый старший бит
     integer_t bit = (x & bit_mask_HIGH) ? bit_mask_LOW : 0;
-    x = (x << 1) | bit;   // сдвиг на 1 и добавка запомненого в бит0
+    x = (x << 1) | bit;   // сдвиг Х на 1 и добавка запомненого в бит0
   }
   return x;
 }
@@ -266,8 +270,10 @@ integer_t BIT_CycleRight(integer_t x, unsigned int shift)
 
 integer_t BIT_CycleLeft_inBytes(integer_t x, unsigned int shift)
 { // циклический сдвиг <---  влево <--- (в каждом байте отдельно)
+  
   // shift по модулю 8, иначе тормозит на больших shift
   shift %= 8; // циклический сдвиг байта на 8 не изменяет число
+  
   // маска для обнуления выделенных ранее битов в числе Х
   // иначе, они, сдвинувшись, займут чужое место в соседнем байте
   integer_t clear_mask = ~bit_mask_87;
@@ -288,15 +294,25 @@ integer_t BIT_CycleLeft_inBytes(integer_t x, unsigned int shift)
 
 integer_t BIT_CycleRight_inBytes(integer_t x, unsigned int shift)
 { // циклический сдвиг ---> вправо ---> (в каждом байте отдельно)
+  
   // shift по модулю 8, иначе тормозит на больших shift
   shift %= 8; // циклический сдвиг байта на 8 не изменяет число
+
+  // маска для обнуления выделенных ранее битов в числе Х
+  // иначе, они, сдвинувшись, займут чужое место в соседнем байте
+  integer_t clear_mask = ~bit_mask_80;
   
   while (shift)
   {
-    integer_t bits_0_to_7;
-      
- // XXXXXXXXXXXXXXXXXX --- ещё не реализовано --- XXXXXXXXXXXXXXX
-
+    // выделяем нужные биты и срузу их сдвигаем на новую позицию
+    integer_t bits_0_to_7 = (x & bit_mask_80) << 7;
+    
+    // обнуляем эти биты, теперь там нули, можно записывать сохранённые ранее
+    x &= clear_mask;
+    // сдвигаем Х туда ->
+    x >>= 1;
+    // выделеные ранее биты (они уже в новой позиции) сливаем (суммируем) с Х
+    x |= bits_0_to_7;
     shift--;
   }
   return x;

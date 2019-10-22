@@ -41,17 +41,17 @@ int main()
       dec_width = max_2u(dec_width, BIT_count_dec_width(x_cycleR_b));
 
     // Распечатка
-    BIT_Print("        Вы ввели+:", x, dec_width);
-    BIT_Print(" Реверс по битам+:", x_1reverse, dec_width);
-    BIT_Print(" Реверс по 2 бит+:", x_2reverse, dec_width);
-    BIT_Print(" Реверс по 4 бит :", x_4reverse, dec_width);
-    BIT_Print(" Реверс побайтно :", x_8reverse, dec_width);
-    BIT_Print(" Обмен бит в 2ке+:", x_swap2, dec_width);
-    BIT_Print(" Обмен бит в 4ке+:", x_swap4, dec_width);
-    BIT_Print(" Обмен бит в 8ке+:", x_swap8, dec_width);
-    BIT_Print("   Цикл << числа+:", x_cycleL, dec_width);
-    BIT_Print("   Цикл >> числа+:", x_cycleR, dec_width);
-    BIT_Print("Цикл << в байтах+:", x_cycleL_b, dec_width);
+    BIT_Print("        Вы ввели :", x, dec_width);
+    BIT_Print(" Реверс по битам :", x_1reverse, dec_width);
+    BIT_Print(" Реверс по 2 бит :", x_2reverse, dec_width);
+    BIT_Print(" Реверс по 4 бит -", x_4reverse, dec_width);
+    BIT_Print(" Реверс побайтно -", x_8reverse, dec_width);
+    BIT_Print(" Обмен бит в 2ке :", x_swap2, dec_width);
+    BIT_Print(" Обмен бит в 4ке :", x_swap4, dec_width);
+    BIT_Print(" Обмен бит в 8ке :", x_swap8, dec_width);
+    BIT_Print("   Цикл << числа :", x_cycleL, dec_width);
+    BIT_Print("   Цикл >> числа :", x_cycleR, dec_width);
+    BIT_Print("Цикл << в байтах :", x_cycleL_b, dec_width);
     BIT_Print("Цикл >> в байтах :", x_cycleR_b, dec_width);
 
     printf("\n");
