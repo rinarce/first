@@ -1,10 +1,10 @@
-#include <stdio.h>
-#include <stdlib.h>           // для выделения памяти
+п»ї#include <stdio.h>
+#include <stdlib.h>           // РґР»СЏ РІС‹РґРµР»РµРЅРёСЏ РїР°РјСЏС‚Рё
           
-// #define DEBUG                 // Отладка
-#define DST_BUFFER_SIZE 5     // порции считывания строки
+// #define DEBUG                 // РћС‚Р»Р°РґРєР°
+#define DST_BUFFER_SIZE 5     // РїРѕСЂС†РёРё СЃС‡РёС‚С‹РІР°РЅРёСЏ СЃС‚СЂРѕРєРё
 
-unsigned int STR_Lenght(char const* str) {  // длина строки до '\0'
+unsigned int STR_Lenght(char const* str) {  // РґР»РёРЅР° СЃС‚СЂРѕРєРё РґРѕ '\0'
   int len = 0;
   if (NULL != str)
     while (*str++) len++;
@@ -12,158 +12,158 @@ unsigned int STR_Lenght(char const* str) {  // длина строки до '\0'
 }
 
 int STR_IsEmpty(char const* str)
-{ // 1 - если строка пустая, иначе 0
+{ // 1 - РµСЃР»Рё СЃС‚СЂРѕРєР° РїСѓСЃС‚Р°СЏ, РёРЅР°С‡Рµ 0
   return ((NULL != str) && *str) ? 0 : 1;
 }
 
 int IsAlNum(char c) {
-  // определяет, что является допустимой буквой в данной задаче
-  // 1 - если [A–Z] или [a–z] или [0–9], иначе - 0
+  // РѕРїСЂРµРґРµР»СЏРµС‚, С‡С‚Рѕ СЏРІР»СЏРµС‚СЃСЏ РґРѕРїСѓСЃС‚РёРјРѕР№ Р±СѓРєРІРѕР№ РІ РґР°РЅРЅРѕР№ Р·Р°РґР°С‡Рµ
+  // 1 - РµСЃР»Рё [AвЂ“Z] РёР»Рё [aвЂ“z] РёР»Рё [0вЂ“9], РёРЅР°С‡Рµ - 0
   return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9');
 }
 
 char* STR_FindNextWord(char const* str) {
-  // возвращает указатель на следующую букву в str или на конец строки
+  // РІРѕР·РІСЂР°С‰Р°РµС‚ СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃР»РµРґСѓСЋС‰СѓСЋ Р±СѓРєРІСѓ РІ str РёР»Рё РЅР° РєРѕРЅРµС† СЃС‚СЂРѕРєРё
   while (*str && !IsAlNum(*str)) str++;
   return (char*)str;
 }
 
 char* STR_FindNextSeparator(char const* str) {
-  // возвращает указатель на следующую НЕбукву в str или на конец строки
+  // РІРѕР·РІСЂР°С‰Р°РµС‚ СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃР»РµРґСѓСЋС‰СѓСЋ РќР•Р±СѓРєРІСѓ РІ str РёР»Рё РЅР° РєРѕРЅРµС† СЃС‚СЂРѕРєРё
   while (*str && IsAlNum(*str)) str++;
   return (char*)str;
 }
 
 int STR_Compare_FixLen(char const* str1, char const* str2, unsigned int distance)
-{ // сравнивает строки на длину distance, возврат 1 если равны, 0 иначе
+{ // СЃСЂР°РІРЅРёРІР°РµС‚ СЃС‚СЂРѕРєРё РЅР° РґР»РёРЅСѓ distance, РІРѕР·РІСЂР°С‚ 1 РµСЃР»Рё СЂР°РІРЅС‹, 0 РёРЅР°С‡Рµ
   while (distance--)
-    if (*(str1++) != *(str2++)) // до первого несовпадения
+    if (*(str1++) != *(str2++)) // РґРѕ РїРµСЂРІРѕРіРѕ РЅРµСЃРѕРІРїР°РґРµРЅРёСЏ
       return 0;
   return 1;
 }
 
 void STR_TransliterateSym(char* str)
-{  // транслитерация 1 русского символа, в строке должно быть минимум 5 байта длины
-   // по правилам - ПРИКАЗ МИД РФ от 29 марта 2016 г. N 4271
+{  // С‚СЂР°РЅСЃР»РёС‚РµСЂР°С†РёСЏ 1 СЂСѓСЃСЃРєРѕРіРѕ СЃРёРјРІРѕР»Р°, РІ СЃС‚СЂРѕРєРµ РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ РјРёРЅРёРјСѓРј 5 Р±Р°Р№С‚Р° РґР»РёРЅС‹
+   // РїРѕ РїСЂР°РІРёР»Р°Рј - РџР РРљРђР— РњРР” Р Р¤ РѕС‚ 29 РјР°СЂС‚Р° 2016 Рі. N 4271
   switch (*str)
   {
-  case 'а': str[0] = 'a'; str[1] = '\0'; break;
-  case 'А': str[0] = 'A'; str[1] = '\0'; break;
-  case 'б': str[0] = 'b'; str[1] = '\0'; break;
-  case 'Б': str[0] = 'B'; str[1] = '\0'; break;
-  case 'в': str[0] = 'v'; str[1] = '\0'; break;
-  case 'В': str[0] = 'V'; str[1] = '\0'; break;
-  case 'г': str[0] = 'g'; str[1] = '\0'; break;
-  case 'Г': str[0] = 'G'; str[1] = '\0'; break;
-  case 'д': str[0] = 'd'; str[1] = '\0'; break;
-  case 'Д': str[0] = 'D'; str[1] = '\0'; break;
-  case 'е':
-  case 'ё': str[0] = 'e'; str[1] = '\0'; break;
-  case 'Е': 
-  case 'Ё': str[0] = 'E'; str[1] = '\0'; break;
-  case 'ж': str[0] = 'z'; str[1] = 'h'; break; str[2] = '\0'; break;
-  case 'Ж': str[0] = 'Z'; str[1] = 'h'; break; str[2] = '\0'; break;
-  case 'з': str[0] = 'z'; str[1] = '\0'; break;
-  case 'З': str[0] = 'Z'; str[1] = '\0'; break;
-  case 'и':
-  case 'й': str[0] = 'i'; str[1] = '\0'; break;
-  case 'И':
-  case 'Й': str[0] = 'I'; str[1] = '\0'; break;
-  case 'к': str[0] = 'k'; str[1] = '\0'; break;
-  case 'К': str[0] = 'K'; str[1] = '\0'; break;
-  case 'л': str[0] = 'l'; str[1] = '\0'; break;
-  case 'Л': str[0] = 'L'; str[1] = '\0'; break;
-  case 'м': str[0] = 'm'; str[1] = '\0'; break;
-  case 'М': str[0] = 'M'; str[1] = '\0'; break;
-  case 'н': str[0] = 'n'; str[1] = '\0'; break;
-  case 'Н': str[0] = 'N'; str[1] = '\0'; break;
-  case 'о': str[0] = 'o'; str[1] = '\0'; break;
-  case 'О': str[0] = 'O'; str[1] = '\0'; break;
-  case 'п': str[0] = 'p'; str[1] = '\0'; break;
-  case 'П': str[0] = 'P'; str[1] = '\0'; break;
-  case 'р': str[0] = 'r'; str[1] = '\0'; break;
-  case 'Р': str[0] = 'R'; str[1] = '\0'; break;
-  case 'с': str[0] = 's'; str[1] = '\0'; break;
-  case 'С': str[0] = 'S'; str[1] = '\0'; break;
-  case 'т': str[0] = 't'; str[1] = '\0'; break;
-  case 'Т': str[0] = 'T'; str[1] = '\0'; break;
-  case 'у': str[0] = 'u'; str[1] = '\0'; break;
-  case 'У': str[0] = 'U'; str[1] = '\0'; break;
-  case 'ф': str[0] = 'f'; str[1] = '\0'; break;
-  case 'Ф': str[0] = 'F'; str[1] = '\0'; break;
-  case 'х': str[0] = 'k'; str[1] = 'h'; str[2] = '\0'; break;
-  case 'Х': str[0] = 'K'; str[1] = 'h'; str[2] = '\0'; break;
-  case 'ц': str[0] = 't'; str[1] = 's'; str[2] = '\0'; break;
-  case 'Ц': str[0] = 'T'; str[1] = 's'; str[2] = '\0'; break;
-  case 'ч': str[0] = 'c'; str[1] = 'h'; str[2] = '\0'; break;
-  case 'Ч': str[0] = 'C'; str[1] = 'h'; str[2] = '\0'; break;
-  case 'ш': str[0] = 's'; str[1] = 'h'; str[2] = '\0'; break;
-  case 'Ш': str[0] = 'S'; str[1] = 'h'; str[2] = '\0'; break;
-  case 'щ': str[0] = 's'; str[1] = 'h'; str[2] = 'c'; str[3] = 'h'; str[4] = '\0'; break;
-  case 'Щ': str[0] = 'S'; str[1] = 'h'; str[2] = 'c'; str[3] = 'h'; str[4] = '\0'; break;
-  case 'ы': str[0] = 'y'; str[1] = '\0'; break;
-  case 'Ы': str[0] = 'Y'; str[1] = '\0'; break;
-  case 'ъ': str[0] = 'i'; str[1] = 'e'; str[2] = '\0'; break;
-  case 'Ъ': str[0] = 'I'; str[1] = 'e'; str[2] = '\0'; break;
-  case 'ь': str[0] = '\''; str[1] = '\0'; break; // в приказе ьЬ не определены
-  case 'Ь': str[0] = '\''; str[1] = '\0'; break; // используем '
-  case 'э': str[0] = 'e'; str[1] = '\0'; break;
-  case 'Э': str[0] = 'E'; str[1] = '\0'; break;
-  case 'ю': str[0] = 'i'; str[1] = 'u'; str[2] = '\0'; break;
-  case 'Ю': str[0] = 'I'; str[1] = 'u'; str[2] = '\0'; break;
-  case 'я': str[0] = 'i'; str[1] = 'a'; str[2] = '\0'; break;
-  case 'Я': str[0] = 'I'; str[1] = 'a'; str[2] = '\0'; break;
+  case 'Р°': str[0] = 'a'; str[1] = '\0'; break;
+  case 'Рђ': str[0] = 'A'; str[1] = '\0'; break;
+  case 'Р±': str[0] = 'b'; str[1] = '\0'; break;
+  case 'Р‘': str[0] = 'B'; str[1] = '\0'; break;
+  case 'РІ': str[0] = 'v'; str[1] = '\0'; break;
+  case 'Р’': str[0] = 'V'; str[1] = '\0'; break;
+  case 'Рі': str[0] = 'g'; str[1] = '\0'; break;
+  case 'Р“': str[0] = 'G'; str[1] = '\0'; break;
+  case 'Рґ': str[0] = 'd'; str[1] = '\0'; break;
+  case 'Р”': str[0] = 'D'; str[1] = '\0'; break;
+  case 'Рµ':
+  case 'С‘': str[0] = 'e'; str[1] = '\0'; break;
+  case 'Р•': 
+  case 'РЃ': str[0] = 'E'; str[1] = '\0'; break;
+  case 'Р¶': str[0] = 'z'; str[1] = 'h'; break; str[2] = '\0'; break;
+  case 'Р–': str[0] = 'Z'; str[1] = 'h'; break; str[2] = '\0'; break;
+  case 'Р·': str[0] = 'z'; str[1] = '\0'; break;
+  case 'Р—': str[0] = 'Z'; str[1] = '\0'; break;
+  case 'Рё':
+  case 'Р№': str[0] = 'i'; str[1] = '\0'; break;
+  case 'Р':
+  case 'Р™': str[0] = 'I'; str[1] = '\0'; break;
+  case 'Рє': str[0] = 'k'; str[1] = '\0'; break;
+  case 'Рљ': str[0] = 'K'; str[1] = '\0'; break;
+  case 'Р»': str[0] = 'l'; str[1] = '\0'; break;
+  case 'Р›': str[0] = 'L'; str[1] = '\0'; break;
+  case 'Рј': str[0] = 'm'; str[1] = '\0'; break;
+  case 'Рњ': str[0] = 'M'; str[1] = '\0'; break;
+  case 'РЅ': str[0] = 'n'; str[1] = '\0'; break;
+  case 'Рќ': str[0] = 'N'; str[1] = '\0'; break;
+  case 'Рѕ': str[0] = 'o'; str[1] = '\0'; break;
+  case 'Рћ': str[0] = 'O'; str[1] = '\0'; break;
+  case 'Рї': str[0] = 'p'; str[1] = '\0'; break;
+  case 'Рџ': str[0] = 'P'; str[1] = '\0'; break;
+  case 'СЂ': str[0] = 'r'; str[1] = '\0'; break;
+  case 'Р ': str[0] = 'R'; str[1] = '\0'; break;
+  case 'СЃ': str[0] = 's'; str[1] = '\0'; break;
+  case 'РЎ': str[0] = 'S'; str[1] = '\0'; break;
+  case 'С‚': str[0] = 't'; str[1] = '\0'; break;
+  case 'Рў': str[0] = 'T'; str[1] = '\0'; break;
+  case 'Сѓ': str[0] = 'u'; str[1] = '\0'; break;
+  case 'РЈ': str[0] = 'U'; str[1] = '\0'; break;
+  case 'С„': str[0] = 'f'; str[1] = '\0'; break;
+  case 'Р¤': str[0] = 'F'; str[1] = '\0'; break;
+  case 'С…': str[0] = 'k'; str[1] = 'h'; str[2] = '\0'; break;
+  case 'РҐ': str[0] = 'K'; str[1] = 'h'; str[2] = '\0'; break;
+  case 'С†': str[0] = 't'; str[1] = 's'; str[2] = '\0'; break;
+  case 'Р¦': str[0] = 'T'; str[1] = 's'; str[2] = '\0'; break;
+  case 'С‡': str[0] = 'c'; str[1] = 'h'; str[2] = '\0'; break;
+  case 'Р§': str[0] = 'C'; str[1] = 'h'; str[2] = '\0'; break;
+  case 'С€': str[0] = 's'; str[1] = 'h'; str[2] = '\0'; break;
+  case 'РЁ': str[0] = 'S'; str[1] = 'h'; str[2] = '\0'; break;
+  case 'С‰': str[0] = 's'; str[1] = 'h'; str[2] = 'c'; str[3] = 'h'; str[4] = '\0'; break;
+  case 'Р©': str[0] = 'S'; str[1] = 'h'; str[2] = 'c'; str[3] = 'h'; str[4] = '\0'; break;
+  case 'С‹': str[0] = 'y'; str[1] = '\0'; break;
+  case 'Р«': str[0] = 'Y'; str[1] = '\0'; break;
+  case 'СЉ': str[0] = 'i'; str[1] = 'e'; str[2] = '\0'; break;
+  case 'РЄ': str[0] = 'I'; str[1] = 'e'; str[2] = '\0'; break;
+  case 'СЊ': str[0] = '\''; str[1] = '\0'; break; // РІ РїСЂРёРєР°Р·Рµ СЊР¬ РЅРµ РѕРїСЂРµРґРµР»РµРЅС‹
+  case 'Р¬': str[0] = '\''; str[1] = '\0'; break; // РёСЃРїРѕР»СЊР·СѓРµРј '
+  case 'СЌ': str[0] = 'e'; str[1] = '\0'; break;
+  case 'Р­': str[0] = 'E'; str[1] = '\0'; break;
+  case 'СЋ': str[0] = 'i'; str[1] = 'u'; str[2] = '\0'; break;
+  case 'Р®': str[0] = 'I'; str[1] = 'u'; str[2] = '\0'; break;
+  case 'СЏ': str[0] = 'i'; str[1] = 'a'; str[2] = '\0'; break;
+  case 'РЇ': str[0] = 'I'; str[1] = 'a'; str[2] = '\0'; break;
   default:
     break;
   }
 }
 
 int STR_CompareByMask(char const* str, char const* mask)
-{ // сравнивает строку с маской, возврат 1 если подходит, 0 иначе
-  // пробую рекурсию ? - любой символ, * - любая группа символов или ничего
+{ // СЃСЂР°РІРЅРёРІР°РµС‚ СЃС‚СЂРѕРєСѓ СЃ РјР°СЃРєРѕР№, РІРѕР·РІСЂР°С‚ 1 РµСЃР»Рё РїРѕРґС…РѕРґРёС‚, 0 РёРЅР°С‡Рµ
+  // РїСЂРѕР±СѓСЋ СЂРµРєСѓСЂСЃРёСЋ ? - Р»СЋР±РѕР№ СЃРёРјРІРѕР», * - Р»СЋР±Р°СЏ РіСЂСѓРїРїР° СЃРёРјРІРѕР»РѕРІ РёР»Рё РЅРёС‡РµРіРѕ
   if (*str == 0 && *mask == 0)
-    return 1;                 // одновременно дошли до конца обоих строк
+    return 1;                 // РѕРґРЅРѕРІСЂРµРјРµРЅРЅРѕ РґРѕС€Р»Рё РґРѕ РєРѕРЅС†Р° РѕР±РѕРёС… СЃС‚СЂРѕРє
   if (*str == 0)
-  {                           // строка закончилась, шанс есть только для '*'
+  {                           // СЃС‚СЂРѕРєР° Р·Р°РєРѕРЅС‡РёР»Р°СЃСЊ, С€Р°РЅСЃ РµСЃС‚СЊ С‚РѕР»СЊРєРѕ РґР»СЏ '*'
     if (*mask == '*')
-      return STR_CompareByMask(str, mask+1);  // укорачиваем маску на *
+      return STR_CompareByMask(str, mask+1);  // СѓРєРѕСЂР°С‡РёРІР°РµРј РјР°СЃРєСѓ РЅР° *
     else return 0;
   }
-  else if (*mask == '?' || *mask == *str)     // символы совпали или шаблон '?'
-    return STR_CompareByMask(str+1, mask+1);  // укорачиваем обе строки
+  else if (*mask == '?' || *mask == *str)     // СЃРёРјРІРѕР»С‹ СЃРѕРІРїР°Р»Рё РёР»Рё С€Р°Р±Р»РѕРЅ '?'
+    return STR_CompareByMask(str+1, mask+1);  // СѓРєРѕСЂР°С‡РёРІР°РµРј РѕР±Рµ СЃС‚СЂРѕРєРё
   else if (*mask == '*')
-  { // тут анализ шаблона '*' проверяем варианты, если срабытывает, то сразу возврат
+  { // С‚СѓС‚ Р°РЅР°Р»РёР· С€Р°Р±Р»РѕРЅР° '*' РїСЂРѕРІРµСЂСЏРµРј РІР°СЂРёР°РЅС‚С‹, РµСЃР»Рё СЃСЂР°Р±С‹С‚С‹РІР°РµС‚, С‚Рѕ СЃСЂР°Р·Сѓ РІРѕР·РІСЂР°С‚
     
-    // вариант 1 - продвигаем только строку, шаблон остаётся на '*'
+    // РІР°СЂРёР°РЅС‚ 1 - РїСЂРѕРґРІРёРіР°РµРј С‚РѕР»СЊРєРѕ СЃС‚СЂРѕРєСѓ, С€Р°Р±Р»РѕРЅ РѕСЃС‚Р°С‘С‚СЃСЏ РЅР° '*'
     if (STR_CompareByMask(str+1, mask)) return 1;
       
-    // вариант 2 - продвигаем обе строки
+    // РІР°СЂРёР°РЅС‚ 2 - РїСЂРѕРґРІРёРіР°РµРј РѕР±Рµ СЃС‚СЂРѕРєРё
     if (STR_CompareByMask(str+1, mask+1)) return 1;
     
-    // вариант 3 - продвигаем маску, сразу возвращаем результат
+    // РІР°СЂРёР°РЅС‚ 3 - РїСЂРѕРґРІРёРіР°РµРј РјР°СЃРєСѓ, СЃСЂР°Р·Сѓ РІРѕР·РІСЂР°С‰Р°РµРј СЂРµР·СѓР»СЊС‚Р°С‚
     return STR_CompareByMask(str, mask+1);
   }
-  else return 0; // не совпали символы, или закончилась маска, а строка нет
+  else return 0; // РЅРµ СЃРѕРІРїР°Р»Рё СЃРёРјРІРѕР»С‹, РёР»Рё Р·Р°РєРѕРЅС‡РёР»Р°СЃСЊ РјР°СЃРєР°, Р° СЃС‚СЂРѕРєР° РЅРµС‚
 }
 
 int STR_FindWord(char const* str, char* word, unsigned int pos)
-{ // ищет в строке str с позиции pos слово word
-  // return - позиция (от начала строки) или -1 == не найдено
+{ // РёС‰РµС‚ РІ СЃС‚СЂРѕРєРµ str СЃ РїРѕР·РёС†РёРё pos СЃР»РѕРІРѕ word
+  // return - РїРѕР·РёС†РёСЏ (РѕС‚ РЅР°С‡Р°Р»Р° СЃС‚СЂРѕРєРё) РёР»Рё -1 == РЅРµ РЅР°Р№РґРµРЅРѕ
   char const* str_ptr = str + pos;
   int word_len = STR_Lenght(word);
   int str_len = STR_Lenght(str);
   if (word_len && str_len)
   {  
-    char const* limit = str + str_len - word_len;  // до куда искать
+    char const* limit = str + str_len - word_len;  // РґРѕ РєСѓРґР° РёСЃРєР°С‚СЊ
     while (str_ptr <= limit)
     {
       str_ptr = STR_FindNextWord(str_ptr);
-      if (!(*str_ptr))  // закончились слова в строке
+      if (!(*str_ptr))  // Р·Р°РєРѕРЅС‡РёР»РёСЃСЊ СЃР»РѕРІР° РІ СЃС‚СЂРѕРєРµ
         break;
-      if (STR_Compare_FixLen(str_ptr, word, word_len)) // совпало начало
-        // за найденым идёт разделитель, слово не продолжается
+      if (STR_Compare_FixLen(str_ptr, word, word_len)) // СЃРѕРІРїР°Р»Рѕ РЅР°С‡Р°Р»Рѕ
+        // Р·Р° РЅР°Р№РґРµРЅС‹Рј РёРґС‘С‚ СЂР°Р·РґРµР»РёС‚РµР»СЊ, СЃР»РѕРІРѕ РЅРµ РїСЂРѕРґРѕР»Р¶Р°РµС‚СЃСЏ
         if (! IsAlNum(*(str_ptr + word_len))) 
-          return (str_ptr - str); // слово найдено
+          return (str_ptr - str); // СЃР»РѕРІРѕ РЅР°Р№РґРµРЅРѕ
       str_ptr = STR_FindNextSeparator(str_ptr);
     }
   }
@@ -171,33 +171,33 @@ int STR_FindWord(char const* str, char* word, unsigned int pos)
 }
 
 int STR_FindSubStr(char const* str, char* subStr, unsigned int pos)
-{ // ищет в строке str с позиции pos подстроку subStr 
-  // return - позиция (от начала строки) или -1 == не найдено
+{ // РёС‰РµС‚ РІ СЃС‚СЂРѕРєРµ str СЃ РїРѕР·РёС†РёРё pos РїРѕРґСЃС‚СЂРѕРєСѓ subStr 
+  // return - РїРѕР·РёС†РёСЏ (РѕС‚ РЅР°С‡Р°Р»Р° СЃС‚СЂРѕРєРё) РёР»Рё -1 == РЅРµ РЅР°Р№РґРµРЅРѕ
   char const* str_ptr = str + pos;
   int subStr_len = STR_Lenght(subStr);
   int str_len = STR_Lenght(str);
   if (subStr_len && str_len)
   {
-    char const* limit = str + str_len - subStr_len;  // до куда искать
-    while (str_ptr <= limit)                         // поиск
+    char const* limit = str + str_len - subStr_len;  // РґРѕ РєСѓРґР° РёСЃРєР°С‚СЊ
+    while (str_ptr <= limit)                         // РїРѕРёСЃРє
     { 
       if(STR_Compare_FixLen(str_ptr, subStr, subStr_len))
-          return (str_ptr - str);                    // нашли
+          return (str_ptr - str);                    // РЅР°С€Р»Рё
       str_ptr++;
     }
   }
-  return -1;                                        // не нашли
+  return -1;                                        // РЅРµ РЅР°С€Р»Рё
 }
 
 unsigned int WordLen(char const* str) {
-  // возвращает длину слова от начала str
+  // РІРѕР·РІСЂР°С‰Р°РµС‚ РґР»РёРЅСѓ СЃР»РѕРІР° РѕС‚ РЅР°С‡Р°Р»Р° str
   return STR_FindNextSeparator(str) - str; 
 }
 
 unsigned int CountWords(char const* str) {
-  // возвращает количество слов в str
+  // РІРѕР·РІСЂР°С‰Р°РµС‚ РєРѕР»РёС‡РµСЃС‚РІРѕ СЃР»РѕРІ РІ str
   unsigned int counter = 0;
-  while(*(str = STR_FindNextWord(str))) // пока не найден конец строки \0
+  while(*(str = STR_FindNextWord(str))) // РїРѕРєР° РЅРµ РЅР°Р№РґРµРЅ РєРѕРЅРµС† СЃС‚СЂРѕРєРё \0
   { 
     counter++;
     str = STR_FindNextSeparator(str);
@@ -206,7 +206,7 @@ unsigned int CountWords(char const* str) {
 }
 
 unsigned int CountSymbols(char const* str) {
-  // возвращает количество букв в str
+  // РІРѕР·РІСЂР°С‰Р°РµС‚ РєРѕР»РёС‡РµСЃС‚РІРѕ Р±СѓРєРІ РІ str
   unsigned int counter = 0;
   while (*str)
     counter += IsAlNum(*str++);
@@ -214,7 +214,7 @@ unsigned int CountSymbols(char const* str) {
 }
 
 unsigned int CountChar(char const* str, char x) {
-  // считает вхождение в строку символа X
+  // СЃС‡РёС‚Р°РµС‚ РІС…РѕР¶РґРµРЅРёРµ РІ СЃС‚СЂРѕРєСѓ СЃРёРјРІРѕР»Р° X
   unsigned int counter = 0;
   while (*str)
     if(x == (*str++)) counter++;
@@ -222,16 +222,16 @@ unsigned int CountChar(char const* str, char x) {
 }
 
 char* FindChar(char const* str, char x, int start) {
-  // находит вхождение в строку символа X, или конец строки '\0'
-  str += start;     // от начала строки
+  // РЅР°С…РѕРґРёС‚ РІС…РѕР¶РґРµРЅРёРµ РІ СЃС‚СЂРѕРєСѓ СЃРёРјРІРѕР»Р° X, РёР»Рё РєРѕРЅРµС† СЃС‚СЂРѕРєРё '\0'
+  str += start;     // РѕС‚ РЅР°С‡Р°Р»Р° СЃС‚СЂРѕРєРё
   while (*str)
-    if (x == (*str)) return (char*)str;  // вернёт адрес первого найденного Х
+    if (x == (*str)) return (char*)str;  // РІРµСЂРЅС‘С‚ Р°РґСЂРµСЃ РїРµСЂРІРѕРіРѕ РЅР°Р№РґРµРЅРЅРѕРіРѕ РҐ
     else str++;
-  return (char*)str;  // тут вернёт адрес концы строки '\0'
+  return (char*)str;  // С‚СѓС‚ РІРµСЂРЅС‘С‚ Р°РґСЂРµСЃ РєРѕРЅС†С‹ СЃС‚СЂРѕРєРё '\0'
 }
 
 unsigned int CountSeparators(char const* str) {
-  // возвращает количество НЕбукв в str
+  // РІРѕР·РІСЂР°С‰Р°РµС‚ РєРѕР»РёС‡РµСЃС‚РІРѕ РќР•Р±СѓРєРІ РІ str
   unsigned int counter = 0;
   while (*str)
     counter += IsAlNum(*str++) ? 0 : 1;
@@ -239,29 +239,29 @@ unsigned int CountSeparators(char const* str) {
 }
 
 char* AllocateString(unsigned int size)
-{ // выделяет место для строки размером (size + 1)
+{ // РІС‹РґРµР»СЏРµС‚ РјРµСЃС‚Рѕ РґР»СЏ СЃС‚СЂРѕРєРё СЂР°Р·РјРµСЂРѕРј (size + 1)
   char* new_str = (char*)malloc(size + 1);
   if(NULL != new_str)
-    *new_str = '\0';   // на всякий случай в начале делаем конец строки
+    *new_str = '\0';   // РЅР° РІСЃСЏРєРёР№ СЃР»СѓС‡Р°Р№ РІ РЅР°С‡Р°Р»Рµ РґРµР»Р°РµРј РєРѕРЅРµС† СЃС‚СЂРѕРєРё
   return new_str;
 }
 
 char* CopyString(char const* str)
-{ // Создаёт новую строку == str
+{ // РЎРѕР·РґР°С‘С‚ РЅРѕРІСѓСЋ СЃС‚СЂРѕРєСѓ == str
   unsigned int str_size = STR_Lenght(str);
   char* new_str = (char*)malloc(str_size + 1);
   if (NULL != new_str)
   {
     char const* pOrigin = str;
     char* pNew = new_str;
-    // копируем, последний скопированный будет конец строки '\0'
+    // РєРѕРїРёСЂСѓРµРј, РїРѕСЃР»РµРґРЅРёР№ СЃРєРѕРїРёСЂРѕРІР°РЅРЅС‹Р№ Р±СѓРґРµС‚ РєРѕРЅРµС† СЃС‚СЂРѕРєРё '\0'
     while (*(pNew++) = *(pOrigin++)) {};  
   }
   return new_str;
 }
 
 char* STR_GetChars(char const* str, int start, int end)
-{ // Создаёт новую строку == str[start...end]
+{ // РЎРѕР·РґР°С‘С‚ РЅРѕРІСѓСЋ СЃС‚СЂРѕРєСѓ == str[start...end]
   if (start > end) return NULL;
   unsigned int str_size = end - start;
   char* new_str = (char*)malloc(str_size + 1);
@@ -270,103 +270,103 @@ char* STR_GetChars(char const* str, int start, int end)
     char const* pOrigin = str + start;
     char const* pEnd = str + end;
     char* pNew = new_str;
-    // копируем, последний скопированный будет конец строки '\0'
-    while (pOrigin <= pEnd && *pOrigin)  // копируем кусок [start..end] или до конца '\0'
+    // РєРѕРїРёСЂСѓРµРј, РїРѕСЃР»РµРґРЅРёР№ СЃРєРѕРїРёСЂРѕРІР°РЅРЅС‹Р№ Р±СѓРґРµС‚ РєРѕРЅРµС† СЃС‚СЂРѕРєРё '\0'
+    while (pOrigin <= pEnd && *pOrigin)  // РєРѕРїРёСЂСѓРµРј РєСѓСЃРѕРє [start..end] РёР»Рё РґРѕ РєРѕРЅС†Р° '\0'
       { *(pNew++) = *(pOrigin++); }
-    pNew = '\0';   // конец строки
+    pNew = '\0';   // РєРѕРЅРµС† СЃС‚СЂРѕРєРё
   }
   return new_str;
 }
 
 char* OnlyOneSpace(char const* str)
-{ // Создаёт новую строку == str, несколько пробелов подряд заменяются на один
-  // В начале строки пробелы удаляются
+{ // РЎРѕР·РґР°С‘С‚ РЅРѕРІСѓСЋ СЃС‚СЂРѕРєСѓ == str, РЅРµСЃРєРѕР»СЊРєРѕ РїСЂРѕР±РµР»РѕРІ РїРѕРґСЂСЏРґ Р·Р°РјРµРЅСЏСЋС‚СЃСЏ РЅР° РѕРґРёРЅ
+  // Р’ РЅР°С‡Р°Р»Рµ СЃС‚СЂРѕРєРё РїСЂРѕР±РµР»С‹ СѓРґР°Р»СЏСЋС‚СЃСЏ
   unsigned int str_size = STR_Lenght(str);
-  // выделяю место по длнине оригинала
+  // РІС‹РґРµР»СЏСЋ РјРµСЃС‚Рѕ РїРѕ РґР»РЅРёРЅРµ РѕСЂРёРіРёРЅР°Р»Р°
   char* new_str = (char*)malloc(str_size + 1);
   if (NULL != new_str)
   {
     char const* pOrigin = str;
     char* pNew = new_str;
-    int isPredSpase = 1;    // считаю, что пробелы в начале строки не нужны
+    int isPredSpase = 1;    // СЃС‡РёС‚Р°СЋ, С‡С‚Рѕ РїСЂРѕР±РµР»С‹ РІ РЅР°С‡Р°Р»Рµ СЃС‚СЂРѕРєРё РЅРµ РЅСѓР¶РЅС‹
     do
     {
-      if (*pOrigin == ' ')  // найден пробел
+      if (*pOrigin == ' ')  // РЅР°Р№РґРµРЅ РїСЂРѕР±РµР»
       {
-        if (!isPredSpase)   // пробел копируем только если перед ним был НЕпробел
+        if (!isPredSpase)   // РїСЂРѕР±РµР» РєРѕРїРёСЂСѓРµРј С‚РѕР»СЊРєРѕ РµСЃР»Рё РїРµСЂРµРґ РЅРёРј Р±С‹Р» РќР•РїСЂРѕР±РµР»
           { *(pNew++) = *(pOrigin++); }
         else
-          { pOrigin++; }    // был пробел => не копируем, просто сдвигаем указатель
-        isPredSpase = 1;    // запомнить, что был пробел
+          { pOrigin++; }    // Р±С‹Р» РїСЂРѕР±РµР» => РЅРµ РєРѕРїРёСЂСѓРµРј, РїСЂРѕСЃС‚Рѕ СЃРґРІРёРіР°РµРј СѓРєР°Р·Р°С‚РµР»СЊ
+        isPredSpase = 1;    // Р·Р°РїРѕРјРЅРёС‚СЊ, С‡С‚Рѕ Р±С‹Р» РїСЂРѕР±РµР»
       }
       else
       {
-        *(pNew++) = *(pOrigin++);  // копируем не пробел
-        isPredSpase = 0;  // запомнить, что был не пробел
+        *(pNew++) = *(pOrigin++);  // РєРѕРїРёСЂСѓРµРј РЅРµ РїСЂРѕР±РµР»
+        isPredSpase = 0;  // Р·Р°РїРѕРјРЅРёС‚СЊ, С‡С‚Рѕ Р±С‹Р» РЅРµ РїСЂРѕР±РµР»
       }
-    } while (*pOrigin);   // копируем, пока не конец строки
-    *pNew = '\0';         // конец строки
+    } while (*pOrigin);   // РєРѕРїРёСЂСѓРµРј, РїРѕРєР° РЅРµ РєРѕРЅРµС† СЃС‚СЂРѕРєРё
+    *pNew = '\0';         // РєРѕРЅРµС† СЃС‚СЂРѕРєРё
   }
-  // строка возможно сократилась, перераспределить память ? или не надо ?? не буду
+  // СЃС‚СЂРѕРєР° РІРѕР·РјРѕР¶РЅРѕ СЃРѕРєСЂР°С‚РёР»Р°СЃСЊ, РїРµСЂРµСЂР°СЃРїСЂРµРґРµР»РёС‚СЊ РїР°РјСЏС‚СЊ ? РёР»Рё РЅРµ РЅР°РґРѕ ?? РЅРµ Р±СѓРґСѓ
   // new_str = (char*)realloc(new_str, STR_Lenght(new_str) + 1);
   return new_str;
 }
 
 void CopySymbols(char const* strFrom, char* strTo, unsigned int number)
-{ // копирует символы в строках strFrom -> strTo, в количестве number
+{ // РєРѕРїРёСЂСѓРµС‚ СЃРёРјРІРѕР»С‹ РІ СЃС‚СЂРѕРєР°С… strFrom -> strTo, РІ РєРѕР»РёС‡РµСЃС‚РІРµ number
   while (number--)
     *(strTo++) = *(strFrom++);
 }
 
 unsigned int DST_InputStr(char** str, char const* text)
-// вводит строку произвольной длины, самостоятельно выделяет память
-// в *str возвращает указатель на строку, return возвращает длину строки
+// РІРІРѕРґРёС‚ СЃС‚СЂРѕРєСѓ РїСЂРѕРёР·РІРѕР»СЊРЅРѕР№ РґР»РёРЅС‹, СЃР°РјРѕСЃС‚РѕСЏС‚РµР»СЊРЅРѕ РІС‹РґРµР»СЏРµС‚ РїР°РјСЏС‚СЊ
+// РІ *str РІРѕР·РІСЂР°С‰Р°РµС‚ СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂРѕРєСѓ, return РІРѕР·РІСЂР°С‰Р°РµС‚ РґР»РёРЅСѓ СЃС‚СЂРѕРєРё
 {
   printf("%s", text);
-  char* result_str = NULL;  // Это указатель на итоговую строку, тут накапливаем ввод
-  unsigned int str_len = 0; // Накапливаем длину строки, в конце - возвращаем
-  char buffer[DST_BUFFER_SIZE + 1] = { 0 }; // Для порций ввода
+  char* result_str = NULL;  // Р­С‚Рѕ СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РёС‚РѕРіРѕРІСѓСЋ СЃС‚СЂРѕРєСѓ, С‚СѓС‚ РЅР°РєР°РїР»РёРІР°РµРј РІРІРѕРґ
+  unsigned int str_len = 0; // РќР°РєР°РїР»РёРІР°РµРј РґР»РёРЅСѓ СЃС‚СЂРѕРєРё, РІ РєРѕРЅС†Рµ - РІРѕР·РІСЂР°С‰Р°РµРј
+  char buffer[DST_BUFFER_SIZE + 1] = { 0 }; // Р”Р»СЏ РїРѕСЂС†РёР№ РІРІРѕРґР°
   
-  while (1)  // считываем строку порциями размера DST_BUFFER_SIZE
+  while (1)  // СЃС‡РёС‚С‹РІР°РµРј СЃС‚СЂРѕРєСѓ РїРѕСЂС†РёСЏРјРё СЂР°Р·РјРµСЂР° DST_BUFFER_SIZE
   {
-    // fgets читает на 1 символ меньше, так как в конце всегда добавляет '\0'
+    // fgets С‡РёС‚Р°РµС‚ РЅР° 1 СЃРёРјРІРѕР» РјРµРЅСЊС€Рµ, С‚Р°Рє РєР°Рє РІ РєРѕРЅС†Рµ РІСЃРµРіРґР° РґРѕР±Р°РІР»СЏРµС‚ '\0'
     unsigned int input_len = STR_Lenght(fgets(buffer, DST_BUFFER_SIZE + 1, stdin));
 
 #ifdef DEBUG    
-    printf("\nПрочитано %u символов ", input_len);
+    printf("\nРџСЂРѕС‡РёС‚Р°РЅРѕ %u СЃРёРјРІРѕР»РѕРІ ", input_len);
 #endif
 
     if (buffer[input_len - 1] == '\n')
     {
-      buffer[--input_len] = '\0';  // заменяем '\n' -> '\0', уменьшаем длину
+      buffer[--input_len] = '\0';  // Р·Р°РјРµРЅСЏРµРј '\n' -> '\0', СѓРјРµРЅСЊС€Р°РµРј РґР»РёРЅСѓ
 #ifdef DEBUG
-      printf(" {CR найден [%u], удалён} ", input_len);
+      printf(" {CR РЅР°Р№РґРµРЅ [%u], СѓРґР°Р»С‘РЅ} ", input_len);
 #endif
     }
 
 #ifdef DEBUG
     printf("\"%s\"\n", buffer); 
 #endif
-    // просим новый кусок памяти
+    // РїСЂРѕСЃРёРј РЅРѕРІС‹Р№ РєСѓСЃРѕРє РїР°РјСЏС‚Рё
     char * new_str = (char*)realloc(result_str, str_len + input_len + 1);
     
-    if (NULL == new_str)  // выделение памяти не удалось, возвращаем что есть
+    if (NULL == new_str)  // РІС‹РґРµР»РµРЅРёРµ РїР°РјСЏС‚Рё РЅРµ СѓРґР°Р»РѕСЃСЊ, РІРѕР·РІСЂР°С‰Р°РµРј С‡С‚Рѕ РµСЃС‚СЊ
     { printf("No more memory\n");
       break;
     }
     else 
     {
-      result_str = new_str;                   //  результат возможно уже в другом месте
-      // первые ячейки уже заполнены, сместиться на длину имеющейся строки 
+      result_str = new_str;                   //  СЂРµР·СѓР»СЊС‚Р°С‚ РІРѕР·РјРѕР¶РЅРѕ СѓР¶Рµ РІ РґСЂСѓРіРѕРј РјРµСЃС‚Рµ
+      // РїРµСЂРІС‹Рµ СЏС‡РµР№РєРё СѓР¶Рµ Р·Р°РїРѕР»РЅРµРЅС‹, СЃРјРµСЃС‚РёС‚СЊСЃСЏ РЅР° РґР»РёРЅСѓ РёРјРµСЋС‰РµР№СЃСЏ СЃС‚СЂРѕРєРё 
       char* res_pointer = result_str + str_len;  
-      char* in_pointer = buffer;                  // добавляем очередную порцию из buffer
-      while (*res_pointer++ = *in_pointer++) {};  // копируем пока не '\0' в конце buffer
+      char* in_pointer = buffer;                  // РґРѕР±Р°РІР»СЏРµРј РѕС‡РµСЂРµРґРЅСѓСЋ РїРѕСЂС†РёСЋ РёР· buffer
+      while (*res_pointer++ = *in_pointer++) {};  // РєРѕРїРёСЂСѓРµРј РїРѕРєР° РЅРµ '\0' РІ РєРѕРЅС†Рµ buffer
 
-      str_len += input_len;  // новая длина строки
+      str_len += input_len;  // РЅРѕРІР°СЏ РґР»РёРЅР° СЃС‚СЂРѕРєРё
 #ifdef DEBUG
-      printf("Пока введено %u символов, \"%s\"\n", str_len, result_str);
+      printf("РџРѕРєР° РІРІРµРґРµРЅРѕ %u СЃРёРјРІРѕР»РѕРІ, \"%s\"\n", str_len, result_str);
 #endif
-      // использован не весь входной буфер => ввод закончен
+      // РёСЃРїРѕР»СЊР·РѕРІР°РЅ РЅРµ РІРµСЃСЊ РІС…РѕРґРЅРѕР№ Р±СѓС„РµСЂ => РІРІРѕРґ Р·Р°РєРѕРЅС‡РµРЅ
       if (input_len < DST_BUFFER_SIZE)
         break;
     }
@@ -376,9 +376,9 @@ unsigned int DST_InputStr(char** str, char const* text)
 }
 
 int STR_Joint_Separ_Str(char** str, char const* separator, char const* appendStr)
-{ // расширяет строку str, добавляя к ней + separator + appendStr
-  // separator добавляется только если str не пустая
-  // возвращает длину добавленного
+{ // СЂР°СЃС€РёСЂСЏРµС‚ СЃС‚СЂРѕРєСѓ str, РґРѕР±Р°РІР»СЏСЏ Рє РЅРµР№ + separator + appendStr
+  // separator РґРѕР±Р°РІР»СЏРµС‚СЃСЏ С‚РѕР»СЊРєРѕ РµСЃР»Рё str РЅРµ РїСѓСЃС‚Р°СЏ
+  // РІРѕР·РІСЂР°С‰Р°РµС‚ РґР»РёРЅСѓ РґРѕР±Р°РІР»РµРЅРЅРѕРіРѕ
 
   unsigned int origin_len = STR_Lenght(*str);
   unsigned int separator_len = STR_Lenght(separator);
@@ -388,61 +388,61 @@ int STR_Joint_Separ_Str(char** str, char const* separator, char const* appendStr
   char* new_memory = (char*)realloc(*str, new_len);
   if (NULL == new_memory)
     return 0;
-  *str = new_memory;   // возможно указатель изменился
-  char* str_ptr = new_memory + origin_len;  // добавляем от конца имеющегося
+  *str = new_memory;   // РІРѕР·РјРѕР¶РЅРѕ СѓРєР°Р·Р°С‚РµР»СЊ РёР·РјРµРЅРёР»СЃСЏ
+  char* str_ptr = new_memory + origin_len;  // РґРѕР±Р°РІР»СЏРµРј РѕС‚ РєРѕРЅС†Р° РёРјРµСЋС‰РµРіРѕСЃСЏ
 
-  if (origin_len)      //  для непустой строки вставляем разделители
+  if (origin_len)      //  РґР»СЏ РЅРµРїСѓСЃС‚РѕР№ СЃС‚СЂРѕРєРё РІСЃС‚Р°РІР»СЏРµРј СЂР°Р·РґРµР»РёС‚РµР»Рё
     while (*separator)
       *str_ptr++ = *separator++;
 
-  while (*appendStr)   // копируем 2ю строку
+  while (*appendStr)   // РєРѕРїРёСЂСѓРµРј 2СЋ СЃС‚СЂРѕРєСѓ
     *str_ptr++ = *appendStr++;
-  *str_ptr = '\0';     // коней строки
+  *str_ptr = '\0';     // РєРѕРЅРµР№ СЃС‚СЂРѕРєРё
 
   return (origin_len ? separator_len : 0) + append_len;
 }
 
 char* STR_GetFirstWord(char const* str)
-{ // из str выдаёт первое слово в новую созданную строку, или NULL
+{ // РёР· str РІС‹РґР°С‘С‚ РїРµСЂРІРѕРµ СЃР»РѕРІРѕ РІ РЅРѕРІСѓСЋ СЃРѕР·РґР°РЅРЅСѓСЋ СЃС‚СЂРѕРєСѓ, РёР»Рё NULL
   char* word_ptr = STR_FindNextWord(str);
-  if (! *word_ptr)                 // слов не найдено
+  if (! *word_ptr)                 // СЃР»РѕРІ РЅРµ РЅР°Р№РґРµРЅРѕ
     return NULL;
   char* word_end = STR_FindNextSeparator(word_ptr);
   unsigned int word_len = word_end - word_ptr;
 
-  char* new_string = (char*)malloc(word_len + 1);   // выделние памяти
-  if (NULL == new_string)         // выделение памяти не удалось
+  char* new_string = (char*)malloc(word_len + 1);   // РІС‹РґРµР»РЅРёРµ РїР°РјСЏС‚Рё
+  if (NULL == new_string)         // РІС‹РґРµР»РµРЅРёРµ РїР°РјСЏС‚Рё РЅРµ СѓРґР°Р»РѕСЃСЊ
     return NULL;
 
-  char* new_str_ptr = new_string; // копирование
+  char* new_str_ptr = new_string; // РєРѕРїРёСЂРѕРІР°РЅРёРµ
   while (word_len--)
     *(new_str_ptr++) = *(word_ptr++);
-  *new_str_ptr = '\0';            //  конец строки
+  *new_str_ptr = '\0';            //  РєРѕРЅРµС† СЃС‚СЂРѕРєРё
   return new_string;
 }
 
 char* STR_GetOnlyLetters(char const* str)
-{ // из str выдаёт только буквы в новую созданную строку
+{ // РёР· str РІС‹РґР°С‘С‚ С‚РѕР»СЊРєРѕ Р±СѓРєРІС‹ РІ РЅРѕРІСѓСЋ СЃРѕР·РґР°РЅРЅСѓСЋ СЃС‚СЂРѕРєСѓ
   unsigned int letters = CountSymbols(str);
 
   char* new_string = (char*)malloc(letters + 1);
-  if (NULL == new_string)         // выделение памяти не удалось
+  if (NULL == new_string)         // РІС‹РґРµР»РµРЅРёРµ РїР°РјСЏС‚Рё РЅРµ СѓРґР°Р»РѕСЃСЊ
     return NULL;
 
-  char* new_str_ptr = new_string; // копирование
+  char* new_str_ptr = new_string; // РєРѕРїРёСЂРѕРІР°РЅРёРµ
   char const* old_str_ptr = str;
-  while (*old_str_ptr)            // пока не конец строки
-    if (IsAlNum(*old_str_ptr))    //   копируем только буквы
+  while (*old_str_ptr)            // РїРѕРєР° РЅРµ РєРѕРЅРµС† СЃС‚СЂРѕРєРё
+    if (IsAlNum(*old_str_ptr))    //   РєРѕРїРёСЂСѓРµРј С‚РѕР»СЊРєРѕ Р±СѓРєРІС‹
       *(new_str_ptr++) = *(old_str_ptr++);
     else
-      old_str_ptr++;              // небуква - пропускаем
+      old_str_ptr++;              // РЅРµР±СѓРєРІР° - РїСЂРѕРїСѓСЃРєР°РµРј
   
-  *new_str_ptr = '\0';            //  конец строки
+  *new_str_ptr = '\0';            //  РєРѕРЅРµС† СЃС‚СЂРѕРєРё
   return new_string;
 }
 
 char* STR_ReverseInStr(char *str, int start, int end)
-{ // str[start...end] <- str[end...start] , т.е. в обратном порядке
+{ // str[start...end] <- str[end...start] , С‚.Рµ. РІ РѕР±СЂР°С‚РЅРѕРј РїРѕСЂСЏРґРєРµ
   char* p1 = str + start;
   char* p2 = str + end;
   while (p1 < p2) 
@@ -451,11 +451,11 @@ char* STR_ReverseInStr(char *str, int start, int end)
     *(p1++) = *p2;
     *(p2--) = temp;
   }
-  return str;  // возврат строки на всякий случай
+  return str;  // РІРѕР·РІСЂР°С‚ СЃС‚СЂРѕРєРё РЅР° РІСЃСЏРєРёР№ СЃР»СѓС‡Р°Р№
 }
 
 char* STR_ReverseAllStr(char* str)
-{ // Реверс строки
+{ // Р РµРІРµСЂСЃ СЃС‚СЂРѕРєРё
   char* p1 = str;
   char* p2 = str + STR_Lenght(str) - 1;
   while (p1 < p2)
@@ -464,18 +464,18 @@ char* STR_ReverseAllStr(char* str)
     *(p1++) = *p2;
     *(p2--) = temp;
   }
-  return str;  // возврат строки на всякий случай
+  return str;  // РІРѕР·РІСЂР°С‚ СЃС‚СЂРѕРєРё РЅР° РІСЃСЏРєРёР№ СЃР»СѓС‡Р°Р№
 }
 
-// XXXXXXXXXXXXXXXXX   ЗАДАНИЯ     XXXXXXXXXXXXXXXXXXXXXXXX
+// XXXXXXXXXXXXXXXXX   Р—РђР”РђРќРРЇ     XXXXXXXXXXXXXXXXXXXXXXXX
 
 char* ExtractLetters(char const* str, char const* newSeparator)
-{ // новая строка, БУКВЫ из str разделены новым разделителем
+{ // РЅРѕРІР°СЏ СЃС‚СЂРѕРєР°, Р‘РЈРљР’Р« РёР· str СЂР°Р·РґРµР»РµРЅС‹ РЅРѕРІС‹Рј СЂР°Р·РґРµР»РёС‚РµР»РµРј
   unsigned int sepLenght = STR_Lenght(newSeparator);
   int symbols = CountSymbols(str);
   unsigned int new_string_size = symbols ? (symbols + (symbols - 1) * sepLenght) : 0;
   char* result = AllocateString(new_string_size);
-  if (NULL == result)  // выделение памяти не удалось
+  if (NULL == result)  // РІС‹РґРµР»РµРЅРёРµ РїР°РјСЏС‚Рё РЅРµ СѓРґР°Р»РѕСЃСЊ
     return result;
   char* result_p = result;
   int wasFirstWord = 0;
@@ -484,230 +484,230 @@ char* ExtractLetters(char const* str, char const* newSeparator)
   {
     if (IsAlNum(*str))
     {
-      if (wasFirstWord++)  // разделителя не будет только перед первым словом
+      if (wasFirstWord++)  // СЂР°Р·РґРµР»РёС‚РµР»СЏ РЅРµ Р±СѓРґРµС‚ С‚РѕР»СЊРєРѕ РїРµСЂРµРґ РїРµСЂРІС‹Рј СЃР»РѕРІРѕРј
       {   
         CopySymbols(newSeparator, result_p, sepLenght);
         result_p += sepLenght;
       }
-      *result_p++ = *str; // тут копируем символ в новую строку
+      *result_p++ = *str; // С‚СѓС‚ РєРѕРїРёСЂСѓРµРј СЃРёРјРІРѕР» РІ РЅРѕРІСѓСЋ СЃС‚СЂРѕРєСѓ
     }
-    str++;                // следующий символ
+    str++;                // СЃР»РµРґСѓСЋС‰РёР№ СЃРёРјРІРѕР»
   }
-  *result_p = '\0';       // конец строки
+  *result_p = '\0';       // РєРѕРЅРµС† СЃС‚СЂРѕРєРё
   return result;
 }
 
 char* ExtractWords(char const* str, char const* newSeparator)
-{ // новая строка, СЛОВА из str разделены новым разделителем
+{ // РЅРѕРІР°СЏ СЃС‚СЂРѕРєР°, РЎР›РћР’Рђ РёР· str СЂР°Р·РґРµР»РµРЅС‹ РЅРѕРІС‹Рј СЂР°Р·РґРµР»РёС‚РµР»РµРј
   char const* str_ptr = str;
-  char* next_word = NULL; // очередное слово (выделено отдельно)
-  char* result = AllocateString(0);    // тут накапливаем результат
+  char* next_word = NULL; // РѕС‡РµСЂРµРґРЅРѕРµ СЃР»РѕРІРѕ (РІС‹РґРµР»РµРЅРѕ РѕС‚РґРµР»СЊРЅРѕ)
+  char* result = AllocateString(0);    // С‚СѓС‚ РЅР°РєР°РїР»РёРІР°РµРј СЂРµР·СѓР»СЊС‚Р°С‚
  
   while (next_word = STR_GetFirstWord(str_ptr))
   {
     unsigned int next_word_len = STR_Lenght(next_word);
     int added = STR_Joint_Separ_Str(&result, newSeparator, next_word);
 
-    free(next_word);      // удаляем слово, оно уже не нужно
-    if (!added)  // добавление не удалось, возвращаем всё что есть
+    free(next_word);      // СѓРґР°Р»СЏРµРј СЃР»РѕРІРѕ, РѕРЅРѕ СѓР¶Рµ РЅРµ РЅСѓР¶РЅРѕ
+    if (!added)  // РґРѕР±Р°РІР»РµРЅРёРµ РЅРµ СѓРґР°Р»РѕСЃСЊ, РІРѕР·РІСЂР°С‰Р°РµРј РІСЃС‘ С‡С‚Рѕ РµСЃС‚СЊ
       break;
-    // смещаем указатель - находим начало слова, от него - конец слова
+    // СЃРјРµС‰Р°РµРј СѓРєР°Р·Р°С‚РµР»СЊ - РЅР°С…РѕРґРёРј РЅР°С‡Р°Р»Рѕ СЃР»РѕРІР°, РѕС‚ РЅРµРіРѕ - РєРѕРЅРµС† СЃР»РѕРІР°
     str_ptr = STR_FindNextWord(str_ptr) + next_word_len;
   }
   return result;
 }
 
 char* ExtractUniqueWords(char const* str, char const* newSeparator)
-{ // новая строка, УНИКАЛЬНЫЕ СЛОВА из str разделены новым разделителем
+{ // РЅРѕРІР°СЏ СЃС‚СЂРѕРєР°, РЈРќРРљРђР›Р¬РќР«Р• РЎР›РћР’Рђ РёР· str СЂР°Р·РґРµР»РµРЅС‹ РЅРѕРІС‹Рј СЂР°Р·РґРµР»РёС‚РµР»РµРј
   char const* str_ptr = str;
-  char* next_word = NULL; // очередное слово (выделено отдельно)
-  char* result = AllocateString(0);    // тут накапливаем результат
+  char* next_word = NULL; // РѕС‡РµСЂРµРґРЅРѕРµ СЃР»РѕРІРѕ (РІС‹РґРµР»РµРЅРѕ РѕС‚РґРµР»СЊРЅРѕ)
+  char* result = AllocateString(0);    // С‚СѓС‚ РЅР°РєР°РїР»РёРІР°РµРј СЂРµР·СѓР»СЊС‚Р°С‚
 
   while (next_word = STR_GetFirstWord(str_ptr))
   {
     unsigned int next_word_len = STR_Lenght(next_word);
 
     if (STR_FindWord(result, next_word, 0) == -1) 
-    { // слова ещё не было в строке
+    { // СЃР»РѕРІР° РµС‰С‘ РЅРµ Р±С‹Р»Рѕ РІ СЃС‚СЂРѕРєРµ
       int added = STR_Joint_Separ_Str(&result, newSeparator, next_word);
-      if (!added)  // добавление не удалось, возвращаем всё что есть
+      if (!added)  // РґРѕР±Р°РІР»РµРЅРёРµ РЅРµ СѓРґР°Р»РѕСЃСЊ, РІРѕР·РІСЂР°С‰Р°РµРј РІСЃС‘ С‡С‚Рѕ РµСЃС‚СЊ
       {
-        free(next_word);      // удаляем слово, оно уже не нужно
+        free(next_word);      // СѓРґР°Р»СЏРµРј СЃР»РѕРІРѕ, РѕРЅРѕ СѓР¶Рµ РЅРµ РЅСѓР¶РЅРѕ
         break;
       }
     }
-    free(next_word);      // удаляем слово, оно уже не нужно
-    // смещаем указатель - находим начало слова, от него - конец слова
+    free(next_word);      // СѓРґР°Р»СЏРµРј СЃР»РѕРІРѕ, РѕРЅРѕ СѓР¶Рµ РЅРµ РЅСѓР¶РЅРѕ
+    // СЃРјРµС‰Р°РµРј СѓРєР°Р·Р°С‚РµР»СЊ - РЅР°С…РѕРґРёРј РЅР°С‡Р°Р»Рѕ СЃР»РѕРІР°, РѕС‚ РЅРµРіРѕ - РєРѕРЅРµС† СЃР»РѕРІР°
     str_ptr = STR_FindNextWord(str_ptr) + next_word_len; 
   }
   return result;
 }
 
 char* ExtractUniqueLetters(char const* str, char const* newSeparator)
-{ // новая строка, УНИКАЛЬНЫЕ БУКВЫ из str разделены новым разделителем
+{ // РЅРѕРІР°СЏ СЃС‚СЂРѕРєР°, РЈРќРРљРђР›Р¬РќР«Р• Р‘РЈРљР’Р« РёР· str СЂР°Р·РґРµР»РµРЅС‹ РЅРѕРІС‹Рј СЂР°Р·РґРµР»РёС‚РµР»РµРј
   char const* str_ptr = str;
-  char* result = AllocateString(0);    // тут накапливаем результат
-  char letter[] = "x";    // не создаём каждый раз строку, используем эту
+  char* result = AllocateString(0);    // С‚СѓС‚ РЅР°РєР°РїР»РёРІР°РµРј СЂРµР·СѓР»СЊС‚Р°С‚
+  char letter[] = "x";    // РЅРµ СЃРѕР·РґР°С‘Рј РєР°Р¶РґС‹Р№ СЂР°Р· СЃС‚СЂРѕРєСѓ, РёСЃРїРѕР»СЊР·СѓРµРј СЌС‚Сѓ
 
   while (*(str_ptr = STR_FindNextWord(str_ptr)))
   {
-    letter[0] = *str_ptr; // строка из одной буквы
+    letter[0] = *str_ptr; // СЃС‚СЂРѕРєР° РёР· РѕРґРЅРѕР№ Р±СѓРєРІС‹
     if (STR_FindWord(result, letter, 0) == -1)
-    { // слова ещё не было в строке
+    { // СЃР»РѕРІР° РµС‰С‘ РЅРµ Р±С‹Р»Рѕ РІ СЃС‚СЂРѕРєРµ
       int added = STR_Joint_Separ_Str(&result, newSeparator, letter);
-      if (!added)  // добавление не удалось, возвращаем всё что есть
+      if (!added)  // РґРѕР±Р°РІР»РµРЅРёРµ РЅРµ СѓРґР°Р»РѕСЃСЊ, РІРѕР·РІСЂР°С‰Р°РµРј РІСЃС‘ С‡С‚Рѕ РµСЃС‚СЊ
         break;
     }
-    str_ptr++;    // смещаем указатель - на следующую букву
+    str_ptr++;    // СЃРјРµС‰Р°РµРј СѓРєР°Р·Р°С‚РµР»СЊ - РЅР° СЃР»РµРґСѓСЋС‰СѓСЋ Р±СѓРєРІСѓ
   }
   return result;
 }
 
 char* FindMirrors(char const* str, char const* newSeparator)
-{ // новая строка, из str удалены разделители и найдены 
-  // все подстроки длиннее 1, которые есть в зеркальном виде,
-  // они разделены новым разделителем
+{ // РЅРѕРІР°СЏ СЃС‚СЂРѕРєР°, РёР· str СѓРґР°Р»РµРЅС‹ СЂР°Р·РґРµР»РёС‚РµР»Рё Рё РЅР°Р№РґРµРЅС‹ 
+  // РІСЃРµ РїРѕРґСЃС‚СЂРѕРєРё РґР»РёРЅРЅРµРµ 1, РєРѕС‚РѕСЂС‹Рµ РµСЃС‚СЊ РІ Р·РµСЂРєР°Р»СЊРЅРѕРј РІРёРґРµ,
+  // РѕРЅРё СЂР°Р·РґРµР»РµРЅС‹ РЅРѕРІС‹Рј СЂР°Р·РґРµР»РёС‚РµР»РµРј
   
-  char* result = AllocateString(0);          // тут накапливаем результат
-  char* str_syms = STR_GetOnlyLetters(str);  // тут только буквы
-  if (NULL == str_syms)                      // букв нет
+  char* result = AllocateString(0);          // С‚СѓС‚ РЅР°РєР°РїР»РёРІР°РµРј СЂРµР·СѓР»СЊС‚Р°С‚
+  char* str_syms = STR_GetOnlyLetters(str);  // С‚СѓС‚ С‚РѕР»СЊРєРѕ Р±СѓРєРІС‹
+  if (NULL == str_syms)                      // Р±СѓРєРІ РЅРµС‚
     return result;
   unsigned int syms_len = STR_Lenght(str_syms);
-  // не буду создавать каждый раз новые строки в цикле
+  // РЅРµ Р±СѓРґСѓ СЃРѕР·РґР°РІР°С‚СЊ РєР°Р¶РґС‹Р№ СЂР°Р· РЅРѕРІС‹Рµ СЃС‚СЂРѕРєРё РІ С†РёРєР»Рµ
   char* buff = AllocateString(syms_len);
 
-  char* str_ptr = str_syms; // начнём с первого символа
+  char* str_ptr = str_syms; // РЅР°С‡РЅС‘Рј СЃ РїРµСЂРІРѕРіРѕ СЃРёРјРІРѕР»Р°
   
-  while (syms_len) // будем уменьшать оставшуюся длину
-  { // создаём подстроки начиная от str_ptr и до конца строки длиной > 1
+  while (syms_len) // Р±СѓРґРµРј СѓРјРµРЅСЊС€Р°С‚СЊ РѕСЃС‚Р°РІС€СѓСЋСЃСЏ РґР»РёРЅСѓ
+  { // СЃРѕР·РґР°С‘Рј РїРѕРґСЃС‚СЂРѕРєРё РЅР°С‡РёРЅР°СЏ РѕС‚ str_ptr Рё РґРѕ РєРѕРЅС†Р° СЃС‚СЂРѕРєРё РґР»РёРЅРѕР№ > 1
     for (unsigned int i = 2; i <= syms_len; i++)
     {
-      CopySymbols(str_ptr, buff, i);                // скопировали в buff
-      STR_ReverseInStr(buff, 0, i - 1);             // отзеркалили
-      *(buff + i) = '\0';                           // конец строки
+      CopySymbols(str_ptr, buff, i);                // СЃРєРѕРїРёСЂРѕРІР°Р»Рё РІ buff
+      STR_ReverseInStr(buff, 0, i - 1);             // РѕС‚Р·РµСЂРєР°Р»РёР»Рё
+      *(buff + i) = '\0';                           // РєРѕРЅРµС† СЃС‚СЂРѕРєРё
 
-      if (STR_FindSubStr(str_syms, buff, 0) != -1)  // ищем во всей строке символов
-      { // нашли, проверим, может слово уже есть в строке результата
-        STR_ReverseInStr(buff, 0, i - 1);           // отзеркалили обратно
-        if (STR_FindWord(result, buff, 0) == -1)    // это новое слово
+      if (STR_FindSubStr(str_syms, buff, 0) != -1)  // РёС‰РµРј РІРѕ РІСЃРµР№ СЃС‚СЂРѕРєРµ СЃРёРјРІРѕР»РѕРІ
+      { // РЅР°С€Р»Рё, РїСЂРѕРІРµСЂРёРј, РјРѕР¶РµС‚ СЃР»РѕРІРѕ СѓР¶Рµ РµСЃС‚СЊ РІ СЃС‚СЂРѕРєРµ СЂРµР·СѓР»СЊС‚Р°С‚Р°
+        STR_ReverseInStr(buff, 0, i - 1);           // РѕС‚Р·РµСЂРєР°Р»РёР»Рё РѕР±СЂР°С‚РЅРѕ
+        if (STR_FindWord(result, buff, 0) == -1)    // СЌС‚Рѕ РЅРѕРІРѕРµ СЃР»РѕРІРѕ
           if (!STR_Joint_Separ_Str(&result, newSeparator, buff))
-          { // сбой формирования результата, вернуть что есть
+          { // СЃР±РѕР№ С„РѕСЂРјРёСЂРѕРІР°РЅРёСЏ СЂРµР·СѓР»СЊС‚Р°С‚Р°, РІРµСЂРЅСѓС‚СЊ С‡С‚Рѕ РµСЃС‚СЊ
             free(buff);
             free(str_syms);
             return result;
           }
       }
     }
-    str_ptr++;                   // анализировать со следующего символа
-    syms_len--;                             // осталось до конца строки
+    str_ptr++;                   // Р°РЅР°Р»РёР·РёСЂРѕРІР°С‚СЊ СЃРѕ СЃР»РµРґСѓСЋС‰РµРіРѕ СЃРёРјРІРѕР»Р°
+    syms_len--;                             // РѕСЃС‚Р°Р»РѕСЃСЊ РґРѕ РєРѕРЅС†Р° СЃС‚СЂРѕРєРё
   }
-  free(str_syms);   // строка букв больше не нужна
+  free(str_syms);   // СЃС‚СЂРѕРєР° Р±СѓРєРІ Р±РѕР»СЊС€Рµ РЅРµ РЅСѓР¶РЅР°
   free(buff);
   return result;
 }
 
 char* FindMaskWords(char const* str, char const* mask, char const* newSeparator)
-{ // новая строка, все подстроки из str по маске поиска, разделены новым разделителем
+{ // РЅРѕРІР°СЏ СЃС‚СЂРѕРєР°, РІСЃРµ РїРѕРґСЃС‚СЂРѕРєРё РёР· str РїРѕ РјР°СЃРєРµ РїРѕРёСЃРєР°, СЂР°Р·РґРµР»РµРЅС‹ РЅРѕРІС‹Рј СЂР°Р·РґРµР»РёС‚РµР»РµРј
   char const* str_ptr = str;
-  char* next_word = NULL; // очередное слово (выделено отдельно)
-  char* result = AllocateString(0);    // тут накапливаем результат
+  char* next_word = NULL; // РѕС‡РµСЂРµРґРЅРѕРµ СЃР»РѕРІРѕ (РІС‹РґРµР»РµРЅРѕ РѕС‚РґРµР»СЊРЅРѕ)
+  char* result = AllocateString(0);    // С‚СѓС‚ РЅР°РєР°РїР»РёРІР°РµРј СЂРµР·СѓР»СЊС‚Р°С‚
 
   while (next_word = STR_GetFirstWord(str_ptr))
   {
     unsigned int next_word_len = STR_Lenght(next_word);
-    if (STR_CompareByMask(next_word, mask))    // подходит по маске ?
+    if (STR_CompareByMask(next_word, mask))    // РїРѕРґС…РѕРґРёС‚ РїРѕ РјР°СЃРєРµ ?
       if (! STR_Joint_Separ_Str(&result, newSeparator, next_word))  
-      { // добавление не удалось, возвращаем всё что есть
-        free(next_word);      // удаляем слово, оно уже не нужно
+      { // РґРѕР±Р°РІР»РµРЅРёРµ РЅРµ СѓРґР°Р»РѕСЃСЊ, РІРѕР·РІСЂР°С‰Р°РµРј РІСЃС‘ С‡С‚Рѕ РµСЃС‚СЊ
+        free(next_word);      // СѓРґР°Р»СЏРµРј СЃР»РѕРІРѕ, РѕРЅРѕ СѓР¶Рµ РЅРµ РЅСѓР¶РЅРѕ
         break;
       }
-    free(next_word);      // удаляем слово, оно уже не нужно
-    // смещаем указатель - находим начало слова, от него - конец слова
+    free(next_word);      // СѓРґР°Р»СЏРµРј СЃР»РѕРІРѕ, РѕРЅРѕ СѓР¶Рµ РЅРµ РЅСѓР¶РЅРѕ
+    // СЃРјРµС‰Р°РµРј СѓРєР°Р·Р°С‚РµР»СЊ - РЅР°С…РѕРґРёРј РЅР°С‡Р°Р»Рѕ СЃР»РѕРІР°, РѕС‚ РЅРµРіРѕ - РєРѕРЅРµС† СЃР»РѕРІР°
     str_ptr = STR_FindNextWord(str_ptr) + next_word_len;
   }
   return result;
 }
 
 char* ConvertRussian(char const* str)
-{ // новая строка, транслитерация русских символов, 
-  // по правилам - ПРИКАЗ МИД РФ от 29 марта 2016 г. N 4271
+{ // РЅРѕРІР°СЏ СЃС‚СЂРѕРєР°, С‚СЂР°РЅСЃР»РёС‚РµСЂР°С†РёСЏ СЂСѓСЃСЃРєРёС… СЃРёРјРІРѕР»РѕРІ, 
+  // РїРѕ РїСЂР°РІРёР»Р°Рј - РџР РРљРђР— РњРР” Р Р¤ РѕС‚ 29 РјР°СЂС‚Р° 2016 Рі. N 4271
 
   char const* str_ptr = str;
-  char* result = AllocateString(0);    // тут накапливаем результат
-  char letter[5] = { 0 };    // не создаём каждый раз строку, используем эту
+  char* result = AllocateString(0);    // С‚СѓС‚ РЅР°РєР°РїР»РёРІР°РµРј СЂРµР·СѓР»СЊС‚Р°С‚
+  char letter[5] = { 0 };    // РЅРµ СЃРѕР·РґР°С‘Рј РєР°Р¶РґС‹Р№ СЂР°Р· СЃС‚СЂРѕРєСѓ, РёСЃРїРѕР»СЊР·СѓРµРј СЌС‚Сѓ
 
   while (*str_ptr)
   {
-    letter[0] = *str_ptr; // строка из одной буквы
+    letter[0] = *str_ptr; // СЃС‚СЂРѕРєР° РёР· РѕРґРЅРѕР№ Р±СѓРєРІС‹
     letter[1] = '\0';
     STR_TransliterateSym(letter);
     int added = STR_Joint_Separ_Str(&result, "", letter);
-    if (!added)  // добавление не удалось, возвращаем всё что есть
+    if (!added)  // РґРѕР±Р°РІР»РµРЅРёРµ РЅРµ СѓРґР°Р»РѕСЃСЊ, РІРѕР·РІСЂР°С‰Р°РµРј РІСЃС‘ С‡С‚Рѕ РµСЃС‚СЊ
       break;
-    str_ptr++;    // смещаем указатель - на следующую букву
+    str_ptr++;    // СЃРјРµС‰Р°РµРј СѓРєР°Р·Р°С‚РµР»СЊ - РЅР° СЃР»РµРґСѓСЋС‰СѓСЋ Р±СѓРєРІСѓ
   }
   return result;
 }
 
 // tele logo gole elemengo gote noga gano ngotole
 char* STR_MakeChain(char * first_word, char * second_word)
-{ // пытается состыковать слова для FindChains, иначе NULL
+{ // РїС‹С‚Р°РµС‚СЃСЏ СЃРѕСЃС‚С‹РєРѕРІР°С‚СЊ СЃР»РѕРІР° РґР»СЏ FindChains, РёРЅР°С‡Рµ NULL
   char* result = NULL;
   unsigned int f_len = STR_Lenght(first_word);
   unsigned int s_len = STR_Lenght(second_word);
    
-  // будем проверять слова на совпадение, постепенно сдвигая второе слово вправо
-  // сдвигать, пока хотябы 2 символа перекрываются - максимально (f_len - 2)
-  // первое слово должно дойти до конца, а второе - не закончится раньше первого
+  // Р±СѓРґРµРј РїСЂРѕРІРµСЂСЏС‚СЊ СЃР»РѕРІР° РЅР° СЃРѕРІРїР°РґРµРЅРёРµ, РїРѕСЃС‚РµРїРµРЅРЅРѕ СЃРґРІРёРіР°СЏ РІС‚РѕСЂРѕРµ СЃР»РѕРІРѕ РІРїСЂР°РІРѕ
+  // СЃРґРІРёРіР°С‚СЊ, РїРѕРєР° С…РѕС‚СЏР±С‹ 2 СЃРёРјРІРѕР»Р° РїРµСЂРµРєСЂС‹РІР°СЋС‚СЃСЏ - РјР°РєСЃРёРјР°Р»СЊРЅРѕ (f_len - 2)
+  // РїРµСЂРІРѕРµ СЃР»РѕРІРѕ РґРѕР»Р¶РЅРѕ РґРѕР№С‚Рё РґРѕ РєРѕРЅС†Р°, Р° РІС‚РѕСЂРѕРµ - РЅРµ Р·Р°РєРѕРЅС‡РёС‚СЃСЏ СЂР°РЅСЊС€Рµ РїРµСЂРІРѕРіРѕ
   // 
   for (unsigned second_shift = 0; second_shift <= (f_len - 2); second_shift++)
   {
-    char* f_ptr = first_word + second_shift;  // сдвиг второго слова отражается на первом :-)
+    char* f_ptr = first_word + second_shift;  // СЃРґРІРёРі РІС‚РѕСЂРѕРіРѕ СЃР»РѕРІР° РѕС‚СЂР°Р¶Р°РµС‚СЃСЏ РЅР° РїРµСЂРІРѕРј :-)
     char* s_ptr = second_word;
 
-    // пока не кончилось первое слово И идёт совпадение
+    // РїРѕРєР° РЅРµ РєРѕРЅС‡РёР»РѕСЃСЊ РїРµСЂРІРѕРµ СЃР»РѕРІРѕ Р РёРґС‘С‚ СЃРѕРІРїР°РґРµРЅРёРµ
     while (*f_ptr && (*(f_ptr) == *(s_ptr))) { 
       f_ptr++; 
       s_ptr++;
     }
 
-    if ((*f_ptr) == 0) // достигнут конец первого слова, а не найдено различие
-    { // второе слово полностью, первое - только символы вначале, т.е. до second_shift
+    if ((*f_ptr) == 0) // РґРѕСЃС‚РёРіРЅСѓС‚ РєРѕРЅРµС† РїРµСЂРІРѕРіРѕ СЃР»РѕРІР°, Р° РЅРµ РЅР°Р№РґРµРЅРѕ СЂР°Р·Р»РёС‡РёРµ
+    { // РІС‚РѕСЂРѕРµ СЃР»РѕРІРѕ РїРѕР»РЅРѕСЃС‚СЊСЋ, РїРµСЂРІРѕРµ - С‚РѕР»СЊРєРѕ СЃРёРјРІРѕР»С‹ РІРЅР°С‡Р°Р»Рµ, С‚.Рµ. РґРѕ second_shift
 #ifdef DEBUG
       printf(" == shift >> [%d] ", second_shift);
 #endif // DEBUG
       result = AllocateString(s_len + second_shift);
-      // первое слово - копируем то, что не входит во второе
+      // РїРµСЂРІРѕРµ СЃР»РѕРІРѕ - РєРѕРїРёСЂСѓРµРј С‚Рѕ, С‡С‚Рѕ РЅРµ РІС…РѕРґРёС‚ РІРѕ РІС‚РѕСЂРѕРµ
       if (second_shift) CopySymbols(first_word, result, second_shift);
-      CopySymbols(second_word, result + second_shift, s_len + 1); // с концом строки 0
-      break; // дальше не искать, первым будет найдено самое длинное совпадение
+      CopySymbols(second_word, result + second_shift, s_len + 1); // СЃ РєРѕРЅС†РѕРј СЃС‚СЂРѕРєРё 0
+      break; // РґР°Р»СЊС€Рµ РЅРµ РёСЃРєР°С‚СЊ, РїРµСЂРІС‹Рј Р±СѓРґРµС‚ РЅР°Р№РґРµРЅРѕ СЃР°РјРѕРµ РґР»РёРЅРЅРѕРµ СЃРѕРІРїР°РґРµРЅРёРµ
     }
   }
   return result;
 }
 
 char* FindChains(char const* str, char const* newSeparator)
-{ // новая строка, задание Поиск цепочек - склеивает слова
-  // если 2 слова совпадают конец одного и начало другого (более 1 символа)
+{ // РЅРѕРІР°СЏ СЃС‚СЂРѕРєР°, Р·Р°РґР°РЅРёРµ РџРѕРёСЃРє С†РµРїРѕС‡РµРє - СЃРєР»РµРёРІР°РµС‚ СЃР»РѕРІР°
+  // РµСЃР»Рё 2 СЃР»РѕРІР° СЃРѕРІРїР°РґР°СЋС‚ РєРѕРЅРµС† РѕРґРЅРѕРіРѕ Рё РЅР°С‡Р°Р»Рѕ РґСЂСѓРіРѕРіРѕ (Р±РѕР»РµРµ 1 СЃРёРјРІРѕР»Р°)
 
-  char* first_word = NULL;   // очередное слово (выделено отдельно)
-  char* second_word = NULL;  // очередное слово (выделено отдельно)
-  char* next_word = NULL;    // новое составное слово (выделено отдельно)
-  char* result = AllocateString(0);    // тут накапливаем результат
+  char* first_word = NULL;   // РѕС‡РµСЂРµРґРЅРѕРµ СЃР»РѕРІРѕ (РІС‹РґРµР»РµРЅРѕ РѕС‚РґРµР»СЊРЅРѕ)
+  char* second_word = NULL;  // РѕС‡РµСЂРµРґРЅРѕРµ СЃР»РѕРІРѕ (РІС‹РґРµР»РµРЅРѕ РѕС‚РґРµР»СЊРЅРѕ)
+  char* next_word = NULL;    // РЅРѕРІРѕРµ СЃРѕСЃС‚Р°РІРЅРѕРµ СЃР»РѕРІРѕ (РІС‹РґРµР»РµРЅРѕ РѕС‚РґРµР»СЊРЅРѕ)
+  char* result = AllocateString(0);    // С‚СѓС‚ РЅР°РєР°РїР»РёРІР°РµРј СЂРµР·СѓР»СЊС‚Р°С‚
 
-  // тут будут слова из строки
+  // С‚СѓС‚ Р±СѓРґСѓС‚ СЃР»РѕРІР° РёР· СЃС‚СЂРѕРєРё
   char* words = ExtractWords(str, newSeparator);
 
-  // Просто проверю каждый с каждым :-)
+  // РџСЂРѕСЃС‚Рѕ РїСЂРѕРІРµСЂСЋ РєР°Р¶РґС‹Р№ СЃ РєР°Р¶РґС‹Рј :-)
   char* first_p = words;
-  unsigned first_num = 0; // будем считать слова, чтобы не соединять слово само с собой
+  unsigned first_num = 0; // Р±СѓРґРµРј СЃС‡РёС‚Р°С‚СЊ СЃР»РѕРІР°, С‡С‚РѕР±С‹ РЅРµ СЃРѕРµРґРёРЅСЏС‚СЊ СЃР»РѕРІРѕ СЃР°РјРѕ СЃ СЃРѕР±РѕР№
   while (first_word = STR_GetFirstWord(first_p))
   {
-    first_num++; // новое первое слово
+    first_num++; // РЅРѕРІРѕРµ РїРµСЂРІРѕРµ СЃР»РѕРІРѕ
     unsigned int first_word_len = STR_Lenght(first_word);
     if (first_word_len > 1)
     {
-      // тут цикл проверка сочетания со всеми остальными
+      // С‚СѓС‚ С†РёРєР» РїСЂРѕРІРµСЂРєР° СЃРѕС‡РµС‚Р°РЅРёСЏ СЃРѕ РІСЃРµРјРё РѕСЃС‚Р°Р»СЊРЅС‹РјРё
       char* second_p = words;
       unsigned second_num = 0;
       while (second_word = STR_GetFirstWord(second_p))
@@ -716,25 +716,25 @@ char* FindChains(char const* str, char const* newSeparator)
         unsigned int second_word_len = STR_Lenght(second_word);
         if (second_word_len > 1)
         {
-          if (first_num != second_num) // не проверяем слово само с собой
+          if (first_num != second_num) // РЅРµ РїСЂРѕРІРµСЂСЏРµРј СЃР»РѕРІРѕ СЃР°РјРѕ СЃ СЃРѕР±РѕР№
           { 
 #ifdef DEBUG
             printf("\n[%s] + [%s]", first_word, second_word);
 #endif // DEBUG
 
             if (NULL != (next_word = STR_MakeChain(first_word, second_word)))
-            { // удалось сделать цепочку
+            { // СѓРґР°Р»РѕСЃСЊ СЃРґРµР»Р°С‚СЊ С†РµРїРѕС‡РєСѓ
 #ifdef DEBUG
               printf(" == FOUND [%s] ", next_word);
 #endif // DEBUG
               if (STR_FindWord(result, next_word, 0) == -1)
-              { // слова ещё не было в строке
+              { // СЃР»РѕРІР° РµС‰С‘ РЅРµ Р±С‹Р»Рѕ РІ СЃС‚СЂРѕРєРµ
                 int added = STR_Joint_Separ_Str(&result, newSeparator, next_word);
-                if (!added)  // добавление не удалось, возвращаем всё что есть
+                if (!added)  // РґРѕР±Р°РІР»РµРЅРёРµ РЅРµ СѓРґР°Р»РѕСЃСЊ, РІРѕР·РІСЂР°С‰Р°РµРј РІСЃС‘ С‡С‚Рѕ РµСЃС‚СЊ
                 {
                   free(first_word);
                   free(second_word);
-                  free(next_word);      // удаляем слово, оно уже не нужно
+                  free(next_word);      // СѓРґР°Р»СЏРµРј СЃР»РѕРІРѕ, РѕРЅРѕ СѓР¶Рµ РЅРµ РЅСѓР¶РЅРѕ
                   break;
                 }
               }
@@ -746,25 +746,25 @@ char* FindChains(char const* str, char const* newSeparator)
         second_p = STR_FindNextWord(second_p) + second_word_len;
       }
     }
-    free(first_word);      // удаляем слово, оно уже не нужно
-    // смещаем указатель - находим начало слова, от него - конец слова
+    free(first_word);      // СѓРґР°Р»СЏРµРј СЃР»РѕРІРѕ, РѕРЅРѕ СѓР¶Рµ РЅРµ РЅСѓР¶РЅРѕ
+    // СЃРјРµС‰Р°РµРј СѓРєР°Р·Р°С‚РµР»СЊ - РЅР°С…РѕРґРёРј РЅР°С‡Р°Р»Рѕ СЃР»РѕРІР°, РѕС‚ РЅРµРіРѕ - РєРѕРЅРµС† СЃР»РѕРІР°
     first_p = STR_FindNextWord(first_p) + first_word_len;
   }
   return result;
 }
 
 char* STR_JustifyLeft(char* str, unsigned width)
-{ // возврат - новая строка, где str разбита на строки шириной width
-  // несколько пробелов подряд заменяются на один пробел, выравнование - влево
-  // между строками - \n, если слово > width, оно разбивается на куски
+{ // РІРѕР·РІСЂР°С‚ - РЅРѕРІР°СЏ СЃС‚СЂРѕРєР°, РіРґРµ str СЂР°Р·Р±РёС‚Р° РЅР° СЃС‚СЂРѕРєРё С€РёСЂРёРЅРѕР№ width
+  // РЅРµСЃРєРѕР»СЊРєРѕ РїСЂРѕР±РµР»РѕРІ РїРѕРґСЂСЏРґ Р·Р°РјРµРЅСЏСЋС‚СЃСЏ РЅР° РѕРґРёРЅ РїСЂРѕР±РµР», РІС‹СЂР°РІРЅРѕРІР°РЅРёРµ - РІР»РµРІРѕ
+  // РјРµР¶РґСѓ СЃС‚СЂРѕРєР°РјРё - \n, РµСЃР»Рё СЃР»РѕРІРѕ > width, РѕРЅРѕ СЂР°Р·Р±РёРІР°РµС‚СЃСЏ РЅР° РєСѓСЃРєРё
 
-  char* cropSP = OnlyOneSpace(str); // сокращаю подряд идущие пробелы
+  char* cropSP = OnlyOneSpace(str); // СЃРѕРєСЂР°С‰Р°СЋ РїРѕРґСЂСЏРґ РёРґСѓС‰РёРµ РїСЂРѕР±РµР»С‹
 
 #ifdef DEBUG
   printf("\n Source string\n%s\n", cropSP);
   char* ruller = "0123456789";
   for (unsigned i = 0; i < width; i++)
-    printf("%c", *(ruller + i % 10));     // добавить линейку
+    printf("%c", *(ruller + i % 10));     // РґРѕР±Р°РІРёС‚СЊ Р»РёРЅРµР№РєСѓ
   printf("\n");
 #endif // DEBUG
 
@@ -775,13 +775,13 @@ char* STR_JustifyLeft(char* str, unsigned width)
   char* ptr = cropSP;
   unsigned count_in_line = 0;
  
-  while (*ptr) // до конца строки
+  while (*ptr) // РґРѕ РєРѕРЅС†Р° СЃС‚СЂРѕРєРё
   {
-    char* nextWord = STR_FindNextWord(ptr);   // следующее слово
-    unsigned sepWidth = nextWord - ptr;       // символов до слова
-    if (sepWidth) // есть разделители
+    char* nextWord = STR_FindNextWord(ptr);   // СЃР»РµРґСѓСЋС‰РµРµ СЃР»РѕРІРѕ
+    unsigned sepWidth = nextWord - ptr;       // СЃРёРјРІРѕР»РѕРІ РґРѕ СЃР»РѕРІР°
+    if (sepWidth) // РµСЃС‚СЊ СЂР°Р·РґРµР»РёС‚РµР»Рё
     {
-      // надо добавить это + возможно несколько '\n'
+      // РЅР°РґРѕ РґРѕР±Р°РІРёС‚СЊ СЌС‚Рѕ + РІРѕР·РјРѕР¶РЅРѕ РЅРµСЃРєРѕР»СЊРєРѕ '\n'
       unsigned add_length = sepWidth + (count_in_line + sepWidth) / width;
       unsigned count_added = 0;
       char* new_result = (char*)realloc(result, result_len + add_length + 1);
@@ -790,22 +790,22 @@ char* STR_JustifyLeft(char* str, unsigned width)
       result = new_result;
       result_ptr = result + result_len;
 
-      for (int i = sepWidth; i; i--) // копируем разделители
+      for (int i = sepWidth; i; i--) // РєРѕРїРёСЂСѓРµРј СЂР°Р·РґРµР»РёС‚РµР»Рё
       {
-        if (count_in_line == 0 && *ptr == ' ') // если пробел попал в начало строки не добавлять его
+        if (count_in_line == 0 && *ptr == ' ') // РµСЃР»Рё РїСЂРѕР±РµР» РїРѕРїР°Р» РІ РЅР°С‡Р°Р»Рѕ СЃС‚СЂРѕРєРё РЅРµ РґРѕР±Р°РІР»СЏС‚СЊ РµРіРѕ
           ptr++;
         else
         {
-          *result_ptr++ = *ptr++;       // тут копирование символа
+          *result_ptr++ = *ptr++;       // С‚СѓС‚ РєРѕРїРёСЂРѕРІР°РЅРёРµ СЃРёРјРІРѕР»Р°
           count_added++;
-          if (++count_in_line >= width) // увеличиваем счётчик символов в строке
+          if (++count_in_line >= width) // СѓРІРµР»РёС‡РёРІР°РµРј СЃС‡С‘С‚С‡РёРє СЃРёРјРІРѕР»РѕРІ РІ СЃС‚СЂРѕРєРµ
           {
-            // если в конце строчки был пробел удалить его
+            // РµСЃР»Рё РІ РєРѕРЅС†Рµ СЃС‚СЂРѕС‡РєРё Р±С‹Р» РїСЂРѕР±РµР» СѓРґР°Р»РёС‚СЊ РµРіРѕ
             if (*(result_ptr - 1) == ' ')
               *(result_ptr - 1) = '\n';
             else
             {
-              *result_ptr++ = '\n';       // начать новую строку
+              *result_ptr++ = '\n';       // РЅР°С‡Р°С‚СЊ РЅРѕРІСѓСЋ СЃС‚СЂРѕРєСѓ
               count_added++;
             }
             count_in_line = 0;
@@ -815,18 +815,18 @@ char* STR_JustifyLeft(char* str, unsigned width)
       result_len += count_added;
     }
 
-    if (*ptr) // это ещё слово, а не конец строки
-    { // 3 варианта
+    if (*ptr) // СЌС‚Рѕ РµС‰С‘ СЃР»РѕРІРѕ, Р° РЅРµ РєРѕРЅРµС† СЃС‚СЂРѕРєРё
+    { // 3 РІР°СЂРёР°РЅС‚Р°
       char* next_separ = STR_FindNextSeparator(ptr);
       unsigned word_len = next_separ - ptr;
       
-      // слово не помещается в строке 
+      // СЃР»РѕРІРѕ РЅРµ РїРѕРјРµС‰Р°РµС‚СЃСЏ РІ СЃС‚СЂРѕРєРµ 
       if (count_in_line + word_len > width)
-        if (word_len < width)     //слово меньше ширины строки, 
-          // ставим счётчик символов в строке на конец строки,
+        if (word_len < width)     //СЃР»РѕРІРѕ РјРµРЅСЊС€Рµ С€РёСЂРёРЅС‹ СЃС‚СЂРѕРєРё, 
+          // СЃС‚Р°РІРёРј СЃС‡С‘С‚С‡РёРє СЃРёРјРІРѕР»РѕРІ РІ СЃС‚СЂРѕРєРµ РЅР° РєРѕРЅРµС† СЃС‚СЂРѕРєРё,
           count_in_line = width;
-      // иначе, либо слово помещается, очень хорошо
-      // либо слово шире строки, будем его разбивать
+      // РёРЅР°С‡Рµ, Р»РёР±Рѕ СЃР»РѕРІРѕ РїРѕРјРµС‰Р°РµС‚СЃСЏ, РѕС‡РµРЅСЊ С…РѕСЂРѕС€Рѕ
+      // Р»РёР±Рѕ СЃР»РѕРІРѕ С€РёСЂРµ СЃС‚СЂРѕРєРё, Р±СѓРґРµРј РµРіРѕ СЂР°Р·Р±РёРІР°С‚СЊ
 
       unsigned add_length = word_len + (count_in_line + word_len) / width;
       char* new_result = (char*)realloc(result, result_len + add_length + 1);
@@ -835,22 +835,22 @@ char* STR_JustifyLeft(char* str, unsigned width)
       result_ptr = result + result_len;
       unsigned count_added = 0;
       
-      for (int i = word_len; i; i--) // копируем 
+      for (int i = word_len; i; i--) // РєРѕРїРёСЂСѓРµРј 
       {
-        if (count_in_line == width)  // конец строки
+        if (count_in_line == width)  // РєРѕРЅРµС† СЃС‚СЂРѕРєРё
         {
-          // если в конце строчки был пробел удалить его
+          // РµСЃР»Рё РІ РєРѕРЅС†Рµ СЃС‚СЂРѕС‡РєРё Р±С‹Р» РїСЂРѕР±РµР» СѓРґР°Р»РёС‚СЊ РµРіРѕ
           if (*(result_ptr - 1) == ' ')
             *(result_ptr - 1) = '\n';
           else
           {
-            *result_ptr++ = '\n';       // начать новую строку
+            *result_ptr++ = '\n';       // РЅР°С‡Р°С‚СЊ РЅРѕРІСѓСЋ СЃС‚СЂРѕРєСѓ
             count_added++;
           }
           count_in_line = 0;
         }
         count_in_line++;
-        *result_ptr++ = *ptr++;       // тут копирование символа
+        *result_ptr++ = *ptr++;       // С‚СѓС‚ РєРѕРїРёСЂРѕРІР°РЅРёРµ СЃРёРјРІРѕР»Р°
         count_added++;
       }
       result_len += count_added;
@@ -863,26 +863,26 @@ char* STR_JustifyLeft(char* str, unsigned width)
 }
 
 char* STR_JustifyWidth(char* str, unsigned width)
-{ // возврат - новая строка, где str разбита на строки шириной width
-  // выравнивание- по ширине, изменяя количество пробелов
-  // между строками - \n, если слово > width, оно разбивается на куски
+{ // РІРѕР·РІСЂР°С‚ - РЅРѕРІР°СЏ СЃС‚СЂРѕРєР°, РіРґРµ str СЂР°Р·Р±РёС‚Р° РЅР° СЃС‚СЂРѕРєРё С€РёСЂРёРЅРѕР№ width
+  // РІС‹СЂР°РІРЅРёРІР°РЅРёРµ- РїРѕ С€РёСЂРёРЅРµ, РёР·РјРµРЅСЏСЏ РєРѕР»РёС‡РµСЃС‚РІРѕ РїСЂРѕР±РµР»РѕРІ
+  // РјРµР¶РґСѓ СЃС‚СЂРѕРєР°РјРё - \n, РµСЃР»Рё СЃР»РѕРІРѕ > width, РѕРЅРѕ СЂР°Р·Р±РёРІР°РµС‚СЃСЏ РЅР° РєСѓСЃРєРё
   
-  char* cropSP = OnlyOneSpace(str);   // сокращу пробелы, чтоб не мешались
+  char* cropSP = OnlyOneSpace(str);   // СЃРѕРєСЂР°С‰Сѓ РїСЂРѕР±РµР»С‹, С‡С‚РѕР± РЅРµ РјРµС€Р°Р»РёСЃСЊ
   if (NULL == cropSP) return NULL;
 
-  char* buffer = (char*)malloc(width + 2);   // тут буду формировать очередную строчку
-  if (NULL == buffer) return NULL;    // +1 для '\n'   и   +1 для '\0'
+  char* buffer = (char*)malloc(width + 2);   // С‚СѓС‚ Р±СѓРґСѓ С„РѕСЂРјРёСЂРѕРІР°С‚СЊ РѕС‡РµСЂРµРґРЅСѓСЋ СЃС‚СЂРѕС‡РєСѓ
+  if (NULL == buffer) return NULL;    // +1 РґР»СЏ '\n'   Рё   +1 РґР»СЏ '\0'
 
-  // сначала разобью на строчки с выравниванием влево, 
-  // потом выравняю по ширине каждую строчку
+  // СЃРЅР°С‡Р°Р»Р° СЂР°Р·РѕР±СЊСЋ РЅР° СЃС‚СЂРѕС‡РєРё СЃ РІС‹СЂР°РІРЅРёРІР°РЅРёРµРј РІР»РµРІРѕ, 
+  // РїРѕС‚РѕРј РІС‹СЂР°РІРЅСЏСЋ РїРѕ С€РёСЂРёРЅРµ РєР°Р¶РґСѓСЋ СЃС‚СЂРѕС‡РєСѓ
   char* str_j_left = STR_JustifyLeft(cropSP, width);
-  free(cropSP);                       // это уже не нужно
+  free(cropSP);                       // СЌС‚Рѕ СѓР¶Рµ РЅРµ РЅСѓР¶РЅРѕ
   if (NULL == str_j_left) return NULL;
   
-  // количество строчек, возьму с запасом +1 если последняя строчка не полная
+  // РєРѕР»РёС‡РµСЃС‚РІРѕ СЃС‚СЂРѕС‡РµРє, РІРѕР·СЊРјСѓ СЃ Р·Р°РїР°СЃРѕРј +1 РµСЃР»Рё РїРѕСЃР»РµРґРЅСЏСЏ СЃС‚СЂРѕС‡РєР° РЅРµ РїРѕР»РЅР°СЏ
   int num_lines = CountChar(str_j_left, '\n') + 1;
-  // сколько байт нужно, если все строчки будут длиной width + '\n'
-  int result_len = num_lines * (width + 1) + 1;   // + конец строки '\0'
+  // СЃРєРѕР»СЊРєРѕ Р±Р°Р№С‚ РЅСѓР¶РЅРѕ, РµСЃР»Рё РІСЃРµ СЃС‚СЂРѕС‡РєРё Р±СѓРґСѓС‚ РґР»РёРЅРѕР№ width + '\n'
+  int result_len = num_lines * (width + 1) + 1;   // + РєРѕРЅРµС† СЃС‚СЂРѕРєРё '\0'
 
   char* result = (char*)malloc(result_len);
   if (NULL == result) { free(str_j_left); return NULL; }
@@ -890,31 +890,31 @@ char* STR_JustifyWidth(char* str, unsigned width)
   char* ptr = str_j_left;
   char* result_ptr = result;
  
-  while (*ptr) //до конца строки
+  while (*ptr) //РґРѕ РєРѕРЅС†Р° СЃС‚СЂРѕРєРё
   {
-    char* nextCR = FindChar(ptr, '\n', 0);  // следующий '\n' или конец строки '\0'
+    char* nextCR = FindChar(ptr, '\n', 0);  // СЃР»РµРґСѓСЋС‰РёР№ '\n' РёР»Рё РєРѕРЅРµС† СЃС‚СЂРѕРєРё '\0'
     if (*nextCR == '\0')
-    { // последнюю строчку не выравнивать, просто скопирую
-      while (*ptr) *(result_ptr++) = *(ptr++); // тут копирование
+    { // РїРѕСЃР»РµРґРЅСЋСЋ СЃС‚СЂРѕС‡РєСѓ РЅРµ РІС‹СЂР°РІРЅРёРІР°С‚СЊ, РїСЂРѕСЃС‚Рѕ СЃРєРѕРїРёСЂСѓСЋ
+      while (*ptr) *(result_ptr++) = *(ptr++); // С‚СѓС‚ РєРѕРїРёСЂРѕРІР°РЅРёРµ
       break;
     }
       
     unsigned int line_len = nextCR - ptr;
-    CopySymbols(ptr, buffer, line_len);     // скопирую в буфер очередную строку(без \n)
-    *(buffer + line_len) = '\0';            // дополню признаком конца строки
+    CopySymbols(ptr, buffer, line_len);     // СЃРєРѕРїРёСЂСѓСЋ РІ Р±СѓС„РµСЂ РѕС‡РµСЂРµРґРЅСѓСЋ СЃС‚СЂРѕРєСѓ(Р±РµР· \n)
+    *(buffer + line_len) = '\0';            // РґРѕРїРѕР»РЅСЋ РїСЂРёР·РЅР°РєРѕРј РєРѕРЅС†Р° СЃС‚СЂРѕРєРё
 
 #ifdef DEBUG
-      printf("\nBUFFER [%s] длина %d", buffer, line_len);
+      printf("\nBUFFER [%s] РґР»РёРЅР° %d", buffer, line_len);
 #endif // DEBUG
 
-    if (line_len < width)                   // строку надо расширить
+    if (line_len < width)                   // СЃС‚СЂРѕРєСѓ РЅР°РґРѕ СЂР°СЃС€РёСЂРёС‚СЊ
     {
-      unsigned int countSpace = CountChar(buffer, ' '); // считаем пробелы в этой строке
-      unsigned delta = width - line_len;                // сколько всего добавить пробелов
-      if (countSpace) // в строке есть пробелы, будем их увеличивать
+      unsigned int countSpace = CountChar(buffer, ' '); // СЃС‡РёС‚Р°РµРј РїСЂРѕР±РµР»С‹ РІ СЌС‚РѕР№ СЃС‚СЂРѕРєРµ
+      unsigned delta = width - line_len;                // СЃРєРѕР»СЊРєРѕ РІСЃРµРіРѕ РґРѕР±Р°РІРёС‚СЊ РїСЂРѕР±РµР»РѕРІ
+      if (countSpace) // РІ СЃС‚СЂРѕРєРµ РµСЃС‚СЊ РїСЂРѕР±РµР»С‹, Р±СѓРґРµРј РёС… СѓРІРµР»РёС‡РёРІР°С‚СЊ
       {
-        unsigned plusSP = delta / countSpace;      // сколько добавить к каждому имеющемуся пробелу
-        unsigned plusSP_special = delta - plusSP * countSpace; // это остаток, добавлять не к каждому
+        unsigned plusSP = delta / countSpace;      // СЃРєРѕР»СЊРєРѕ РґРѕР±Р°РІРёС‚СЊ Рє РєР°Р¶РґРѕРјСѓ РёРјРµСЋС‰РµРјСѓСЃСЏ РїСЂРѕР±РµР»Сѓ
+        unsigned plusSP_special = delta - plusSP * countSpace; // СЌС‚Рѕ РѕСЃС‚Р°С‚РѕРє, РґРѕР±Р°РІР»СЏС‚СЊ РЅРµ Рє РєР°Р¶РґРѕРјСѓ
         int count_in_line = 0;
         for (unsigned i = 0; i < line_len; i++)
         {
@@ -927,33 +927,33 @@ char* STR_JustifyWidth(char* str, unsigned width)
           }
           else
           { 
-            count_in_line++;                    // считаем промежутки
-            for (unsigned j = 0; j <= plusSP; j++)   // в этом промежутке пробел стал больше
+            count_in_line++;                    // СЃС‡РёС‚Р°РµРј РїСЂРѕРјРµР¶СѓС‚РєРё
+            for (unsigned j = 0; j <= plusSP; j++)   // РІ СЌС‚РѕРј РїСЂРѕРјРµР¶СѓС‚РєРµ РїСЂРѕР±РµР» СЃС‚Р°Р» Р±РѕР»СЊС€Рµ
             { *(result_ptr++) = ' ';
 #ifdef DEBUG
-                printf("#"); // добавлен пробел из числа "как у всех промежутков"
+                printf("#"); // РґРѕР±Р°РІР»РµРЅ РїСЂРѕР±РµР» РёР· С‡РёСЃР»Р° "РєР°Рє Сѓ РІСЃРµС… РїСЂРѕРјРµР¶СѓС‚РєРѕРІ"
 #endif // DEBUG                
                
             }
-            // вот тут раскидываются пробелы неравномерно, не в каждый промежуток
+            // РІРѕС‚ С‚СѓС‚ СЂР°СЃРєРёРґС‹РІР°СЋС‚СЃСЏ РїСЂРѕР±РµР»С‹ РЅРµСЂР°РІРЅРѕРјРµСЂРЅРѕ, РЅРµ РІ РєР°Р¶РґС‹Р№ РїСЂРѕРјРµР¶СѓС‚РѕРє
             if (plusSP_special && count_in_line * plusSP_special % countSpace == 0)
             {
 #ifdef DEBUG
-                printf("*");   // этот пробел "особенный, не как все"
+                printf("*");   // СЌС‚РѕС‚ РїСЂРѕР±РµР» "РѕСЃРѕР±РµРЅРЅС‹Р№, РЅРµ РєР°Рє РІСЃРµ"
 #endif // DEBUG                         
-              *(result_ptr++) = ' '; // доплонительный пробел
+              *(result_ptr++) = ' '; // РґРѕРїР»РѕРЅРёС‚РµР»СЊРЅС‹Р№ РїСЂРѕР±РµР»
             }
           }
         }
       }
-      else  // в строке 1 слово и нет пробелов, допишем их в конец
-      {     // или не дополнять пробелам ?? дополню
+      else  // РІ СЃС‚СЂРѕРєРµ 1 СЃР»РѕРІРѕ Рё РЅРµС‚ РїСЂРѕР±РµР»РѕРІ, РґРѕРїРёС€РµРј РёС… РІ РєРѕРЅРµС†
+      {     // РёР»Рё РЅРµ РґРѕРїРѕР»РЅСЏС‚СЊ РїСЂРѕР±РµР»Р°Рј ?? РґРѕРїРѕР»РЅСЋ
         unsigned int delta = width - line_len;
         while (delta--)
           *(buffer + line_len + delta) = ' ';
-        // в буфере строка, но без \n \0
-        CopySymbols(buffer, result_ptr, width); // в резалт её
-        result_ptr += width;                    // сдвину указатель в резалт
+        // РІ Р±СѓС„РµСЂРµ СЃС‚СЂРѕРєР°, РЅРѕ Р±РµР· \n \0
+        CopySymbols(buffer, result_ptr, width); // РІ СЂРµР·Р°Р»С‚ РµС‘
+        result_ptr += width;                    // СЃРґРІРёРЅСѓ СѓРєР°Р·Р°С‚РµР»СЊ РІ СЂРµР·Р°Р»С‚
 #ifdef DEBUG
           printf("\nBUFFER [%s] just add %d SP", buffer, width-line_len);
 #endif // DEBUG
@@ -961,21 +961,21 @@ char* STR_JustifyWidth(char* str, unsigned width)
       }
     }
     else
-    { // в буфере строка нужной длины, но без \n \0
-      CopySymbols(buffer, result_ptr, width); // в резалт её
-      result_ptr += width;                    // сдвину указатель в резалт
+    { // РІ Р±СѓС„РµСЂРµ СЃС‚СЂРѕРєР° РЅСѓР¶РЅРѕР№ РґР»РёРЅС‹, РЅРѕ Р±РµР· \n \0
+      CopySymbols(buffer, result_ptr, width); // РІ СЂРµР·Р°Р»С‚ РµС‘
+      result_ptr += width;                    // СЃРґРІРёРЅСѓ СѓРєР°Р·Р°С‚РµР»СЊ РІ СЂРµР·Р°Р»С‚
 
 #ifdef DEBUG
         printf("\nBUFFER [%s] do nothing", buffer);
 #endif // DEBUG
     }        
-    *(result_ptr++) = '\n';                 // добавить перевод строки
-    ptr += line_len;      // сдвинуть указатель в исходной строке
-    if (*ptr == '\n')     // сдвинуть ещё, если там \n
+    *(result_ptr++) = '\n';                 // РґРѕР±Р°РІРёС‚СЊ РїРµСЂРµРІРѕРґ СЃС‚СЂРѕРєРё
+    ptr += line_len;      // СЃРґРІРёРЅСѓС‚СЊ СѓРєР°Р·Р°С‚РµР»СЊ РІ РёСЃС…РѕРґРЅРѕР№ СЃС‚СЂРѕРєРµ
+    if (*ptr == '\n')     // СЃРґРІРёРЅСѓС‚СЊ РµС‰С‘, РµСЃР»Рё С‚Р°Рј \n
       ptr++;
   }
  
   free(str_j_left);
-  *result_ptr = '\0';  // добавить конец строки
+  *result_ptr = '\0';  // РґРѕР±Р°РІРёС‚СЊ РєРѕРЅРµС† СЃС‚СЂРѕРєРё
   return result;
 }
