@@ -134,7 +134,7 @@ void Figure_print(Figure* fig)
       printf("Unknown figure type=[%d]>\n", fig->type);
       return; // Для неизвестной фигуры тут выход
   }
-  printf(" Sq =%7.2f>\n", Figure_Square(fig)); // Печатем площадь
+  printf(" Sq =%9.4f>\n", Figure_Square(fig)); // Печатем площадь
 }
 
 unsigned long int filesize(FILE* file) { 
@@ -213,7 +213,7 @@ int main()
    
     // Распечатка результата
     printf("\n----------------------------------------------\n");
-    printf("Count by type:\n"
+    printf("\nCount by type:\n"
            "----------------------------------------------\n");
     double total_square = 0;
     int counter = 0;
@@ -250,12 +250,10 @@ int main()
     
     free(figures);
     fclose(fp);
-    int x = getchar();
   }
-  else 
-  { // Не удалось даже открыть файл
-    printf("File open error : %d", err);
-    return err;
-  }
-  return 0;
+  else  // Не удалось даже открыть файл
+    printf("Can't open file:  %s\nfile open error:  %d\n", filename, err);
+  
+  int x = getchar();
+  return err; 
 }
