@@ -5,6 +5,7 @@
 #include <stdlib.h>           // для выделения памяти
 
 #include "DST_functions.h"
+//#include "DST_functions.cpp"
 #define DST_SEPARATOR ", "
 
 int main()
