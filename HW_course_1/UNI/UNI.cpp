@@ -223,8 +223,8 @@ int main()
       if (0 <= type && type < FIG_TYPES)
       { // считаем для каждого типа - количество и общую площадь
         double square = Figure_Square(&figures[i]);
-        count_types[figures[i].type]++;
-        count_squares_type[figures[i].type] += square;
+        count_types[type]++;
+        count_squares_type[type] += square;
         
         if (0 <= color && color < FIG_COLORS)
         {
