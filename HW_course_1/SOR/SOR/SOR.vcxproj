@@ -151,7 +151,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="getCPUTime.c" />
     <ClCompile Include="SOR.cpp" />
+    <ClCompile Include="testing_system.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="SOR.h" />
+    <ClInclude Include="testing_system.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
