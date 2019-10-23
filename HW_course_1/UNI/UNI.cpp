@@ -7,10 +7,6 @@
 #include <math.h>             // для tan()
 
 
-// так не работает
-//#define FIG_TYPES  sizeof(Figure::Figure_type)    // всего типов
-//#define FIG_COLORS sizeof(Figure::Figure_color)   // разных цветов
-
 #define FIG_TYPES  3    // всего типов
 #define FIG_COLORS 3    // разных цветов
 #define TASK_INPUT_FILE "uni_shapes.bin"
@@ -56,120 +52,96 @@ struct Figure
 
 };
 
-struct Figure_ColorsTranslateNames
-{
-  const char* red  = "red";
-  const char* gren = "green";
-  const char* blue = "blue";
-  const char* unkn = "ERROR";
+struct Figure_Translate
+{     // Максимально отведу на название фигуры 20 символов
+  const char type_name[FIG_TYPES][20] = { "Circ", "Rect", "Poly" };
+      // Максимально отведу на название цвета 20 символов
+  const char color_name[FIG_COLORS][20] = { "red", "green", "blue" };
+  const char* unkn = "ERROR"; // Что-то не сходится
+} translate_table;
 
-} translate_table_colors;
-
-struct Figure_TypesTranslateNames
-{
-  const char* circ = "Circ";
-  const char* rect = "Rect";
-  const char* poly = "Poly";
-  const char* unkn = "ERROR";
-
-} translate_table_types;
-
-const char* Fig_TranslateColor(Figure::Figure_color fig_col)
-{
-  switch (fig_col)
-  {
-  case(Figure::Figure_color::RED):
-    return translate_table_colors.red;
-
-  case(Figure::Figure_color::GREEN):
-    return translate_table_colors.gren;
-
-  case(Figure::Figure_color::BLUE):
-    return translate_table_colors.blue;
-
-  default:
-    return translate_table_colors.unkn;
-  }
+int isTypeOK(Figure::Figure_type fig_type)
+{ // Проверим, что тип допустимый в задаче
+  return (0 <= fig_type && fig_type < FIG_TYPES);
 }
 
-const char* Fig_TranslateType(Figure::Figure_type fig_type)
+int isColorOK(Figure::Figure_color fig_color)
+{ // Проверим, что цвет допустимый в задаче
+  return (0 <= fig_color && fig_color < FIG_COLORS);
+}
+
+const char* Fig_TranslateType(Figure::Figure_type f_type)
 {
-  switch (fig_type)
-  {
-  case(Figure::Figure_type::CIRCLE):
-    return translate_table_types.circ;
+  if (isTypeOK(f_type)) return translate_table.type_name[f_type];
+  else                  return translate_table.unkn;
+}
 
-  case(Figure::Figure_type::RECTANGLE):
-    return translate_table_types.rect;
-
-  case(Figure::Figure_type::REGULAR_POLYGON):
-    return translate_table_types.poly;
-
-  default:
-    return translate_table_types.unkn;
-  }
+const char* Fig_TranslateColor(Figure::Figure_color f_col)
+{
+  if (isColorOK(f_col)) return translate_table.color_name[f_col];
+  else                  return translate_table.unkn;
 }
 
 double Figure_Square(Figure* fig)
 {
   switch (fig->type)
   {
-  case(Figure::Figure_type::CIRCLE):
-    return fig->attr.circle.radius * fig->attr.circle.radius * M_PI;
+    case(Figure::Figure_type::CIRCLE):
+      return fig->attr.circle.radius * fig->attr.circle.radius * M_PI;
 
-  case(Figure::Figure_type::RECTANGLE):
-    return fig->attr.rectangle.width * fig->attr.rectangle.height;
+    case(Figure::Figure_type::RECTANGLE):
+      return fig->attr.rectangle.width * fig->attr.rectangle.height;
 
-  case(Figure::Figure_type::REGULAR_POLYGON):
-    return (0.25l * fig->attr.poligon.number_sides 
-        * fig->attr.poligon.side_size * fig->attr.poligon.side_size 
-        / tan(M_PI / fig->attr.poligon.number_sides));
-
+    case(Figure::Figure_type::REGULAR_POLYGON):
+      return (fig->attr.poligon.number_sides / 4
+            * fig->attr.poligon.side_size * fig->attr.poligon.side_size 
+            / tan(M_PI / fig->attr.poligon.number_sides));
+/* https://ru.wikipedia.org/wiki/Правильный_многоугольник
+    ctg(x) 1 способ - 1/tan(x)
+           2 способ, даёт меньше всего погрешность - cos(x)/sin(x)
+           3 способ, самый быстрый - tan(M_PI/2 - x).
+*/
   default:
-    //"Unknown figure"
-    return 0;
+    return 0;  // "Unknown figure"
   }
 }
 void Figure_print(Figure* fig)
 {
-  printf("%-6s %-6s ",
+  printf("%-6s %-6s <",
     Fig_TranslateType(fig->type),
     Fig_TranslateColor(fig->color));
 
   switch (fig->type)
   {
     case(Figure::Figure_type::CIRCLE) :
-      printf("R = %f               Sq = %f\n",
-        fig->attr.circle.radius,
-        Figure_Square(fig));
+      printf("r =%6.2f              ",
+        fig->attr.circle.radius);
       break;
 
     case(Figure::Figure_type::RECTANGLE):
-      printf("W = %f H = %f  Sq = %f\n", 
+      printf("w =%6.2f    h =%6.2f ", 
         fig->attr.rectangle.width, 
-        fig->attr.rectangle.height,
-        Figure_Square(fig));
+        fig->attr.rectangle.height);
       break;
 
     case(Figure::Figure_type::REGULAR_POLYGON):
-      printf("N = %d     Size = %f  Sq = %f\n", 
+      printf("n =%3d    side =%6.2f ", 
         fig->attr.poligon.number_sides, 
-        fig->attr.poligon.side_size,
-        Figure_Square(fig));
+        fig->attr.poligon.side_size);
       break;
 
     default:
-      printf("Unknown figure type <%d>\n", fig->type);
-    break;
+      printf("Unknown figure type=[%d]>\n", fig->type);
+      return; // Для неизвестной фигуры тут выход
   }
+  printf(" Sq =%7.2f>\n", Figure_Square(fig)); // Печатем площадь
 }
 
-unsigned long int filesize(FILE* file)
-{ 
+unsigned long int filesize(FILE* file) { 
   return _filelength(_fileno(file)); 
 }
 
-int main()
+int main() 
 { 
   char filename[] = TASK_INPUT_FILE;
 
@@ -201,6 +173,7 @@ int main()
     if (NULL == figures)
     {
       printf("\nMemory allocation error\n");
+      fclose(fp);
       return -1;
     }
 
@@ -211,7 +184,7 @@ int main()
     else  // Если вдруг не введены все, обрабатывать сколько есть
       printf("File read error, just read %d figures", readed);
     
-    // Обработка считанных фигур
+    // Обработка введённых фигур
     for (size_t i = 0; i < readed; i++)
     {
       printf("%3d ", i+1);        // Номер
@@ -239,27 +212,43 @@ int main()
     }
    
     // Распечатка результата
-    printf("\nCount by type:\n");
+    printf("\n----------------------------------------------\n");
+    printf("Count by type:\n"
+           "----------------------------------------------\n");
+    double total_square = 0;
+    int counter = 0;
     for (size_t i = 0; i < FIG_TYPES; i++)
     {
-      printf("%-6s Total: %4d  Square: %9.2f\n", 
-        Fig_TranslateType((Figure::Figure_type)i),
-        count_types[i],
-        count_squares_type[i]);
+      printf("%-6s : %4d  Square : %9.2f\n", 
+              Fig_TranslateType((Figure::Figure_type)i),
+              count_types[i],
+              count_squares_type[i]);
+      counter += count_types[i];
+      total_square += count_squares_type[i];
     }
+    printf("----------------------------------------------\n"
+           "Total  : %4d  Square : %9.2f\n", counter, total_square);
     
-    printf("\nCount by colors:\n");
+    printf("\n\nCount by colors:\n"
+           "----------------------------------------------\n");
+    counter = 0;
+    total_square = 0;
     for (size_t i = 0; i < FIG_COLORS; i++)
     {
-      printf("%-6s Total: %4d  Square: %9.2f\n",
-        Fig_TranslateColor((Figure::Figure_color)i),
-        count_colors[i],
-        count_squares_color[i]);
+      printf("%-6s : %4d  Square : %9.2f\n",
+              Fig_TranslateColor((Figure::Figure_color)i),
+              count_colors[i],
+              count_squares_color[i]);
+      counter += count_colors[i];
+      total_square += count_squares_color[i];
     }
-    
+    printf("----------------------------------------------\n"
+           "Total  : %4d  Square : %9.2f\n", counter, total_square);
+
     if (bad_figs)
       printf("\n! Figures with error, total %d\n", bad_figs);
-
+    
+    free(figures);
     fclose(fp);
     int x = getchar();
   }
