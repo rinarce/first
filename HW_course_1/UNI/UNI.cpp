@@ -36,7 +36,7 @@ struct Figure
     float height;
   };
 
-  struct Poligon_Attribute {
+  struct Polygon_Attribute {
     int number_sides;
     float side_size;
   };
@@ -47,7 +47,7 @@ struct Figure
   {
     Circle_Attribute circle;
     Rectangle_Attribute rectangle;
-    Poligon_Attribute poligon;
+    Polygon_Attribute polygon;
   } attr;
 
 };
@@ -93,9 +93,9 @@ double Figure_Square(Figure* fig)
       return fig->attr.rectangle.width * fig->attr.rectangle.height;
 
     case(Figure::Figure_type::REGULAR_POLYGON):
-      return (fig->attr.poligon.number_sides / 4
-            * fig->attr.poligon.side_size * fig->attr.poligon.side_size 
-            / tan(M_PI / fig->attr.poligon.number_sides));
+      return (fig->attr.polygon.number_sides / 4
+            * fig->attr.polygon.side_size * fig->attr.polygon.side_size 
+            / tan(M_PI / fig->attr.polygon.number_sides));
 /* https://ru.wikipedia.org/wiki/Правильный_многоугольник
     ctg(x) 1 способ - 1/tan(x)
            2 способ, даёт меньше всего погрешность - cos(x)/sin(x)
@@ -126,8 +126,8 @@ void Figure_print(Figure* fig)
 
     case(Figure::Figure_type::REGULAR_POLYGON):
       printf("n =%3d    side =%6.2f ", 
-        fig->attr.poligon.number_sides, 
-        fig->attr.poligon.side_size);
+        fig->attr.polygon.number_sides, 
+        fig->attr.polygon.side_size);
       break;
 
     default:
