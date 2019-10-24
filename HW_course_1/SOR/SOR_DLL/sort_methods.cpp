@@ -245,3 +245,34 @@ extern void _mergeSort_wiki(int array[], int size)
   free(temp);
 }
 
+
+// -----------------------------------------------------------
+// Быстрая сортировка  («qsort») Чарльз Хоар (Charles Antony Richard Hoare)
+// вариант // http://kvodo.ru/quicksort.html
+void qiuckSort_Hoare(int* mas, int first, int last)
+{
+  int mid, count;
+  int f = first, l = last;
+  mid = mas[(f + l) / 2]; //вычисление опорного элемента
+  do
+  {
+    while (mas[f] < mid) f++;
+    while (mas[l] > mid) l--;
+    if (f <= l) //перестановка элементов
+    {
+      count = mas[f];
+      mas[f] = mas[l];
+      mas[l] = count;
+      f++;
+      l--;
+    }
+  } while (f < l);
+  if (first < l) qiuckSort_Hoare(mas, first, l);
+  if (f < last) qiuckSort_Hoare(mas, f, last);
+}
+
+// Обёртка для единообразного вызова сортировок,
+extern void _qiuckSort_Hoare(int array[], int size)
+{
+  qiuckSort_Hoare(array, 0, size - 1);
+}

@@ -27,3 +27,6 @@ extern void _mergeSort_2(int array[], int size);
 // с доп памятью, память выделяю 1 раз вначале 
 extern void _mergeSort_wiki(int array[], int size);
 
+// Быстрая сортировка  («qsort») Чарльз Хоар
+// вариант // http://kvodo.ru/quicksort.html
+extern void _qiuckSort_Hoare(int array[], int size);
