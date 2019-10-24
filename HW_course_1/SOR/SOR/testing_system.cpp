@@ -66,7 +66,7 @@ double test_pass(sort_func_t fun, int size, int times, const char* algorithm)
     endTime = getCPUTime();
     spend_time += (endTime - startTime);
 
-    // ѕока не провер€ем правильность
+    // провер€ем правильность (отключить после успешного прохождени€ 
     if(CompareArrays(test_array, etalon_array, size))
        fprintf(stderr, "Bad sort implementation function [%s] array [%d]\n", 
                algorithm, size);
@@ -90,7 +90,7 @@ void test_algorithm(sort_func_t fun, const char* algorithm, FILE* out_file)
     fprintf(out_file, "%f%s", pass_time, OUT_SEPARATOR);
   }
   
-  printf("Total <%s>: %f sec (brutto %f sec)", 
+  printf("Total <%s>: %f sec (brutto %f sec)\n", 
     algorithm, total_time, getCPUTime()-brutto_time);
   fprintf(out_file, "%f\n", total_time);
 }

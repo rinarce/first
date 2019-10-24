@@ -3,9 +3,9 @@
 #include "SOR.h"
 
 #define ARRAY_MIN_SIZE  100     // минимальный размер массива
-#define ARRAY_MAX_SIZE  30000   // максимальный
+#define ARRAY_MAX_SIZE  50000   // максимальный
 #define ARRAY_SIZE_STEP 2019    // шаг приращения размера массива
-#define TEST_REPEAT     5       // каждый тест проводить 5 раз
+#define TEST_REPEAT     10       // каждый тест проводить X раз
 #define INIT_RAND       12345   // для инициализации генератора случайных чисел
 #define OUT_SEPARATOR   "; "
 

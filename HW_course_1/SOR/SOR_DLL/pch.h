@@ -11,6 +11,7 @@
 
 // Добавьте сюда заголовочные файлы для предварительной компиляции
 #include "framework.h"
+#include "sort_methods.h"
 
 #endif //PCH_H
 

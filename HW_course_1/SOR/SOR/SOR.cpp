@@ -20,7 +20,7 @@ int main(int argc, char* argv[])
   SetConsoleOutputCP(1251);
 
   // Загружаем DLL
-  HINSTANCE hDllInstance = LoadLibraryEx(L"SOR_DLL.dll", 0, DONT_RESOLVE_DLL_REFERENCES);
+  HINSTANCE hDllInstance = LoadLibraryW(L"SOR_DLL.dll");
   if (NULL == hDllInstance)  {
     printf("Fail load DLL");
     return 1;
