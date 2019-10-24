@@ -35,3 +35,26 @@ extern void _qiuckSort_Hoare(int array[], int size);
 // вариант // http://kvodo.ru/quicksort.html
 // вариант - для малых размеров переходить на другую сортировку
 extern void _qiuckSort_Hoare_2(int array[], int size);
+
+
+// Гномья сортировка Hamid Sarbazi-Azad
+extern void gnomeSort(int array[], int size);
+
+//сортировка Шелла
+extern void ShellSort(int array[], int size);
+
+//сортировка Шелла   /* Пример из книги Герберта Шилдта */
+// https://ru.wikibooks.org/wiki/Реализации_алгоритмов/Сортировка/Шелла
+// фиксированные значения расстояния между сравнениями
+extern void ShellSort_2(int array[], int size);
+
+//сортировка Шелла // расстояния между сравнениями по формуле Роберта Седжвика
+// https://ru.wikibooks.org/wiki/Реализации_алгоритмов/Сортировка/Шелла
+extern void ShellSort_3(int array[], int size);
+
+//сортировка расчёска // https://ru.wikipedia.org/wiki/Сортировка_расчёской
+extern void combSort(int array[], int size);
+
+
+
+

@@ -3,10 +3,10 @@
 #include "SOR.h"
 
 #define ARRAY_MIN_SIZE  100     // минимальный размер массива
-#define ARRAY_MAX_SIZE  77777   // максимальный
+#define ARRAY_MAX_SIZE  37777   // максимальный
 #define ARRAY_SIZE_STEP 2019    // шаг приращения размера массива
 #define TEST_REPEAT     10      // каждый тест проводить X раз
-#define INIT_RAND       12345   // для инициализации генератора случайных чисел
+#define INIT_RAND       1234    // admin pass для инициализации генератора случайных чисел
 #define OUT_SEPARATOR   "; "
 
 // sort_func_t - мой тип для функций фортировки 

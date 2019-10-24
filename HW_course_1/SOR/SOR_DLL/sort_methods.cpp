@@ -19,17 +19,22 @@ extern void EtalonSort(int array[], int size)
 // Пузырьком вариант 1
 extern  void _bubbleSort_1(int array[], int size)
 {
-  int temp;
+  int temp, finish;
   // Сортировка массива пузырьком
+
   for (int i = 0; i < size - 1; i++) {
+    finish = 1;
     for (int j = 0; j < size - i - 1; j++) {
       if (array[j] > array[j + 1]) {
         // меняем элементы местами
         temp = array[j];
         array[j] = array[j + 1];
         array[j + 1] = temp;
+        finish = 0;          //  был обмен
       }
     }
+    if (finish)
+      break;
   }
 }
 
@@ -274,12 +279,13 @@ void qiuckSort_Hoare(int* mas, int first, int last)
 // Быстрая сортировка  («qsort») Чарльз Хоар (Charles Antony Richard Hoare)
 // вариант // http://kvodo.ru/quicksort.html
 // вариант - для малых размеров переходить на другую сортировку
+// чё-то не улучшает
 void qiuckSort_Hoare_2(int* mas, int first, int last)
 {
   int size = last - first + 1;
-  if (size < 10)
+  if (size < 666)
   { 
-    _mergeSort_2(mas + first, size);
+    ShellSort(mas + first, size);
     
   }
   
@@ -319,4 +325,166 @@ extern void _qiuckSort_Hoare(int array[], int size)
 extern void _qiuckSort_Hoare_2(int array[], int size)
 {
   qiuckSort_Hoare_2(array, 0, size - 1);
+}
+
+
+// -----------------------------------------------------------
+// Гномья сортировка Hamid Sarbazi-Azad (вставками)
+  extern void gnomeSort(int array[], int size)
+{
+  int i = 1, j = 2;               // j граница, до которой дошёл гном
+  while (i < size)
+  {
+    if (array[i - 1] <= array[i]) // пока  соблюдается порядок
+    {
+      i = j;                      // гном прыгает вправо
+      j++;
+    }
+    else
+    { // нарушен порядок => поменять местами, и проверить чуть левее 
+      // гном несёт число к началу, пока не найдёт ему место
+      int t = array[i]; array[i] = array[i - 1]; array[i - 1] = t;
+      i--;        // проверяем ближе к началу, возможно придётся сдвигать ещё
+      if (i == 0) // если гном дошёл до 0 => прыгнуть на j
+      { i = j;
+        j++;      // в следующий раз прыгать дальше
+      }
+    }
+  }
+}
+
+
+// -----------------------------------------------------------
+//сортировка Шелла
+extern void ShellSort(int array[], int size)
+{
+  int d = size / 2;
+  while (d > 0)
+  {
+    for (int i = 0; i < size - d; i++)
+    {
+      int j = i;
+      while (j >= 0 && array[j] > array[j + d])
+      {
+        int temp = array[j];      // swap
+        array[j] = array[j + d]; 
+        array[j + d] = temp;
+        j--;
+      }
+    }
+    d = d / 2;
+  }
+}
+
+// -----------------------------------------------------------
+//сортировка Шелла  /* Пример из книги Герберта Шилдта */
+// https://ru.wikibooks.org/wiki/Реализации_алгоритмов/Сортировка/Шелла
+// фиксированные значения расстояния между сравнениями
+extern void ShellSort_2(int array[], int size)
+{ 
+  register int i, j, gap, k, x;
+  int a[5] = { 9, 5, 3, 2, 1 };
+
+  for (k = 0; k < 5; k++) {
+    gap = a[k];
+    for (i = gap; i < size; ++i) {
+      x = array[i];
+      for (j = i - gap; (x < array[j]) && (j >= 0); j = j - gap)
+        array[j + gap] = array[j];
+      array[j + gap] = x;
+    }
+  }
+}
+
+//сортировка Шелла // расстояния между сравнениями по формуле Роберта Седжвика
+// https://ru.wikibooks.org/wiki/Реализации_алгоритмов/Сортировка/Шелла
+// переделан из непонятного варианта C++
+int increment(int inc[], int size) {
+  // inc[] массив, в который заносятся инкременты
+  // size размерность этого массива
+  int p1, p2, p3, s;
+
+  p1 = p2 = p3 = 1;
+  s = -1;
+  do {// заполняем массив элементов по формуле Роберта Седжвика
+    if (++s % 2) {
+      inc[s] = 8 * p1 - 6 * p2 + 1;
+    }
+    else {
+      inc[s] = 9 * p1 - 9 * p3 + 1;
+      p2 *= 2;
+      p3 *= 2;
+    }
+    p1 *= 2;
+    // заполняем массив, пока текущая инкремента хотя бы в 3 раза меньше количества элементов в массиве
+  } while (3 * inc[s] < size);
+
+  return s > 0 ? --s : 0;// возвращаем количество элементов в массиве
+}
+
+extern void ShellSort_3(int array[], int size) {
+  // inc инкремент, расстояние между элементами сравнения
+  // seq[40] массив, в котором хранятся инкременты
+  int inc, i, j, seq[40];
+  int s;//количество элементов в массиве seq[40]
+
+  // вычисление последовательности приращений
+  s = increment(seq, size);
+  while (s >= 0) {
+    //извлекаем из массива очередную инкременту
+    inc = seq[s--];
+    // сортировка вставками с инкрементами inc
+    for (i = inc; i < size; i++) {
+      int temp = array[i];
+      // сдвигаем элементы до тех пор, пока не дойдем до конца или не упорядочим в нужном порядке
+      for (j = i - inc; (j >= 0) && (array[j] > temp); j -= inc)
+        array[j + inc] = array[j];
+      // после всех сдвигов ставим на место j+inc элемент, который находился на i месте
+      array[j + inc] = temp;
+    }
+  }
+}
+
+
+
+
+
+
+// -----------------------------------------------------------
+//сортировка расчёска // https://ru.wikipedia.org/wiki/Сортировка_расчёской
+extern void combSort(int array[], int size)
+{
+  double fakt = 1.2473309; // фактор уменьшения
+  register int i, j, temp, finish, step = size - 1;
+
+  while (step >= 1)
+  {
+    for (i = 0; i + step < size; ++i)
+    {
+      if (array[i] > array[i + step])
+      {
+        temp = array[i];
+        array[i] = array[i + step];
+        array[i + step] = temp;
+      }
+    }
+    step /= fakt;
+  }
+  // сортировка пузырьком
+  for (i = 0; i < size - 1; i++)
+  {
+    finish = 1;
+    for (j = 0; j < size - i - 1; j++)
+    {
+      if (array[j] > array[j + 1])
+      {
+        temp = array[j];
+        array[j] = array[j + 1];
+        array[j + 1] = temp;
+        finish = 0;
+      }
+    }
+    if (finish)
+      break;
+  }
 }

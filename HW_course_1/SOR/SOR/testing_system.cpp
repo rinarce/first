@@ -26,7 +26,7 @@ int test_array[ARRAY_MAX_SIZE] = { 0 };
 void FillRandom(int array[], int size)
 {
   for (int i = 0; i < size; i++)
-    array[i] = (int)rand() - RAND_MAX/2;
+    array[i] = rand() - RAND_MAX/2; // пусть будут и отрицательные тоже
 }
 
 void CopyArray(int from[], int copy[], int size)
