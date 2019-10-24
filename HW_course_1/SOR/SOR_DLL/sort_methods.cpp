@@ -383,9 +383,11 @@ extern void ShellSort(int array[], int size)
 extern void ShellSort_2(int array[], int size)
 { 
   register int i, j, gap, k, x;
-  int a[5] = { 9, 5, 3, 2, 1 };
+  // int a[5] = { 9, 5, 3, 2, 1 }; /* Пример из книги Герберта Шилдта */
+  // другой вариант https://habr.com/ru/post/204968/
+  int a[8] = { 701, 301, 132, 57, 23, 10, 4, 1 };
 
-  for (k = 0; k < 5; k++) {
+  for (k = 0; k < 8; k++) {
     gap = a[k];
     for (i = gap; i < size; ++i) {
       x = array[i];
@@ -399,8 +401,8 @@ extern void ShellSort_2(int array[], int size)
 //сортировка Шелла // расстояния между сравнениями по формуле Роберта Седжвика
 // https://ru.wikibooks.org/wiki/Реализации_алгоритмов/Сортировка/Шелла
 // переделан из непонятного варианта C++
-int increment(int inc[], int size) {
-  // inc[] массив, в который заносятся инкременты
+int increment(int inc[], int size) { // Robert Sedgewick
+  // inc[] массив, в который заносятся инкременты 
   // size размерность этого массива
   int p1, p2, p3, s;
 
