@@ -57,8 +57,12 @@ extern void ShellSort_3(int array[], int size);
 extern void combSort(int array[], int size);
 
 //сортировка расчёска
-// http://rosettacode.org/wiki/Sorting_algorithms/Comb_sort#C
+// http://rosettacode.org/wiki/Sorting_algorithms/Comb_sort
 extern void CombSort_2(int a[], int nElements);
+
+// Radix sort
+// http://rosettacode.org/wiki/Sorting_algorithms/Radix_sort
+extern void Radix_Sort(int array[], int size);
 
 
 

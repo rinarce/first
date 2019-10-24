@@ -25,6 +25,9 @@ static sort_info_t s_sortList[] =
   
   {combSort, SORT_COMB, SORT_QUASILINEAR, "Comb Sort" },
   {CombSort_2, SORT_COMB, SORT_QUASILINEAR, "Comb Sort" },
+
+  {Radix_Sort, SORT_RADIX, SORT_LINEAR, "Radix Sort" },
+
 };
 
 __declspec(dllexport) sort_info_t* GetSortList(int* count)
