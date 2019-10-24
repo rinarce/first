@@ -24,7 +24,7 @@ static sort_info_t s_sortList[] =
   {ShellSort_3, SORT_SHELL, SORT_SUBQUADRATIC, "Shell - up to 40 gaps"},
   
   {combSort, SORT_COMB, SORT_QUASILINEAR, "Comb Sort" },
-
+  {CombSort_2, SORT_COMB, SORT_QUASILINEAR, "Comb Sort" },
 };
 
 __declspec(dllexport) sort_info_t* GetSortList(int* count)

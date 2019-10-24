@@ -401,6 +401,7 @@ extern void ShellSort_2(int array[], int size)
 //сортировка Шелла // расстояния между сравнениями по формуле Роберта Седжвика
 // https://ru.wikibooks.org/wiki/Реализации_алгоритмов/Сортировка/Шелла
 // переделан из непонятного варианта C++
+// http://algolist.manual.ru/sort/shell_sort.php 
 int increment(int inc[], int size) { // Robert Sedgewick
   // inc[] массив, в который заносятся инкременты 
   // size размерность этого массива
@@ -470,7 +471,7 @@ extern void combSort(int array[], int size)
         array[i + step] = temp;
       }
     }
-    step /= fakt;
+    step = (int) (step / fakt);
   }
   // сортировка пузырьком
   for (i = 0; i < size - 1; i++)
@@ -488,5 +489,30 @@ extern void combSort(int array[], int size)
     }
     if (finish)
       break;
+  }
+}
+
+// http://rosettacode.org/wiki/Sorting_algorithms/Comb_sort#C
+extern void CombSort_2(int a[], int nElements)
+{
+  register int i, j, gap, temp, swapped = 1;
+
+  gap = nElements;
+  while (gap > 1 || swapped == 1)
+  {
+    gap = gap * 10 / 13;
+    if (gap == 9 || gap == 10) gap = 11;
+    if (gap < 1) gap = 1;
+    swapped = 0;
+    for (i = 0, j = gap; j < nElements; i++, j++)
+    {
+      if (a[i] > a[j])
+      {
+        temp = a[i];
+        a[i] = a[j];
+        a[j] = temp;
+        swapped = 1;
+      }
+    }
   }
 }

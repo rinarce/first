@@ -52,8 +52,13 @@ extern void ShellSort_2(int array[], int size);
 // https://ru.wikibooks.org/wiki/Реализации_алгоритмов/Сортировка/Шелла
 extern void ShellSort_3(int array[], int size);
 
-//сортировка расчёска // https://ru.wikipedia.org/wiki/Сортировка_расчёской
+//сортировка расчёска 
+// https://ru.wikipedia.org/wiki/Сортировка_расчёской
 extern void combSort(int array[], int size);
+
+//сортировка расчёска
+// http://rosettacode.org/wiki/Sorting_algorithms/Comb_sort#C
+extern void CombSort_2(int a[], int nElements);
 
 
 
