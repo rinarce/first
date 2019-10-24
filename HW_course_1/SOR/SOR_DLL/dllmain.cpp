@@ -6,9 +6,9 @@ static sort_info_t s_sortList[] =
 {
   {EtalonSort, SORT_QUICK, SORT_QUASILINEAR, "Sample - C standard qsort" },
 
-  {_mergeSort_1, SORT_MERGE, SORT_QUASILINEAR, "Merge 1 - malloc every pass" },
-  {_mergeSort_2, SORT_MERGE, SORT_QUASILINEAR, "Merge 2 - malloc 1 time" },
-  {_mergeSort_wiki, SORT_MERGE, SORT_QUASILINEAR, "Merge wiki - malloc 1 time" },
+  {_mergeSort_1, SORT_MERGE, SORT_QUASILINEAR, "Merge 1 - +malloc every pass" },
+  {_mergeSort_2, SORT_MERGE, SORT_QUASILINEAR, "Merge 2 - +malloc once" },
+  {_mergeSort_wiki, SORT_MERGE, SORT_QUASILINEAR, "Merge wiki - +malloc once" },
   {_qiuckSort_Hoare, SORT_QUICK, SORT_QUASILINEAR, "Quick - Charles Antony Hoare" },
 
 // ---------------------------------------------------------
