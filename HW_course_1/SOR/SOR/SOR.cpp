@@ -40,7 +40,10 @@ int main(int argc, char* argv[])
     printf("Fail get sorting functions");
     return 1;
   }
-  printf("Imported %d types of sort!", num_sortings);
+  printf("Imported %d types of sort\n", num_sortings);
+  printf("Суммарное время в сек для %d сортировок массива случайных чисел\n[размер массива] Время\n", TEST_REPEAT);
+
+
 
   // Пытаемся открыть файл для записи результатов тестирования
   FILE* f_out;
@@ -50,6 +53,8 @@ int main(int argc, char* argv[])
     return err;
   }
 
+  // формирую в файле первую строку, там будут значения 
+  // размер массива на каждом шаге тестирования.
   test_MakeFirstLine(f_out);
 
   // Тестируем методы сортировки

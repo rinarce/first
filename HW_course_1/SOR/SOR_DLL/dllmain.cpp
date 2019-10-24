@@ -10,6 +10,7 @@ static sort_info_t s_sortList[] =
   {_mergeSort_2, SORT_MERGE, SORT_QUASILINEAR, "Merge 2 - +malloc once" },
   {_mergeSort_wiki, SORT_MERGE, SORT_QUASILINEAR, "Merge wiki - +malloc once" },
   {_qiuckSort_Hoare, SORT_QUICK, SORT_QUASILINEAR, "Quick - Charles Antony Hoare" },
+  {_qiuckSort_Hoare_2, SORT_QUICK, SORT_QUASILINEAR, "Quick 2 - Charles Antony Hoare" },
 
 // ---------------------------------------------------------
 // !!!! раскомментировать медленные алгоритмы перед релизом !!!!!!!!!!!

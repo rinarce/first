@@ -30,3 +30,8 @@ extern void _mergeSort_wiki(int array[], int size);
 // Быстрая сортировка  («qsort») Чарльз Хоар
 // вариант // http://kvodo.ru/quicksort.html
 extern void _qiuckSort_Hoare(int array[], int size);
+
+// Быстрая сортировка  («qsort») Чарльз Хоар
+// вариант // http://kvodo.ru/quicksort.html
+// вариант - для малых размеров переходить на другую сортировку
+extern void _qiuckSort_Hoare_2(int array[], int size);

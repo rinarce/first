@@ -271,8 +271,52 @@ void qiuckSort_Hoare(int* mas, int first, int last)
   if (f < last) qiuckSort_Hoare(mas, f, last);
 }
 
+// Быстрая сортировка  («qsort») Чарльз Хоар (Charles Antony Richard Hoare)
+// вариант // http://kvodo.ru/quicksort.html
+// вариант - для малых размеров переходить на другую сортировку
+void qiuckSort_Hoare_2(int* mas, int first, int last)
+{
+  int size = last - first + 1;
+  if (size < 10)
+  { 
+    _mergeSort_2(mas + first, size);
+    
+  }
+  
+  int mid, count;
+  int f = first, l = last;
+  mid = mas[(f + l) / 2]; //вычисление опорного элемента
+  do
+  {
+    while (mas[f] < mid) f++;
+    while (mas[l] > mid) l--;
+    if (f <= l) //перестановка элементов
+    {
+      count = mas[f];
+      mas[f] = mas[l];
+      mas[l] = count;
+      f++;
+      l--;
+    }
+  } while (f < l);
+  if (first < l) qiuckSort_Hoare_2(mas, first, l);
+  if (f < last) qiuckSort_Hoare_2(mas, f, last);
+}
+
+
 // Обёртка для единообразного вызова сортировок,
+// Быстрая сортировка  («qsort») Чарльз Хоар
+// вариант // http://kvodo.ru/quicksort.html
 extern void _qiuckSort_Hoare(int array[], int size)
 {
   qiuckSort_Hoare(array, 0, size - 1);
+}
+
+// Обёртка для единообразного вызова сортировок,
+// Быстрая сортировка  («qsort») Чарльз Хоар
+// вариант // http://kvodo.ru/quicksort.html
+// вариант - для малых размеров переходить на другую сортировку
+extern void _qiuckSort_Hoare_2(int array[], int size)
+{
+  qiuckSort_Hoare_2(array, 0, size - 1);
 }
