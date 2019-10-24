@@ -31,7 +31,10 @@ double getCPUTime() {
 	FILETIME userTime;
 	if (GetProcessTimes(GetCurrentProcess(), &createTime, &exitTime, &kernelTime, &userTime) != -1) {
 		ULARGE_INTEGER li = {{userTime.dwLowDateTime, userTime.dwHighDateTime }};
-        return li.QuadPart / 10000000.;
+   
+    //--------------------------------------- in ms ---------------------
+    return li.QuadPart / 10000.;      // ms
+    return li.QuadPart / 10000000.;   // s
 	}
 
 #elif defined(__unix__) || defined(__unix) || defined(unix) || (defined(__APPLE__) && defined(__MACH__))

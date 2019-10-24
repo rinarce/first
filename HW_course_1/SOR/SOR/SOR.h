@@ -1,30 +1,30 @@
-#pragma once
+п»ї#pragma once
 typedef void (*sort_func_t)(int array[], int size);
 
-// Семейства сортировок
+// РЎРµРјРµР№СЃС‚РІР° СЃРѕСЂС‚РёСЂРѕРІРѕРє
 typedef enum
-{                                  // (Не определено)
+{                                  // (РќРµ РѕРїСЂРµРґРµР»РµРЅРѕ)
   SORT_NA = -1,
-  // Квадратичные
+  // РљРІР°РґСЂР°С‚РёС‡РЅС‹Рµ
   SORT_SELECTION,
   SORT_INSERTION,
   SORT_BUBBLE,
-  // Субквадратичные
+  // РЎСѓР±РєРІР°РґСЂР°С‚РёС‡РЅС‹Рµ
   SORT_SHELL,
-  // Квазилинейные
+  // РљРІР°Р·РёР»РёРЅРµР№РЅС‹Рµ
   SORT_COMB,
   SORT_MERGE,
   SORT_QUICK,
   SORT_HEAP,
-  // Линейные
+  // Р›РёРЅРµР№РЅС‹Рµ
   SORT_COUNT,
   SORT_RADIX,
   SORT_BUCKET,
 
-  SORT_FAMILY_COUNT               // Всего
+  SORT_FAMILY_COUNT               // Р’СЃРµРіРѕ
 } sort_family_t;
 
-// Вычислительная сложность
+// Р’С‹С‡РёСЃР»РёС‚РµР»СЊРЅР°СЏ СЃР»РѕР¶РЅРѕСЃС‚СЊ
 typedef enum
 {
   SORT_QUADRATIC,
@@ -32,15 +32,15 @@ typedef enum
   SORT_QUASILINEAR,
   SORT_LINEAR,
 
-  SORT_COMPLEXITY_COUNT           // Всего
+  SORT_COMPLEXITY_COUNT           // Р’СЃРµРіРѕ
 } sort_complexity_t;
 
-// Описание одной вариации сортировки
+// РћРїРёСЃР°РЅРёРµ РѕРґРЅРѕР№ РІР°СЂРёР°С†РёРё СЃРѕСЂС‚РёСЂРѕРІРєРё
 typedef struct
 {
-  sort_func_t sort;               // Функция сортировки
-  sort_family_t family;           // Базовое семейство
-  sort_complexity_t complexity;   // Вычислительная сложность
-  char const* name;               // Имя, описывающее вариацию
+  sort_func_t sort;               // Р¤СѓРЅРєС†РёСЏ СЃРѕСЂС‚РёСЂРѕРІРєРё
+  sort_family_t family;           // Р‘Р°Р·РѕРІРѕРµ СЃРµРјРµР№СЃС‚РІРѕ
+  sort_complexity_t complexity;   // Р’С‹С‡РёСЃР»РёС‚РµР»СЊРЅР°СЏ СЃР»РѕР¶РЅРѕСЃС‚СЊ
+  char const* name;               // РРјСЏ, РѕРїРёСЃС‹РІР°СЋС‰РµРµ РІР°СЂРёР°С†РёСЋ
 } sort_info_t;
 

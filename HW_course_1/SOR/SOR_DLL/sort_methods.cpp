@@ -83,9 +83,25 @@ extern  void _selectSort_1(int array[], int size)
 }
 
 // -----------------------------------------------------------
+// Вставками http://rosettacode.org/wiki/Sorting_algorithms/Insertion_sort
+extern void insertion_sort(int array[], int size) 
+{
+  for (int i = 1; i < size; ++i) 
+  {
+    int tmp = array[i];
+    int j = i;
+    while (j > 0 && tmp < array[j - 1]) 
+    {
+      array[j] = array[j - 1];
+      --j;
+    }
+    array[j] = tmp;
+  }
+}
+
+// -----------------------------------------------------------
 // Слиянием вариант 1         // http://kvodo.ru/mergesort.html 
 // С дополнительной памятью, выделяю память на каждом слиянии
-
 void Merge_1(int array[], int first, int last)
 { //функция, сливающая массивы 
   int middle, start, final, j;
@@ -240,6 +256,8 @@ int* merge_sort_wiki(int* up, int* down, unsigned int left, unsigned int right)
 // без выделения массива каждый раз, выделяю 1 раз, */
 extern void _mergeSort_wiki(int array[], int size)
 { 
+  if (size <= 0) return; // с нулевым размером не дружит
+
   int* temp = (int*)malloc(size * sizeof(int));
   int* result = merge_sort_wiki(array, temp, 0, size - 1);
 
@@ -279,14 +297,13 @@ void qiuckSort_Hoare(int* mas, int first, int last)
 // Быстрая сортировка  («qsort») Чарльз Хоар (Charles Antony Richard Hoare)
 // вариант // http://kvodo.ru/quicksort.html
 // вариант - для малых размеров переходить на другую сортировку
-// чё-то не улучшает
 void qiuckSort_Hoare_2(int* mas, int first, int last)
 {
   int size = last - first + 1;
-  if (size < 666)
-  { 
-    ShellSort(mas + first, size);
-    
+  if (size < 66)
+  {
+    return; // так лучше
+    insertion_sort(mas + first, size);
   }
   
   int mid, count;
@@ -325,6 +342,7 @@ extern void _qiuckSort_Hoare(int array[], int size)
 extern void _qiuckSort_Hoare_2(int array[], int size)
 {
   qiuckSort_Hoare_2(array, 0, size - 1);
+  insertion_sort(array, size);
 }
 
 
@@ -385,9 +403,11 @@ extern void ShellSort_2(int array[], int size)
   register int i, j, gap, k, x;
   // int a[5] = { 9, 5, 3, 2, 1 }; /* Пример из книги Герберта Шилдта */
   // другой вариант https://habr.com/ru/post/204968/
-  int a[8] = { 701, 301, 132, 57, 23, 10, 4, 1 };
+  // или http://rosettacode.org/wiki/Sorting_algorithms/Shell_sort#C.2B.2B
+  int a[9] = { 1750, 701, 301, 132, 57, 23, 10, 4, 1 };
+  
 
-  for (k = 0; k < 8; k++) {
+  for (k = 0; k < 9; k++) {
     gap = a[k];
     for (i = gap; i < size; ++i) {
       x = array[i];
@@ -568,4 +588,113 @@ static void radix_sort(int* a, const size_t len)
 extern void Radix_Sort(int array[], int size)
 {
   radix_sort(array, size);
+}
+
+
+// -----------------------------------------------------------
+// Пирамидальная https://www.codelab.ru/task/pyramid_sort/
+
+/* Функция "балансировки" пирамиды.   (просеивания, добавления элементов) */
+void Screening(int array[], int k, int n) 
+{
+  /* Это чтобы при k=0 и n=0 не делалось лишней  перестановки*/
+  if (0 == n) return;
+
+  int tmp, childPos;
+  tmp = array[k];
+
+  while (k <= n / 2) 
+  {
+    childPos = 2 * k;  // Левый ребенок элемента k
+
+    // выбираем большего ребенка элемента k из 2-х: либо левый, либо правый
+    if (childPos < n && array[childPos] < array[childPos + 1]) 
+    {
+      childPos++;
+    }
+    
+    /* Если родитель x[k] больше всех своих детей,
+       то ничего не делаем, он стоит на правильном месте */
+    if (tmp >= array[childPos]) break;
+
+    // иначе - меняем x[k] с наибольшим ребенком
+    array[k] = array[childPos];
+    k = childPos;
+  }
+  array[k] = tmp;
+}
+
+
+extern void PyramidSort_1(int array[], int size) 
+{
+  register int i, tmp;
+
+  // Построение пирамиды 
+  for (i = size / 2; i >= 0; i--) 
+  {
+    Screening(array, i, size - 1);
+  }
+
+  /* Формирование конечной отсортированной
+     последовательности + "балансирование" пирамиды */
+  for (i = size - 1; i > 0; i--) 
+  {
+    // меняем первый с последним 
+    tmp = array[0];
+    array[0] = array[i];
+    array[i] = tmp;
+
+    /* Восстановление баланса  для пирамиды x[0..i-2] */
+    Screening(array, 0, i - 1);
+  }
+}
+
+
+
+// -----------------------------------------------------------
+// Heap sort 
+// http://rosettacode.org/wiki/Sorting_algorithms/Heapsort
+int max_HS(int array[], int size, int i, int j, int k)
+{
+  int mx = i;
+  
+  if (j < size && array[j] > array[mx])
+      mx = j;
+  
+  if (k < size && array[k] > array[mx])
+      mx = k;
+  
+  return mx;
+}
+
+void downheap(int array[], int n, int i) 
+{
+  while (1) 
+  {
+    int j = max_HS(array, n, i, 2 * i + 1, 2 * i + 2);
+    
+    if (j == i)   break;
+    
+    int t = array[i];
+    array[i] = array[j];
+    array[j] = t;
+    i = j;
+  }
+}
+
+extern void heapsort(int array[], int size) 
+{
+  int i;
+  for (i = (size - 2) / 2; i >= 0; i--) 
+  {
+    downheap(array, size, i);
+  }
+  for (i = 0; i < size; i++) 
+  {
+    int t = array[size - i - 1];
+    array[size - i - 1] = array[0];
+    array[0] = t;
+
+    downheap(array, size - i - 1, 0);
+  }
 }

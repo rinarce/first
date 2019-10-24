@@ -1,32 +1,28 @@
-#include <stdio.h>
+п»ї#include <stdio.h>
 #include "testing_system.h"
 
-#define CHECK_SORTED   // проверять массив после работы алгоритма?
+// !! Р·Р°РєРѕРјРјРµРЅС‚РёС‚СЊ РїРѕСЃР»Рµ РїСЂРѕРІРµСЂРєРё РєРѕСЂСЂРµРєС‚РЅРѕСЃС‚Рё РІСЃРµС… Р°Р»РіРѕСЂРёС‚РјРѕРІ
+#define CHECK_SORTED   // РїСЂРѕРІРµСЂСЏС‚СЊ РјР°СЃСЃРёРІ РїРѕСЃР»Рµ СЂР°Р±РѕС‚С‹ Р°Р»РіРѕСЂРёС‚РјР°?
 
-// для замеров времени
+// РґР»СЏ Р·Р°РјРµСЂРѕРІ РІСЂРµРјРµРЅРё
 // repo https://gist.github.com/Randl/45bcca59720f661fa033a67d5f44bff0 
 // description https://habr.com/ru/post/282301/
-#include "getCPUTime.c"         // CPU time in seconds
-/*  double startTime, endTime;
-    startTime = getCPUTime();
-    ...
-    endTime = getCPUTime();
-    fprintf(stderr, "CPU time used = %lf\n", (endTime - startTime));
-*/
+#include "getCPUTime.c"         // CPU time in mseconds
 
-// для экономии времени не будем создавать массивы каждый тест
+
+// РґР»СЏ СЌРєРѕРЅРѕРјРёРё РІСЂРµРјРµРЅРё РЅРµ Р±СѓРґРµРј СЃРѕР·РґР°РІР°С‚СЊ РјР°СЃСЃРёРІС‹ РєР°Р¶РґС‹Р№ С‚РµСЃС‚
 
 int test_array[ARRAY_MAX_SIZE] = { 0 };
 
-#ifdef CHECK_SORTED // в этом массиве заведомо правильно отсортировано
+#ifdef CHECK_SORTED // РІ СЌС‚РѕРј РјР°СЃСЃРёРІРµ Р·Р°РІРµРґРѕРјРѕ РїСЂР°РІРёР»СЊРЅРѕ РѕС‚СЃРѕСЂС‚РёСЂРѕРІР°РЅРѕ
   int etalon_array[ARRAY_MAX_SIZE] = { 0 };
 #endif // CHECK_SORTED
 
-// заполнить массив случайными числами
+// Р·Р°РїРѕР»РЅРёС‚СЊ РјР°СЃСЃРёРІ СЃР»СѓС‡Р°Р№РЅС‹РјРё С‡РёСЃР»Р°РјРё
 void FillRandom(int array[], int size)
 {
   for (int i = 0; i < size; i++)
-    array[i] = rand() - RAND_MAX/2; // пусть будут и отрицательные тоже
+    array[i] = rand() - RAND_MAX/2; // РїСѓСЃС‚СЊ Р±СѓРґСѓС‚ Рё РѕС‚СЂРёС†Р°С‚РµР»СЊРЅС‹Рµ С‚РѕР¶Рµ
 }
 
 void CopyArray(int from[], int copy[], int size)
@@ -35,7 +31,7 @@ void CopyArray(int from[], int copy[], int size)
     copy[i] = from[i];
 }
 
-// возврат 0 - если массивы равны
+// РІРѕР·РІСЂР°С‚ 0 - РµСЃР»Рё РјР°СЃСЃРёРІС‹ СЂР°РІРЅС‹
 int CompareArrays(int array1[], int array2[], int size)
 { 
   for (int i = 0; i < size; i++)
@@ -44,46 +40,46 @@ int CompareArrays(int array1[], int array2[], int size)
   return 0;
 }
 
-// функция сравнения целых чисел для qsort()
+// С„СѓРЅРєС†РёСЏ СЃСЂР°РІРЅРµРЅРёСЏ С†РµР»С‹С… С‡РёСЃРµР» РґР»СЏ qsort()
 int cmpInt(const void* a, const void* b)
 {
   return *(int*)a - *(int*)b;
 }
 
-// Для контроля правильности алгоритмов сортировки 
+// Р”Р»СЏ РєРѕРЅС‚СЂРѕР»СЏ РїСЂР°РІРёР»СЊРЅРѕСЃС‚Рё Р°Р»РіРѕСЂРёС‚РјРѕРІ СЃРѕСЂС‚РёСЂРѕРІРєРё 
 void EtalonSort(int array[], int size)
 {
   qsort(array, size, sizeof(int), cmpInt);
 }
 
-// Многократный тест для заданного размера массива
+// РњРЅРѕРіРѕРєСЂР°С‚РЅС‹Р№ С‚РµСЃС‚ РґР»СЏ Р·Р°РґР°РЅРЅРѕРіРѕ СЂР°Р·РјРµСЂР° РјР°СЃСЃРёРІР°
 double test_pass(sort_func_t fun, int size, int times, const char* algorithm)
 {
   double spend_time = 0;
   
   for (int i = times; i; i--)
   { 
-    FillRandom(test_array, size); // массив случайных чисел
+    FillRandom(test_array, size); // РјР°СЃСЃРёРІ СЃР»СѓС‡Р°Р№РЅС‹С… С‡РёСЃРµР»
 
 #ifdef CHECK_SORTED
-    // Эталонный массив и эталонная сортировка 
-    // -- можно отключить после проверки всех алгоритмов
+    // Р­С‚Р°Р»РѕРЅРЅС‹Р№ РјР°СЃСЃРёРІ Рё СЌС‚Р°Р»РѕРЅРЅР°СЏ СЃРѕСЂС‚РёСЂРѕРІРєР° 
+    // -- РјРѕР¶РЅРѕ РѕС‚РєР»СЋС‡РёС‚СЊ РїРѕСЃР»Рµ РїСЂРѕРІРµСЂРєРё РІСЃРµС… Р°Р»РіРѕСЂРёС‚РјРѕРІ
     CopyArray(test_array, etalon_array, size);
     EtalonSort(etalon_array, size); 
 #endif // CHECK_SORTED
 
 
 
-    double startTime, endTime;    // замер времени - старт
+    double startTime, endTime;    // Р·Р°РјРµСЂ РІСЂРµРјРµРЅРё - СЃС‚Р°СЂС‚
     startTime = getCPUTime();
     
-    fun(test_array, size);        // тут вызов проверяемого алгоритма
+    fun(test_array, size);        // С‚СѓС‚ РІС‹Р·РѕРІ РїСЂРѕРІРµСЂСЏРµРјРѕРіРѕ Р°Р»РіРѕСЂРёС‚РјР°
     
-    endTime = getCPUTime();       // замер времени - стоп
+    endTime = getCPUTime();       // Р·Р°РјРµСЂ РІСЂРµРјРµРЅРё - СЃС‚РѕРї
     spend_time += (endTime - startTime);
 
 #ifdef CHECK_SORTED
-    // проверяем правильность (отключить после успешного прохождения 
+    // РїСЂРѕРІРµСЂСЏРµРј РїСЂР°РІРёР»СЊРЅРѕСЃС‚СЊ (РѕС‚РєР»СЋС‡РёС‚СЊ РїРѕСЃР»Рµ СѓСЃРїРµС€РЅРѕРіРѕ РїСЂРѕС…РѕР¶РґРµРЅРёСЏ 
     if(CompareArrays(test_array, etalon_array, size))
        fprintf(stderr, "Bad sort implementation function [%s] array [%d]\n", 
                algorithm, size);
@@ -94,7 +90,7 @@ double test_pass(sort_func_t fun, int size, int times, const char* algorithm)
 }
 
 
-// Тестирует алгоритм на массивах разного размера, результат в CSV файл
+// РўРµСЃС‚РёСЂСѓРµС‚ Р°Р»РіРѕСЂРёС‚Рј РЅР° РјР°СЃСЃРёРІР°С… СЂР°Р·РЅРѕРіРѕ СЂР°Р·РјРµСЂР°, СЂРµР·СѓР»СЊС‚Р°С‚ РІ CSV С„Р°Р№Р»
 void test_algorithm(sort_func_t fun, const char* algorithm, FILE* out_file)
 {
   srand(INIT_RAND);
@@ -106,30 +102,30 @@ void test_algorithm(sort_func_t fun, const char* algorithm, FILE* out_file)
   {
     double pass_time = test_pass(fun, size, TEST_REPEAT, algorithm);
     total_time += pass_time;
-    // на экран
-    printf("T: [%5d] %f\n", size, pass_time);
-    // в файл CSV только результат
-    fprintf(out_file, "%f%s", pass_time, OUT_SEPARATOR);
+    // РЅР° СЌРєСЂР°РЅ
+    printf("T: [%6d] %8.1f\n", size, pass_time);
+    // РІ С„Р°Р№Р» CSV С‚РѕР»СЊРєРѕ СЂРµР·СѓР»СЊС‚Р°С‚
+    fprintf(out_file, "%8.1f%s", pass_time, OUT_SEPARATOR);
   }
   
-  // суммарное время алгоритма (за все размеры) 
-  // будет в последнем элементе строки
-  printf("Total <%s>: %f sec (brutto %f sec)\n", 
+  // СЃСѓРјРјР°СЂРЅРѕРµ РІСЂРµРјСЏ Р°Р»РіРѕСЂРёС‚РјР° (Р·Р° РІСЃРµ СЂР°Р·РјРµСЂС‹) 
+  // Р±СѓРґРµС‚ РІ РїРѕСЃР»РµРґРЅРµРј СЌР»РµРјРµРЅС‚Рµ СЃС‚СЂРѕРєРё
+  printf("Total <%s>: %f ms (brutto %f ms)\n", 
     algorithm, total_time, getCPUTime()-brutto_time);
   fprintf(out_file, "%f\n", total_time);
 }
 
 
 
-// формирую в файле первую строку, там будут значения 
-// размер массива на каждом шаге тестирования.
+// С„РѕСЂРјРёСЂСѓСЋ РІ С„Р°Р№Р»Рµ РїРµСЂРІСѓСЋ СЃС‚СЂРѕРєСѓ, С‚Р°Рј Р±СѓРґСѓС‚ Р·РЅР°С‡РµРЅРёСЏ 
+// СЂР°Р·РјРµСЂ РјР°СЃСЃРёРІР° РЅР° РєР°Р¶РґРѕРј С€Р°РіРµ С‚РµСЃС‚РёСЂРѕРІР°РЅРёСЏ.
 void test_MakeFirstLine(FILE* out_file)
-{ // формирует в файле первую строку
+{ // С„РѕСЂРјРёСЂСѓРµС‚ РІ С„Р°Р№Р»Рµ РїРµСЂРІСѓСЋ СЃС‚СЂРѕРєСѓ
   fprintf(out_file, "Array size%s", OUT_SEPARATOR);
 
-  // цикл такой же как в функции тестирования алгоритма
+  // С†РёРєР» С‚Р°РєРѕР№ Р¶Рµ РєР°Рє РІ С„СѓРЅРєС†РёРё С‚РµСЃС‚РёСЂРѕРІР°РЅРёСЏ Р°Р»РіРѕСЂРёС‚РјР°
   for (int size = ARRAY_MIN_SIZE; size < ARRAY_MAX_SIZE; size += ARRAY_SIZE_STEP)
-  { // печатаю размер тестового массива
+  { // РїРµС‡Р°С‚Р°СЋ СЂР°Р·РјРµСЂ С‚РµСЃС‚РѕРІРѕРіРѕ РјР°СЃСЃРёРІР°
     fprintf(out_file, "%7d%s", size, OUT_SEPARATOR);
   }
   fprintf(out_file, "Total\n");
