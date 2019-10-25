@@ -11,7 +11,6 @@
 
 
 // для экономии времени не будем создавать массивы каждый тест
-
 int test_array[ARRAY_MAX_SIZE] = { 0 };
 
 #ifdef CHECK_SORTED // в этом массиве заведомо правильно отсортировано
@@ -36,7 +35,7 @@ int CompareArrays(int array1[], int array2[], int size)
 { 
   for (int i = 0; i < size; i++)
     if (array1[i] != array2[i]) 
-      return (array1[i] - array2[i]);
+      return (array1[i] - array2[i]);   // до первого несовпадения
   return 0;
 }
 
@@ -52,8 +51,9 @@ void EtalonSort(int array[], int size)
   qsort(array, size, sizeof(int), cmpInt);
 }
 
-// Многократный тест для заданного размера массива
-double test_pass(sort_func_t fun, int size, int times, const char* algorithm)
+// Многократный тест для одного заданного размера массива
+// возвращает общее время за  times  раз вызовов сортировки
+double test_pass(sort_func_t fun, int size, int times, const char* algorithm_name)
 {
   double spend_time = 0;
   
@@ -82,7 +82,7 @@ double test_pass(sort_func_t fun, int size, int times, const char* algorithm)
     // проверяем правильность (отключить после успешного прохождения 
     if(CompareArrays(test_array, etalon_array, size))
        fprintf(stderr, "Bad sort implementation function [%s] array [%d]\n", 
-               algorithm, size);
+               algorithm_name, size);
 #endif // CHECK_SORTED
 
   }
@@ -91,28 +91,28 @@ double test_pass(sort_func_t fun, int size, int times, const char* algorithm)
 
 
 // Тестирует алгоритм на массивах разного размера, результат в CSV файл
-void test_algorithm(sort_func_t fun, const char* algorithm, FILE* out_file)
+void test_algorithm(sort_func_t fun, const char* algorithm_name, FILE* out_file)
 {
   srand(INIT_RAND);
   double total_time = 0;
   double brutto_time = getCPUTime();
-  fprintf(out_file, "%s%s", algorithm, OUT_SEPARATOR);
+  fprintf(out_file, "%-40s%s", algorithm_name, OUT_SEPARATOR);
 
   for (int size = ARRAY_MIN_SIZE; size < ARRAY_MAX_SIZE; size += ARRAY_SIZE_STEP)
   {
-    double pass_time = test_pass(fun, size, TEST_REPEAT, algorithm);
+    double pass_time = test_pass(fun, size, TEST_REPEAT, algorithm_name);
     total_time += pass_time;
     // на экран
     printf("T: [%6d] %8.1f\n", size, pass_time);
-    // в файл CSV только результат
+    // в файл CSV - только результат
     fprintf(out_file, "%8.1f%s", pass_time, OUT_SEPARATOR);
   }
   
   // суммарное время алгоритма (за все размеры) 
   // будет в последнем элементе строки
   printf("Total <%s>: %f ms (brutto %f ms)\n", 
-    algorithm, total_time, getCPUTime()-brutto_time);
-  fprintf(out_file, "%f\n", total_time);
+    algorithm_name, total_time, getCPUTime()-brutto_time);
+  fprintf(out_file, " %f\n", total_time);
 }
 
 
@@ -121,12 +121,12 @@ void test_algorithm(sort_func_t fun, const char* algorithm, FILE* out_file)
 // размер массива на каждом шаге тестирования.
 void test_MakeFirstLine(FILE* out_file)
 { // формирует в файле первую строку
-  fprintf(out_file, "Array size%s", OUT_SEPARATOR);
+  fprintf(out_file, "Array size%32s", OUT_SEPARATOR);
 
   // цикл такой же как в функции тестирования алгоритма
   for (int size = ARRAY_MIN_SIZE; size < ARRAY_MAX_SIZE; size += ARRAY_SIZE_STEP)
   { // печатаю размер тестового массива
-    fprintf(out_file, "%7d%s", size, OUT_SEPARATOR);
+    fprintf(out_file, "%8d%s", size, OUT_SEPARATOR);
   }
-  fprintf(out_file, "Total\n");
+  fprintf(out_file, " Total\n");
 }

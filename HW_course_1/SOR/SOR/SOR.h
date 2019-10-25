@@ -1,4 +1,6 @@
 ﻿#pragma once
+
+// Описание стандарта заголовка функции сортировки
 typedef void (*sort_func_t)(int array[], int size);
 
 // Семейства сортировок

@@ -9,14 +9,14 @@
 
 #define OUTPUT_FILE     "result.csv"
 
-
-
-typedef sort_info_t* (*type_GetSortList)(int* count);
+// Описание функции, которая вернёт из dll указатель на 
+// список функций сортировки  sort_info_t  и число этих фунций  func_count
+typedef sort_info_t* (*type_GetSortList)(int* func_count);
 
 int main(int argc, char* argv[])
-{
+{ // для русских букв и запятая в выводе float
   setlocale(LC_ALL, "Russian");
-  SetConsoleCP(1251);         // для ввода русских букв
+  SetConsoleCP(1251);     
   SetConsoleOutputCP(1251);
 
   // Загружаем DLL
@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
     return 1;
   }
   
-  // Получаем массив с адресами функций сортировки
+  // Получаем массив с адресами функций сортировки и их именами
   int num_sortings = 0;
   sort_info_t* sortings = get_SortList(&num_sortings);
   if (NULL == sortings) {
@@ -45,10 +45,9 @@ int main(int argc, char* argv[])
          "[размер массива] Время ms\n", TEST_REPEAT);
 
 
-
   // Пытаемся открыть файл для записи результатов тестирования
-  FILE* f_out;
-  errno_t err = fopen_s(&f_out, OUTPUT_FILE, "w");
+  FILE* file_out;
+  errno_t err = fopen_s(&file_out, OUTPUT_FILE, "w");
   if (err)  {
     printf("Fail open output file [%s]", OUTPUT_FILE);
     return err;
@@ -56,20 +55,20 @@ int main(int argc, char* argv[])
 
   // формирую в файле первую строку, там будут значения 
   // размер массива на каждом шаге тестирования.
-  test_MakeFirstLine(f_out);
+  test_MakeFirstLine(file_out);
+
 
   // Тестируем методы сортировки
   for (int i = 0; i < num_sortings; i++)
   {
-    const char* s_name = sortings[i].name;
+    const char* sort_name = sortings[i].name;
     sort_func_t sort_func = sortings[i].sort;
   
-    printf("\nTest <%s>\n", s_name);
-    test_algorithm(sort_func, s_name, f_out);
-
+    printf("\nTest <%s>\n", sort_name);
+    test_algorithm(sort_func, sort_name, file_out);   // тестирование тут
   }
   
-  fclose(f_out);
+  fclose(file_out);
   int x = getchar();
   return 0;
 }

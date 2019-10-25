@@ -1,6 +1,6 @@
 ﻿// dllmain.cpp : Определяет точку входа для приложения DLL.
-#include "pch.h"
-#include "sort_methods.h"
+#include "pch.h"            // Visual Studio
+#include "sort_methods.h"   // тут функции сортировки
 
 static sort_info_t s_sortList[] =
 {
@@ -34,6 +34,9 @@ static sort_info_t s_sortList[] =
   {heapsort, SORT_HEAP, SORT_QUASILINEAR, "Heap Sort" },
 };
 
+
+// Возвращает указатель на массив, из которого можно получить
+// Функцию сортировик и её имя. count - число элементов 
 __declspec(dllexport) sort_info_t* GetSortList(int* count)
 {
   *count = sizeof(s_sortList) / sizeof(s_sortList[0]);

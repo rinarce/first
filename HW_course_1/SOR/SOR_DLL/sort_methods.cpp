@@ -1,4 +1,4 @@
-﻿#include "pch.h"
+﻿#include "pch.h"          // Visual Studio
 #include <stdlib.h>
 #include "sort_methods.h"
 
@@ -16,46 +16,48 @@ extern void EtalonSort(int array[], int size)
 }
 
 // -----------------------------------------------------------
-// Пузырьком вариант 1
+// сортировка Пузырьком - вариант 1
 extern  void _bubbleSort_1(int array[], int size)
 {
   int temp, finish;
-  // Сортировка массива пузырьком
 
   for (int i = 0; i < size - 1; i++) {
     finish = 1;
     for (int j = 0; j < size - i - 1; j++) {
-      if (array[j] > array[j + 1]) {
-        // меняем элементы местами
-        temp = array[j];
+      if (array[j] > array[j + 1]) 
+      {
+        temp = array[j];      // меняем элементы местами
         array[j] = array[j + 1];
         array[j + 1] = temp;
-        finish = 0;          //  был обмен
+        finish = 0;           //  был обмен, работаем ещё
       }
     }
-    if (finish)
-      break;
+    if (finish)               // за проход не было обменов - всё
+      break;                  // массив отсортирован
   }
 }
 
 // -----------------------------------------------------------
-// Пузырьком вариант 2 - указатели вместо массивов
+//  сортировка Пузырьком вариант 2 - указатели вместо массивов
 extern  void _bubbleSort_2(int array[], int size)
 {
-  int temp;
+  int temp, finish;
   int* start = array, * end = array + size, * i, * j;
   int* j_end = end - 1;
-  // Сортировка массива пузырьком
+
   for (i = start; i < end; i++, j_end--) {
+    finish = 1;
     for (j = start; j < j_end; j++) {
-      if (*j > * (j + 1)) {
-        // меняем элементы местами
-        temp = *j;
+      if (*j > * (j + 1)) 
+      {
+        temp = *j;          // меняем элементы местами
         *j = *(j + 1);
         *(j + 1) = temp;
+        finish = 0;
       }
-
     }
+    if (finish)             // за проход не было обменов - всё
+      break;                // массив отсортирован
   }
 }
 
@@ -90,20 +92,24 @@ extern void insertion_sort(int array[], int size)
   {
     int tmp = array[i];
     int j = i;
+    // tmp - очередной элемент проверим со всеми левее
     while (j > 0 && tmp < array[j - 1]) 
-    {
-      array[j] = array[j - 1];
+    { // перемещаем если tmp должен быть ещё левее
+      array[j] = array[j - 1];  
       --j;
     }
-    array[j] = tmp;
+    array[j] = tmp;  // tmp попал на своё место
   }
 }
 
 // -----------------------------------------------------------
 // Слиянием вариант 1         // http://kvodo.ru/mergesort.html 
 // С дополнительной памятью, выделяю память на каждом слиянии
+
+//функция, сливающая массивы 
+// С дополнительной памятью, выделяю память на каждом слиянии
 void Merge_1(int array[], int first, int last)
-{ //функция, сливающая массивы 
+{ 
   int middle, start, final, j;
   // выделяю вспомогательный массив (размер неоптимален -
   // (размер - по последнему элементу, чтоб не пересчитывать индексы)
@@ -148,7 +154,7 @@ extern void _mergeSort_1(int array[], int size)
 
 // -----------------------------------------------------------
 // Слиянием вариант 2         // http://kvodo.ru/mergesort.html 
-// С дополнительной памятью, попробую выделять память только 1 раз
+// С дополнительной памятью, выделяю память только 1 раз
 static int* tempo = NULL;
 void Merge_2(int array[], int first, int last)
 {
@@ -253,7 +259,7 @@ int* merge_sort_wiki(int* up, int* down, unsigned int left, unsigned int right)
 }
 
 // алгоритм отсюда // https://ru.wikipedia.org/wiki/Сортировка_слиянием
-// без выделения массива каждый раз, выделяю 1 раз, */
+// только без выделения массива каждый раз, выделяю 1 раз, */
 extern void _mergeSort_wiki(int array[], int size)
 { 
   if (size <= 0) return; // с нулевым размером не дружит
@@ -300,10 +306,10 @@ void qiuckSort_Hoare(int* mas, int first, int last)
 void qiuckSort_Hoare_2(int* mas, int first, int last)
 {
   int size = last - first + 1;
-  if (size < 66)
+  if (size < 66)  // меньше этого размера не сортировать (размер с потолка)
   {
-    return; // так лучше
-    insertion_sort(mas + first, size);
+    return; // так лучше, ничего не делать, а потом отсортировать весь
+    insertion_sort(mas + first, size); // вар 2
   }
   
   int mid, count;
@@ -342,7 +348,8 @@ extern void _qiuckSort_Hoare(int array[], int size)
 extern void _qiuckSort_Hoare_2(int array[], int size)
 {
   qiuckSort_Hoare_2(array, 0, size - 1);
-  insertion_sort(array, size);
+  // остались неотсортированные кусочки в массиве - отсортируем ВСТАВКАМИ
+  insertion_sort(array, size);   
 }
 
 
@@ -420,7 +427,7 @@ extern void ShellSort_2(int array[], int size)
 
 //сортировка Шелла // расстояния между сравнениями по формуле Роберта Седжвика
 // https://ru.wikibooks.org/wiki/Реализации_алгоритмов/Сортировка/Шелла
-// переделан из непонятного варианта C++
+// переделан из варианта C++
 // http://algolist.manual.ru/sort/shell_sort.php 
 int increment(int inc[], int size) { // Robert Sedgewick
   // inc[] массив, в который заносятся инкременты 
@@ -467,8 +474,6 @@ extern void ShellSort_3(int array[], int size) {
     }
   }
 }
-
-
 
 
 
@@ -552,15 +557,19 @@ static void swap(unsigned* a, unsigned* b) {
 /* sort unsigned ints */
 static void rad_sort_u(unsigned* from, unsigned* to, unsigned bit)
 {
+  unsigned temp;
   if (!bit || to < from + 1) return;
 
   unsigned* ll = from, * rr = to - 1;
-  for (;;) {
+  for (;;) 
+  {
     /* find left most with bit, and right most without bit, swap */
     while (ll < rr && !(*ll & bit)) ll++;
     while (ll < rr && (*rr & bit)) rr--;
     if (ll >= rr) break;
-    swap(ll, rr);
+    temp = *ll;
+    *ll = *rr;
+    *rr = temp;
   }
 
   if (!(bit & *ll) && ll < to) ll++;
