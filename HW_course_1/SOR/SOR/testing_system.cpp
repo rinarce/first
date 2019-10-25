@@ -46,7 +46,7 @@ int cmpInt(const void* a, const void* b)
 }
 
 // Для контроля правильности алгоритмов сортировки 
-void EtalonSort(int array[], int size)
+void etalon_sort(int array[], int size)
 {
   qsort(array, size, sizeof(int), cmpInt);
 }
@@ -65,7 +65,7 @@ double test_pass(sort_func_t fun, int size, int times, const char* algorithm_nam
     // Эталонный массив и эталонная сортировка 
     // -- можно отключить после проверки всех алгоритмов
     CopyArray(test_array, etalon_array, size);
-    EtalonSort(etalon_array, size); 
+    etalon_sort(etalon_array, size); 
 #endif // CHECK_SORTED
 
 
