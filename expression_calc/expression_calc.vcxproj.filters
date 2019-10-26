@@ -24,12 +24,18 @@
     <ClCompile Include="expression_calc.c">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="str_functions.c">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="calc_in_out.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="calc_process.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="str_functions.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

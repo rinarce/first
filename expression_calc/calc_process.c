@@ -1,48 +1,38 @@
-﻿#include "calc_process.h"
+﻿// calc_process.c
+
 #include <stdlib.h>
 #include <ctype.h>  // для isspace()
 
+#include "calc_process.h"
+#include "str_functions.h"
 
-// 1 - если в строке только всевозможные пробелы ( \t\n\v\f\r)
-int is_only_spaces(char* str)
+// определяет приоритет операции для указателя, и длину операнда
+int get_priority(char* ptr, int *operand_len)
 {
-  while (*str)
-    if (!isspace((int)(*str++)))
-      return 0;
-  return 1;
-}
-
-// 1 - если в строке первые значащие символы //
-int is_comment(char* str)
-{
-  while (*str)
-    if (!isspace((int)(*str)))   // пропустить все незначащие символы
-      break;
-    else str++;
-
-  // проверяем что оба символа - это не конец строки и равны '//'
-  if (*str && *str == '/' && *(str + 1) && *(str + 1) == '/')
-    return 1;
-  else return 0;
-}
-
-// 1 - если в строке нарушена парность скобок (()
-int is_bracket_error(char* str)
-{
-  int nest = 0;                       // счётчик открытых скобок
-  while (*str)
+  *operand_len = 1;
+  switch (*ptr)
   {
-    if (*str == '(')        nest++;   // открывающая скобка
-    else if (*str == ')')   nest--;   // закрывающая скобка
-    
-    if (nest < 0)  return 1;          // закрывающая раньше открывающей
-      
-    str++;
+    case '+': return 0;
+    case '-': return 1;
+    case '/': return 2;
+    case '*': return 2;
+    case '%': return 2;
+    case '^': return 3;
   }
-  return nest;            // если >0 - остались незакрытые скобки
+
+  *operand_len = 3;
+  if (str_compare_fix_len(ptr, "sin(", 4))    return 4;
+  if (str_compare_fix_len(ptr, "cos(", 4))    return 4;
+  if (str_compare_fix_len(ptr, "ctg(", 3))    return 4;
+
+  *operand_len = 2;
+  if (str_compare_fix_len(ptr, "tg(", 3))     return 4;
+  if (str_compare_fix_len(ptr, "pi", 2))      return 4;
+  
+  // ДОДЕЛАТЬ ПОТОМ ХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХ
+  *operand_len = 1;
+  return 10;  
 }
-
-
 
 // приоритет операций
 int calc_priority(char c)
@@ -61,7 +51,7 @@ int calc_priority(char c)
 // строит дерево вычислений
 PNode MakeTree(char Expr[], int first, int last)
 {
-  int MinPrt, i, k, prt;
+  int min_priority, i, k, prt;
   int nest = 0; // счетчик открытых скобок
   PNode Tree = (PNode)malloc(sizeof(Node)); // создать в памяти новую вершину
   if (NULL == Tree)
@@ -76,10 +66,12 @@ PNode MakeTree(char Expr[], int first, int last)
     Tree->right = NULL;
     return Tree;
   }
-  MinPrt = 100;
+
+  min_priority = 100;
   for (i = first; i <= last; i++) {
     if (isspace(Expr[i]))
       continue;
+
     if (Expr[i] == '(') // открывающая скобка
       { nest++; continue; }
     if (Expr[i] == ')') // закрывающая скобка
@@ -88,13 +80,13 @@ PNode MakeTree(char Expr[], int first, int last)
 
 
     prt = calc_priority(Expr[i]);
-    if (prt <= MinPrt) { // ищем последнюю операцию
-      MinPrt = prt; // с наименьшим приоритетом
+    if (prt <= min_priority) { // ищем последнюю операцию
+      min_priority = prt;      // с наименьшим приоритетом
       k = i;
     }
   }
 
-  if (MinPrt == 100 && // все выражение взято в скобки
+  if (min_priority == 100 && // все выражение взято в скобки
     Expr[first] == '(' && Expr[last] == ')') {
     free(Tree);
     return MakeTree(Expr, first + 1, last - 1);
@@ -124,12 +116,12 @@ int CalcTree(PNode Tree)
   return 32767; // неизвестная операция, ошибка!
 }
 
-
+// ------------ Главная функция -------------------------------------------
 // вычисляет строку выражений, возвращает тип строки (ок или ошибка) и результат
 int process_line(char* str, double* result)
 {
   *result = 0;
-  unsigned str_len = STR_Lenght(str);
+  unsigned str_len = str_lenght(str);
   if (str_len == 0)
     return CALC_LINE_EMPTY;
   if (is_comment(str))
@@ -141,9 +133,13 @@ int process_line(char* str, double* result)
   
   // тут обработка
   // return 0;
-  PNode Tree = MakeTree(str, 0, str_len - 1);
-  *result = CalcTree(Tree);
-  // удалить дерево !!!!!!!!!!!!!!!!!!!!!!!!!
+  char * spaces_removed = str_remove_spaces(str);
 
+  PNode Tree = MakeTree(spaces_removed, 0, str_lenght(spaces_removed) - 1);
+  *result = CalcTree(Tree);
+
+  // удалить дерево !!!!!!!!!!!!!!!!!!!!!!!!! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+  free(spaces_removed);
   return 0;
 }

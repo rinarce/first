@@ -1,5 +1,6 @@
 ﻿#include "calc_in_out.h"
 #include "calc_process.h"    // for error codes
+#include "str_functions.h"
 
 // ---------------------------------------------------------------------------
 // 1 - параметры командной строки ошибочны для данной задачи
@@ -27,13 +28,7 @@ int detect_input_stream(int arg_count, char* arg_values[], FILE** input_file)
 }
 
 
-// длина строки до '\0'
-unsigned int STR_Lenght(char const* str) {  
-  int len = 0;
-  if (NULL != str)          // проверка, что указатель корректен
-    while (*str++) len++;
-  return len;
-}
+
 
 
 // ---------------------------------------------------------------------------
@@ -49,7 +44,7 @@ unsigned int read_input_line(FILE* input_stream, char** str)
   while (1)  // считываем строку порциями размера DST_BUFFER_SIZE
   {
     // fgets читает на 1 символ меньше, так как в конце всегда добавляет '\0'
-    unsigned int input_len = STR_Lenght(fgets(buffer, DST_BUFFER_SIZE + 1, input_stream));
+    unsigned int input_len = str_lenght(fgets(buffer, DST_BUFFER_SIZE + 1, input_stream));
 
     if (buffer[input_len - 1] == '\n')    // отрезаем '\n'
         buffer[input_len - 1] = '\0';  
