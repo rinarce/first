@@ -34,7 +34,7 @@ int main(int arg_count, char* arg_values[])
   {
     fprintf(output_stream, 
             "ERROR: can't open input file [%s]\n", arg_values[1]);
-    return 1;
+    return 2;
   }
 
 
@@ -81,7 +81,7 @@ int main(int arg_count, char* arg_values[])
   if (output_stream != stdout)   fclose(output_stream); 
   
   // Удалить      ХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХ
-  int _x = getchar();     // пока для отладки
+  // int _x = getchar();     // пока для отладки
 
   return 0;
 }

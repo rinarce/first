@@ -42,7 +42,6 @@ unsigned int STR_Lenght(char const* str) {
 // \n в конце обрезается, но считается в длине (длина == 0 - конец потока ввода)
 unsigned int read_input_line(FILE* input_stream, char** str)
 {
-
   char* result_str = NULL;  // Это указатель на итоговую строку, тут накапливаем ввод
   unsigned int str_len = 0; // Накапливаем длину строки, в конце - возвращаем
   char buffer[DST_BUFFER_SIZE + 1] = { 0 };     // Для порций ввода
@@ -52,48 +51,32 @@ unsigned int read_input_line(FILE* input_stream, char** str)
     // fgets читает на 1 символ меньше, так как в конце всегда добавляет '\0'
     unsigned int input_len = STR_Lenght(fgets(buffer, DST_BUFFER_SIZE + 1, input_stream));
 
-#ifdef DEBUG_IO    
-    printf("\nПрочитано %u символов ", input_len);
-#endif
+    if (buffer[input_len - 1] == '\n')    // отрезаем '\n'
+        buffer[input_len - 1] = '\0';  
 
-    if (buffer[input_len - 1] == '\n')
-    {
-      buffer[input_len - 1] = '\0';  // отрезаем '\n'
-#ifdef DEBUG_IO
-      printf(" {CR найден [%u], удалён} ", input_len);
-#endif
-    }
-
-#ifdef DEBUG_IO
-    printf("\"%s\"\n", buffer);
-#endif
     // просим новый кусок памяти
     char* new_str = (char*)realloc(result_str, str_len + input_len + 1);
 
     if (NULL == new_str)  // выделение памяти не удалось, возвращаем что есть
-    {
-#ifdef DEBUG_IO
-      printf("No more memory\n");
-#endif
       break;
-    }
     else
     {
       result_str = new_str;                   //  результат возможно уже в другом месте
+
       // первые ячейки уже заполнены, сместиться на длину имеющейся строки 
       char* res_pointer = result_str + str_len;
+      
       char* in_pointer = buffer;                  // добавляем очередную порцию из buffer
       while (*res_pointer++ = *in_pointer++) {};  // копируем пока не '\0' в конце buffer
 
       str_len += input_len;  // новая длина строки
-#ifdef DEBUG_IO
-      printf("Пока введено %u символов, \"%s\"\n", str_len, result_str);
-#endif
-      // использован не весь входной буфер => ввод закончен
+
+                             // использован не весь входной буфер => ввод закончен
       if (input_len < DST_BUFFER_SIZE)
         break;
     }
   }
+
   *str = result_str;
   return str_len;
 }
