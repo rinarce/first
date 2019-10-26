@@ -68,10 +68,11 @@ typedef enum NodeType
 // узел дерева
 typedef struct Node 
 {
-  double value;
-  char data;
-  NodeType type;
-  struct Node* left, * right;
+  double value;               // значение
+  int ready;                  // 1 если значение готово
+  char data[100];
+  NodeType type;              // какого типа
+  struct Node* left, * right; // поддерево
 } Node;
 
 typedef struct Node* PNode; // указатель на узел дерева

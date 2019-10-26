@@ -20,6 +20,9 @@ int is_bracket_error(char* str);
 // сравнивает строки на длину distance, возврат 1 если равны, 0 иначе
 int str_compare_fix_len(char const* str1, char const* str2, unsigned int distance);
 
+// копирует символы в строках strFrom -> strTo, в количестве number
+void str_copy_fix_len(char const* strFrom, char* strTo, unsigned int number);
+
 // подсчЄт пробелов
 unsigned int str_count_spaces(char* str);
 
@@ -28,5 +31,19 @@ unsigned int str_count_non_spaces(char* str);
 
 // из str удал€ет все пробелы -> в новую созданную строку
 char* str_remove_spaces(char const* str);
+
+// возвращает 1 символ [AЦZ] -> [aЦz], или не мен€ет
+char LowerChar(char c);
+
+// возвращает 1 символ [aЦz] -> [AЦZ], или не мен€ет
+char UpperChar(char c);
+
+// замен€ет символы строки [AЦZ] -> на аналоги из [aЦz]
+void LowerCase(char str[]);
+
+// замен€ет символы строки [aЦz] -> [AЦZ]
+void UpperCase(char str[]); 
+
+
 
 

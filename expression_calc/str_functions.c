@@ -109,3 +109,30 @@ char* str_remove_spaces(char const* str)
   *new_str_ptr = '\0';            //  конец строки
   return new_string;
 }
+
+// копирует символы в строках strFrom -> strTo, в количестве number
+void str_copy_fix_len(char const* strFrom, char* strTo, unsigned int number)
+{ 
+  while (number--)
+    *(strTo++) = *(strFrom++);
+}
+
+char LowerChar(char c) { // возвращает 1 символ [AЦZ] -> [aЦz], или не мен€ет
+  if (c >= 'A' && c <= 'Z') c += 32;
+  return c;
+}
+
+char UpperChar(char c) { // возвращает 1 символ [aЦz] -> [AЦZ], или не мен€ет
+  if (c >= 'a' && c <= 'z') c -= 32;
+  return c;
+}
+
+void LowerCase(char str[]) { // замен€ет символы строки [AЦZ] -> на аналоги из [aЦz]
+  for (int pos = 0; str[pos]; pos++)
+    str[pos] = LowerChar(str[pos]);
+}
+
+void UpperCase(char str[]) { // замен€ет символы строки [aЦz] -> [AЦZ]
+  for (int pos = 0; str[pos]; pos++)
+    str[pos] = UpperChar(str[pos]);
+}
