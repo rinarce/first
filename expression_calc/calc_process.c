@@ -1,8 +1,8 @@
-#include "calc_process.h"
+п»ї#include "calc_process.h"
 #include <stdlib.h>
 
 
-// 1 - если в строке только всевозможные пробелы ( \t\n\v\f\r)
+// 1 - РµСЃР»Рё РІ СЃС‚СЂРѕРєРµ С‚РѕР»СЊРєРѕ РІСЃРµРІРѕР·РјРѕР¶РЅС‹Рµ РїСЂРѕР±РµР»С‹ ( \t\n\v\f\r)
 int is_only_spaces(char* str)
 {
   while (*str)
@@ -12,7 +12,7 @@ int is_only_spaces(char* str)
 }
 
 
-// вычисляет строку выражений, возвращает тип строки (ок или ошибка) и результат
+// РІС‹С‡РёСЃР»СЏРµС‚ СЃС‚СЂРѕРєСѓ РІС‹СЂР°Р¶РµРЅРёР№, РІРѕР·РІСЂР°С‰Р°РµС‚ С‚РёРї СЃС‚СЂРѕРєРё (РѕРє РёР»Рё РѕС€РёР±РєР°) Рё СЂРµР·СѓР»СЊС‚Р°С‚
 int process_line(char* str, double* result)
 {
   unsigned str_len = STR_Lenght(str);
@@ -23,7 +23,7 @@ int process_line(char* str, double* result)
   if (is_only_spaces(str))
     return CALC_LINE_SPACES;
   
-  // тут обработка
+  // С‚СѓС‚ РѕР±СЂР°Р±РѕС‚РєР°
   
   return 0;
 }
