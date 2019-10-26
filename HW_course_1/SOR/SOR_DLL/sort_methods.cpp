@@ -306,7 +306,7 @@ void qiuckSort_Hoare(int* mas, int first, int last)
 void qiuckSort_Hoare_2(int* mas, int first, int last)
 {
   int size = last - first + 1;
-  if (size < 55)  // меньше этого размера не сортировать (размер с потолка)
+  if (size < 66)  // меньше этого размера не сортировать (размер с потолка)
   {
     return; // так лучше, ничего не делать, а потом отсортировать весь
     insertion_sort(mas + first, size); // вар 2
