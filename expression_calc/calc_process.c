@@ -9,7 +9,7 @@
 #include "calc_process.h"
 #include "str_functions.h"
 
-
+// ПОКА не используется - пренести сюда преобразование --- +++ и пробелы
 char* prepare_expression(char const* str)
 {
   unsigned int new_len = str_count_non_spaces(str);
@@ -40,9 +40,7 @@ void delete_node(PNode Tree)
 {
   if (Tree == NULL) return;
   delete_node(Tree->left);
-  // free(Tree->left);
   delete_node(Tree->right);
-  // free(Tree->right);
   free(Tree);
 }
 
@@ -143,7 +141,8 @@ int get_priority(char* ptr, int *operand_len, int *operand_type)
 }
 
 
-// первые символы строки - это число или переменная
+// первые символы строки - это число или переменная (НЕ РЕАЛИЗОВАНО)
+// Шестнадцатеричные переводит, двоичные - нет
 int calc_evaluate(char* str, int symbols, double * result)
 {
   // создаём новую строку
@@ -169,6 +168,7 @@ int calc_evaluate(char* str, int symbols, double * result)
 }
 
 // строит дерево вычислений
+// ПЕРЕДЕЛАТЬ на ВОЗВРАТ ОШИБКИ, узел дерева - по ссылке
 PNode MakeTree(char Expr[], int first, int last)
 {
   int i, priority, error;
@@ -352,11 +352,26 @@ int process_line(char* str, double* result)
     return CALC_LINE_ERR_BRACKETS;
   
   // тут обработка
-
-  char * spaces_removed = prepare_expression(str);
-  if (NULL == spaces_removed)
-    return CALC_LINE_ERR_MEMORY;
-
+  
+  // заменим множественные --- и +++
+  int made_changes = 1;
+  char* spaces_removed = str_remove_spaces(str);
+    if (NULL == spaces_removed)
+      return CALC_LINE_ERR_MEMORY;
+  while (made_changes)
+  {
+    made_changes = str_replace_all(spaces_removed, "--", "+");
+    made_changes += str_replace_all(spaces_removed, "++", "+");
+    made_changes += str_replace_all(spaces_removed, "+-", "-");
+    made_changes += str_replace_all(spaces_removed, "-+", "-");
+    
+    char* new_str = str_remove_spaces(spaces_removed);
+    if (NULL == new_str)
+      return CALC_LINE_ERR_MEMORY;
+    str_copy_str(new_str, spaces_removed);
+    free(new_str);
+  }
+    
   // LowerCase(spaces_removed);
 
   PNode Tree = MakeTree(spaces_removed, 0, str_lenght(spaces_removed) - 1);

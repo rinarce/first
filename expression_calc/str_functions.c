@@ -143,3 +143,60 @@ char* str_find_char(char const* str, char x, int start)
     else str++;
   return (char*)str;  // тут вернЄт адрес концы строки '\0'
 }
+
+
+// кусок str[start...end] -> записывает в начало subStr
+// конец строки  '\0' никак не провер€етс€ и в subStr не дополн€етс€
+void str_sopy_substr(char str[], int start, int end, char subStr[]) 
+{
+  for (int pos = 0; start <= end; subStr[pos++] = str[start++]) {}
+}
+
+
+// из str вырезаетс€ кусок [start...end], остаток строки сдвигаетс€
+void str_remove_substr(char str[], int start, int end) 
+{
+  int p1 = start, p2 = end + 1;
+  do {}		// копировать, пока на скопируем символ '\0'
+  while (str[p1++] = str[p2++]);
+}
+
+// замен€ет в строке str : word -на-> replace 
+// (!!! замен€етс€ не больше сиимволов чем длина word !)
+// т.е. строка str - может только сокращатьс€, Ќ≈ ”¬≈Ћ»„»¬ј≈“—я
+// возврат - количество замен
+int str_replace_all(char str[], char word[], char replace[]) 
+{
+  int replaced = 0,
+      word_len = str_lenght(word), 
+      replace_len = str_lenght(replace);
+  
+  // образаем по длине исходного слова
+  if (replace_len > word_len) replace_len = word_len; 
+  int delta = word_len - replace_len;	 // разница в длине (уже обрезаного replace)
+  
+
+  int pos = 0;
+  while(str[pos])
+  {
+    if (str_compare_fix_len(&str[pos], word, word_len))
+    {
+      str_sopy_substr(replace, 0, replace_len - 1, &str[pos]);
+      replaced++;
+      if (delta)  // слова разной длины, необходима подрезка строки
+        str_remove_substr(str, pos + replace_len, pos + replace_len + delta - 1);
+      pos += replace_len;
+    }
+    else pos++;
+  }
+  return replaced;
+}
+
+// копирует строку до '\0' включа€, возвращает указатель на strTo
+char* str_copy_str(char strFrom[], char strTo[]) 
+{
+  int pos = 0;
+  do {} while (strTo[pos++] = strFrom[pos]);
+  return strTo; // дл€ удобства
+}
+

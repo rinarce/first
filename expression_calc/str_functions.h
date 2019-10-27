@@ -24,10 +24,10 @@ int str_compare_fix_len(char const* str1, char const* str2, unsigned int distanc
 void str_copy_fix_len(char const* strFrom, char* strTo, unsigned int number);
 
 // подсчЄт пробелов
-unsigned int str_count_spaces(char* str);
+unsigned int str_count_spaces(const char* str);
 
 // подсчЄт непробелов
-unsigned int str_count_non_spaces(char* str);
+unsigned int str_count_non_spaces(const char* str);
 
 // из str удал€ет все пробелы -> в новую созданную строку
 char* str_remove_spaces(char const* str);
@@ -47,6 +47,13 @@ void UpperCase(char str[]);
 // находит вхождение в строку символа X, или конец строки '\0'
 char* str_find_char(char const* str, char x, int start);
 
+// замен€ет в строке str : word -на-> replace 
+// (!!! замен€етс€ не больше сиимволов чем длина word !)
+// т.е. строка str - может только сокращатьс€, Ќ≈ ”¬≈Ћ»„»¬ј≈“—я
+// возврат - количество замен
+int str_replace_all(char str[], char word[], char replace[]);
 
+// копирует строку до '\0' включа€, возвращает указатель на strTo
+char* str_copy_str(char strFrom[], char strTo[]);
 
 
