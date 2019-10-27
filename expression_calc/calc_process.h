@@ -27,6 +27,7 @@ enum calc_line_type
   CALC_LINE_ERR_MEMORY,   // ошибка - выделения памяти
   CALC_LINE_ERR_ZERO_DIV, // ошибка - деление на 0
   CALC_LINE_ERR_BRACKETS, // ошибка - непарность скобок
+  CALC_LINE_ERR_SQRT_N,   // ошибка - квадратный корень из отрицательных
   CALC_LINE_ERR_X,        // ошибка - .... пока не придумано
   CALC_LINE_ERR_OTHER,    // ошибка - прочие
   CALC_LINE_ERR_COUNT,    // ошибка - масимальный номер перечисления
@@ -44,8 +45,9 @@ typedef enum NodeType
   CALC_U_PLUS,      // + унарный
   CALC_DIV,         // /
   CALC_MUL,         // *
-  CALC_REST,        // %
+  CALC_MOD,         // %
   CALC_POWER,       // ^
+  CALC_SQRT,        // sqrt()
   CALC_SIN,         // sin()
   CALC_COS,         // cos()
   CALC_TAN,         // tg()
@@ -70,7 +72,6 @@ typedef struct Node
 {
   double value;               // значение
   int ready;                  // 1 если значение готово
-  char data[100];
   NodeType type;              // какого типа
   struct Node* left, * right; // поддерево
 } Node;

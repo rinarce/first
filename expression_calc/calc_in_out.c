@@ -76,6 +76,7 @@ unsigned int read_input_line(FILE* input_stream, char** str)
   return str_len;
 }
 
+// ---------------------------------------------------------------------------
 // печатает строку правильное выражение == результат
 void print_expression(FILE* output_stream, char* input_line, double result)
 {
@@ -100,6 +101,7 @@ void print_empty(FILE* output_stream, char* input_line)
   fprintf(output_stream, "<empty>\n");
 }
 
+// ---------------------------------------------------------------------------
 // печатает строку с ошибкой
 void print_error(FILE* output_stream, char* input_line, int error_code)
 {
@@ -121,6 +123,10 @@ void print_error(FILE* output_stream, char* input_line, int error_code)
   case CALC_LINE_ERR_X:
     fprintf(output_stream, "jet not defined error !!!!! \n");
     break;
+  case CALC_LINE_ERR_SQRT_N:
+    fprintf(output_stream, "square root from negative number\n");
+    break;
+
   default:
     fprintf(output_stream, "not recognized error type\n");
     break;

@@ -31,15 +31,11 @@ int is_only_spaces(char* str)
 // 1 - если в строке первые значащие символы //
 int is_comment(char* str)
 {
-  while (*str)
-    if (!isspace((int)(*str)))   // пропустить все незначащие символы
-      break;
-    else str++;
+  while (*str && isspace((int)(*str)))
+    str++;   // пропустить все незначащие символы
 
   // провер€ем что оба символа - это не конец строки и равны '//'
-  if (*str && *str == '/' && *(str + 1) && *(str + 1) == '/')
-    return 1;
-  else return 0;
+  return (*str && *str == '/' && *(str + 1) && *(str + 1) == '/');
 }
 
 // 1 - если в строке нарушена парность скобок (()
@@ -51,7 +47,8 @@ int is_bracket_error(char* str)
     if (*str == '(')        nest++;   // открывающа€ скобка
     else if (*str == ')')   nest--;   // закрывающа€ скобка
 
-    if (nest < 0)  return 1;          // закрывающа€ раньше открывающей
+    if (nest < 0)  
+      return 1;                       // закрывающа€ раньше открывающей
 
     str++;
   }
@@ -135,4 +132,14 @@ void LowerCase(char str[]) { // замен€ет символы строки [AЦZ] -> на аналоги из [
 void UpperCase(char str[]) { // замен€ет символы строки [aЦz] -> [AЦZ]
   for (int pos = 0; str[pos]; pos++)
     str[pos] = UpperChar(str[pos]);
+}
+
+// находит вхождение в строку символа X, или конец строки '\0'
+char* str_find_char(char const* str, char x, int start) 
+{
+  str += start;     // от начала строки
+  while (*str)
+    if (x == (*str)) return (char*)str;  // вернЄт адрес первого найденного ’
+    else str++;
+  return (char*)str;  // тут вернЄт адрес концы строки '\0'
 }

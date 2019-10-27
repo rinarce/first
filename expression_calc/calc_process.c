@@ -3,15 +3,46 @@
 #include <stdlib.h>
 #include <ctype.h>  // для isspace()
 #include <math.h>
+#include <stdio.h>
+
 
 #include "calc_process.h"
 #include "str_functions.h"
+
+
+char* prepare_expression(char const* str)
+{
+  unsigned int new_len = str_count_non_spaces(str);
+  char* new_string = (char*)malloc(new_len + 1 + 4);
+
+  if (NULL == new_string)         // выделение памяти не удалось
+    return NULL;
+
+  char* new_str_ptr = new_string; // копирование
+  char const* old_str_ptr = str;
+  //*(new_str_ptr++) = '0';
+  //*(new_str_ptr++) = '+';
+
+  while (*old_str_ptr)            // пока не конец строки
+    if (!isspace(*old_str_ptr))   // копируем не пробел
+      *(new_str_ptr++) = *(old_str_ptr++);
+    else
+      old_str_ptr++;              // пробел - пропускаем
+
+  //*(new_str_ptr++) = '+';
+  //*(new_str_ptr++) = '0';
+  *new_str_ptr = '\0';            //  конец строки
+  return new_string;
+}
+
 
 void delete_node(PNode Tree)
 {
   if (Tree == NULL) return;
   delete_node(Tree->left);
+  // free(Tree->left);
   delete_node(Tree->right);
+  // free(Tree->right);
   free(Tree);
 }
 
@@ -39,7 +70,7 @@ int get_priority(char* ptr, int *operand_len, int *operand_type)
       return 3;
     };
     case '%': {
-      *operand_type = CALC_REST;
+      *operand_type = CALC_MOD;
       return 3;
     };
     case '^': {
@@ -47,7 +78,23 @@ int get_priority(char* ptr, int *operand_len, int *operand_type)
       return 4;
     };
   }
-  //* Что-то не работает как надо
+
+  if (*ptr == '(')
+  { // выражение в скобках - как единый операнд, приоритет самый высокий
+    // выделим кусок до следующей скобки
+    char* next_close_bracket = str_find_char(ptr, ')', 1);
+    *operand_len = next_close_bracket - ptr + 1;
+    *operand_type = CALC_BRACKETS;
+/*
+    char* i = ptr, * j = next_close_bracket;
+    printf("(>");
+    while (i <= j)
+      printf("%c", *i++);
+    printf("<%d)", *operand_len);
+*/
+    return 10;
+  }
+
   *operand_len = 3;
   if (str_compare_fix_len(ptr, "sin(", 4))
   {
@@ -66,6 +113,8 @@ int get_priority(char* ptr, int *operand_len, int *operand_type)
     return 4;
   }
   
+
+
   *operand_len = 2;
   if (str_compare_fix_len(ptr, "tg(", 3))
   {
@@ -79,16 +128,51 @@ int get_priority(char* ptr, int *operand_len, int *operand_type)
   };
   
 
+  
+  if (str_compare_fix_len(ptr, "sqrt(", 5))
+  {
+    *operand_len = 4;
+    *operand_type = CALC_SQRT;
+    return 4;
+  }
+
+
   // ДОДЕЛАТЬ ПОТОМ ХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХ
   *operand_len = 1;
   return 100;  
 }
 
 
+// первые символы строки - это число или переменная
+int calc_evaluate(char* str, int symbols, double * result)
+{
+  // создаём новую строку
+  char* new_str = (char*)malloc(symbols + 1);
+  if (NULL == new_str)
+    return CALC_LINE_ERR_MEMORY;
+  
+  str_copy_fix_len(str, new_str, symbols);
+  new_str[symbols] = '\0';                    // допишем конец строки
+
+  // делаем пока для числа, пока без проверок ошибок ХХХХХХХХХХХХХХХХХХХХХХХХ
+  if (symbols == 0)
+  {
+    *result = 0;
+//    printf("[E0]");
+    return 0;
+  }
+//  printf("[E:%s==", new_str);
+  int evaluated = sscanf_s(new_str, "%lf", result);
+//  printf("%g{%d}]", *result, evaluated);
+  free(new_str);
+  return (evaluated == 1);
+}
+
 // строит дерево вычислений
 PNode MakeTree(char Expr[], int first, int last)
 {
-  int i, priority;
+  int i, priority, error;
+  double result = 0;
   
   int min_priority = 100;            // минимальный приоритет операции
   int min_priority_ptr;             // указатель на эту операцию
@@ -104,18 +188,24 @@ PNode MakeTree(char Expr[], int first, int last)
 
   if (first == last) // конечная вершина: число или
   {
-    Tree->data[0] = Expr[first];           // переменная
-    Tree->data[1] = '\0';
+    error = calc_evaluate(Expr + first, 1, &result);
+    if (error)
+    {
+    }  // ОШИБКА ____________________________ переделать с контролем
+    
+    Tree->value = result;           
+
     Tree->left = NULL;
     Tree->right = NULL;
     return Tree;
   }
 
-
+  
   min_priority = 100; //Находим операцию с мин приоритетом
   int operand_len = 1;
   int operand_type = 0;
-  for (i = first; i <= last; i++) 
+
+  for (i = first; i <= last; i+=operand_len) 
   {
     priority = get_priority(Expr+i, &operand_len, &operand_type);
     if (priority <= min_priority)
@@ -127,20 +217,23 @@ PNode MakeTree(char Expr[], int first, int last)
     }
   }
 
-  if (min_priority == 100)
-    if (Expr[first] == '(' && Expr[last] == ')') 
+  if (min_priority == 10 && Expr[first] == '(' && Expr[last] == ')') 
     {
-      delete_node(Tree);
+      free(Tree);
       return MakeTree(Expr, first + 1, last - 1);
     }
     
-    else 
+  if (min_priority == 100)
     { // число или переменная
       int num_sym = last - first + 1;
-
-      str_copy_fix_len(Expr + first, Tree->data, num_sym);
-      Tree->data[num_sym] = '\0';
-
+      double result;
+      
+      error = calc_evaluate(Expr + first, num_sym, &result);
+      if(error)
+        { }  // ОШИБКА ____________________________ переделать с контролем
+      
+      Tree->value = result;
+      Tree->ready = 1;
       Tree->left = NULL;
       Tree->right = NULL;
       return Tree;
@@ -153,30 +246,100 @@ PNode MakeTree(char Expr[], int first, int last)
 }
 
 
-double CalcTree(PNode Tree)
+// возвращает код ошибки или 0 если всё ОК
+int CalcTree(PNode Tree, double * result)
 {
-  double num1, num2;
-  if (!Tree->left)                    // если нет потомков,
-    return (double)atof(Tree->data);  // вернули число
+  int error = 0;
+  double num_left = 0, num_right = 0;
+  if (Tree->left == NULL && Tree->right == NULL)  // если нет потомков,
+  { 
+    *result = Tree->value;      // вернули число
+    return 0;
+  }
 
-  num1 = CalcTree(Tree->left);        // вычисляем поддеревья
-  num2 = CalcTree(Tree->right);
+  // вычисляем поддеревья
+  if (NULL != Tree->left)
+  {
+    error = CalcTree(Tree->left, &num_left);
+    //delete_node(Tree->left);
+    if (error)
+      return error;             // если ошибка - дальше не вычислять
+  }
+  if (NULL != Tree->right)
+  {
+    error = CalcTree(Tree->right, &num_right);
+    //delete_node(Tree->right);
+    if (error)
+      return error;             // если ошибка - дальше не вычислять
+  }
   switch (Tree->type) 
   { // выполняем операцию
-    case CALC_PLUS:     return num1 + num2;
-    case CALC_MINUS:    return num1 - num2;
-    case CALC_MUL:      return num1 * num2;
-    case CALC_DIV:      return num1 / num2;
-    case CALC_POWER:    return pow(num1, num2);
-    case CALC_PI:       return M_PI;
+    case CALC_PLUS: 
+      {
+//        printf("[%g+%g] ", num_left, num_right);
+        *result = num_left + num_right;
+        return 0;
+      }
+    case CALC_MINUS: 
+      {
+//      printf("[%g-%g] ", num_left, num_right);
+        *result = num_left - num_right;
+        return 0;
+      }
+    case CALC_MUL:
+      {
+//        printf("[%g*%g] ", num_left, num_right);
+        *result = num_left * num_right;
+        return 0;
+      }
+    case CALC_DIV:      
+      { 
+        if (num_right == 0)                   // Проверим на деление на 0
+          return CALC_LINE_ERR_ZERO_DIV;      // Ошибка
+//        printf("[%g/%g] ", num_left, num_right);
+        *result = num_left / num_right;       // ОК
+        return 0;
+      }
+    case CALC_MOD:
+      {
+        if (num_right == 0)                   // Проверим на деление на 0
+          return CALC_LINE_ERR_ZERO_DIV;      // Ошибка
+//        printf("[%g %% %g] ", num_left, num_right);
+        *result = fmod(num_left, num_right);  // ОК
+        return 0;
+      }
+    case CALC_POWER:
+      {
+ //       printf("[%g^%g] ", num_left, num_right);
+        *result = pow(num_left, num_right);
+        return 0;
+      }
+    case CALC_PI:
+      {
+//        printf("[%g<pi>%g] ", num_left, num_right);
+        *result = M_PI;
+        return 0;
+      }
+    case CALC_SQRT:
+      {
+ //       printf("[%g<sqrt>%g] ", num_left, num_right);
+        if (num_right < 0)                  // Проверим на отрицательность
+          return CALC_LINE_ERR_SQRT_N;      // Ошибка
+        *result = sqrt(num_right);          // ОК
+        return 0;
+      }
   }
-  return 32767; // неизвестная операция, ошибка!
+  
+  // неизвестная операция,  результат - правое число
+  *result = num_right;
+  return CALC_LINE_ERR_OTHER;               // пока так
 }
 
 // ------------ Главная функция -------------------------------------------
 // вычисляет строку выражений, возвращает тип строки (ок или ошибка) и результат
 int process_line(char* str, double* result)
 {
+  int error_code = 0;
   *result = 0;
   unsigned str_len = str_lenght(str);
   if (str_len == 0)
@@ -189,15 +352,18 @@ int process_line(char* str, double* result)
     return CALC_LINE_ERR_BRACKETS;
   
   // тут обработка
-  // return 0;
-  char * spaces_removed = str_remove_spaces(str);
-  LowerCase(spaces_removed);
+
+  char * spaces_removed = prepare_expression(str);
+  if (NULL == spaces_removed)
+    return CALC_LINE_ERR_MEMORY;
+
+  // LowerCase(spaces_removed);
 
   PNode Tree = MakeTree(spaces_removed, 0, str_lenght(spaces_removed) - 1);
-  *result = CalcTree(Tree);
-
-  // удалить дерево !!!!!!!!!!!!!!!!!!!!!!!!! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-  free(spaces_removed);
-  return 0;
+  
+  error_code = CalcTree(Tree, result);
+    
+  delete_node(Tree);        // удалить дерево 
+  free(spaces_removed);     // удалить временную строку
+  return error_code;
 }

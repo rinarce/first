@@ -44,6 +44,9 @@ void LowerCase(char str[]);
 // замен€ет символы строки [aЦz] -> [AЦZ]
 void UpperCase(char str[]); 
 
+// находит вхождение в строку символа X, или конец строки '\0'
+char* str_find_char(char const* str, char x, int start);
+
 
 
 
