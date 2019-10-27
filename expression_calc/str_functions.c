@@ -49,7 +49,6 @@ int is_bracket_error(char* str)
 
     if (nest < 0)  
       return 1;                       // закрывающа€ раньше открывающей
-
     str++;
   }
   return nest;            // если >0 - остались незакрытые скобки
@@ -114,22 +113,26 @@ void str_copy_fix_len(char const* strFrom, char* strTo, unsigned int number)
     *(strTo++) = *(strFrom++);
 }
 
-char LowerChar(char c) { // возвращает 1 символ [AЦZ] -> [aЦz], или не мен€ет
+// возвращает 1 символ [AЦZ] -> [aЦz], или не мен€ет
+char LowerChar(char c) { 
   if (c >= 'A' && c <= 'Z') c += 32;
   return c;
 }
 
-char UpperChar(char c) { // возвращает 1 символ [aЦz] -> [AЦZ], или не мен€ет
+// возвращает 1 символ [aЦz] -> [AЦZ], или не мен€ет
+char UpperChar(char c) { 
   if (c >= 'a' && c <= 'z') c -= 32;
   return c;
 }
 
-void LowerCase(char str[]) { // замен€ет символы строки [AЦZ] -> на аналоги из [aЦz]
+// замен€ет символы строки [AЦZ] -> на аналоги из [aЦz]
+void LowerCase(char str[]) { 
   for (int pos = 0; str[pos]; pos++)
     str[pos] = LowerChar(str[pos]);
 }
 
-void UpperCase(char str[]) { // замен€ет символы строки [aЦz] -> [AЦZ]
+// замен€ет символы строки [aЦz] -> [AЦZ]
+void UpperCase(char str[]) { 
   for (int pos = 0; str[pos]; pos++)
     str[pos] = UpperChar(str[pos]);
 }
@@ -137,11 +140,11 @@ void UpperCase(char str[]) { // замен€ет символы строки [aЦz] -> [AЦZ]
 // находит вхождение в строку символа X, или конец строки '\0'
 char* str_find_char(char const* str, char x, int start) 
 {
-  str += start;     // от начала строки
+  str += start;                          // смещение от начала строки
   while (*str)
     if (x == (*str)) return (char*)str;  // вернЄт адрес первого найденного ’
     else str++;
-  return (char*)str;  // тут вернЄт адрес концы строки '\0'
+  return (char*)str;                     // тут вернЄт адрес концы строки '\0'
 }
 
 
@@ -153,7 +156,7 @@ void str_sopy_substr(char str[], int start, int end, char subStr[])
 }
 
 
-// из str вырезаетс€ кусок [start...end], остаток строки сдвигаетс€
+// из str вырезаетс€ кусок [start...end], остаток строки сдвигаетс€ <--
 void str_remove_substr(char str[], int start, int end) 
 {
   int p1 = start, p2 = end + 1;
@@ -167,9 +170,9 @@ void str_remove_substr(char str[], int start, int end)
 // возврат - количество замен
 int str_replace_all(char str[], char word[], char replace[]) 
 {
-  int replaced = 0,
+  int replaced = 0,                     // количество произведЄнных замен
       word_len = str_lenght(word), 
-      replace_len = str_lenght(replace);
+   replace_len = str_lenght(replace);
   
   // образаем по длине исходного слова
   if (replace_len > word_len) replace_len = word_len; 
@@ -183,7 +186,7 @@ int str_replace_all(char str[], char word[], char replace[])
     {
       str_sopy_substr(replace, 0, replace_len - 1, &str[pos]);
       replaced++;
-      if (delta)  // слова разной длины, необходима подрезка строки
+      if (delta)         // слова разной длины, необходима подрезка строки
         str_remove_substr(str, pos + replace_len, pos + replace_len + delta - 1);
       pos += replace_len;
     }

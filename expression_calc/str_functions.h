@@ -24,10 +24,10 @@ int str_compare_fix_len(char const* str1, char const* str2, unsigned int distanc
 void str_copy_fix_len(char const* strFrom, char* strTo, unsigned int number);
 
 // подсчёт пробелов
-unsigned int str_count_spaces(const char* str);
+unsigned int str_count_spaces(char const* str);
 
 // подсчёт непробелов
-unsigned int str_count_non_spaces(const char* str);
+unsigned int str_count_non_spaces(char const* str);
 
 // из str удаляет все пробелы -> в новую созданную строку
 char* str_remove_spaces(char const* str);

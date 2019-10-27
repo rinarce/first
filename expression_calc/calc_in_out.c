@@ -13,6 +13,7 @@ int is_command_line_wrong(int arg_count, char* arg_values[])
   return (arg_count > 2);
 }
 
+
 // ---------------------------------------------------------------------------
 // return - 0 == OK    1 == ошибка открытия входного файла
 // input_file - если указан файл в коммандной строке, то он откроется на ввод
@@ -26,8 +27,6 @@ int detect_input_stream(int arg_count, char* arg_values[], FILE** input_file)
   fopen_s(input_file, arg_values[1], "r");
   return (NULL == *input_file);     // 0 - открыт успешно, 1 - нет (== NULL)
 }
-
-
 
 
 
@@ -53,10 +52,10 @@ unsigned int read_input_line(FILE* input_stream, char** str)
     char* new_str = (char*)realloc(result_str, str_len + input_len + 1);
 
     if (NULL == new_str)  // выделение памяти не удалось, возвращаем что есть
-      break;
+      break;              // ПЕРЕДЕЛАТЬ НА ПЕРЕДАЧУ ОШИБКИ НАВЕРХ ХХХХХХХХХХХХХХХХХХХХХХХХ
     else
     {
-      result_str = new_str;                   //  результат возможно уже в другом месте
+      result_str = new_str;                      //  результат возможно уже в другом месте
 
       // первые ячейки уже заполнены, сместиться на длину имеющейся строки 
       char* res_pointer = result_str + str_len;
@@ -80,7 +79,7 @@ unsigned int read_input_line(FILE* input_stream, char** str)
 // печатает строку правильное выражение == результат
 void print_expression(FILE* output_stream, char* input_line, double result)
 {
-  fprintf(output_stream, "<OK>%s == %g\n", input_line, result);
+  fprintf(output_stream, "%s == %g\n", input_line, result);
 }
 
 // печатает строку комментарий 
@@ -109,26 +108,32 @@ void print_error(FILE* output_stream, char* input_line, int error_code)
   switch (error_code)
   {
   case CALC_LINE_ERR_MEMORY:
-    fprintf(output_stream, "not enough memory\n");
+    fprintf(output_stream, "not enough memory.\n");
     break;
   case CALC_LINE_ERR_ZERO_DIV:
-    fprintf(output_stream, "divide by 0\n");
+    fprintf(output_stream, "divide by 0.\n");
     break;
   case CALC_LINE_ERR_BRACKETS:
-    fprintf(output_stream, "brackets mismatch\n");
+    fprintf(output_stream, "brackets mismatch.\n");
     break;
   case CALC_LINE_ERR_OTHER:
-    fprintf(output_stream, "other error\n");
+    fprintf(output_stream, "other error.\n");
     break;
   case CALC_LINE_ERR_X:
     fprintf(output_stream, "jet not defined error !!!!! \n");
     break;
   case CALC_LINE_ERR_SQRT_N:
-    fprintf(output_stream, "square root from negative number\n");
+    fprintf(output_stream, "square root from negative number.\n");
+    break;
+  case CALC_LINE_ERR_PARSE:
+    fprintf(output_stream, "Can't parse line.\n");
+    break;
+  case CALC_LINE_ERR_ALGO:
+    fprintf(output_stream, "ASSERT. Something wrong in algorithm.\n");
     break;
 
   default:
-    fprintf(output_stream, "not recognized error type\n");
+    fprintf(output_stream, "not recognized error type.\n");
     break;
   }
 }

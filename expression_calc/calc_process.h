@@ -24,10 +24,12 @@ enum calc_line_type
   CALC_LINE_EMPTY,        // это совершенно пустая строка
   CALC_LINE_SPACES,       // это строка без значащих символов
   CALC_LINE_LAST,
+  CALC_LINE_ERR_PARSE,    // ошибка - во время разбора выражения
   CALC_LINE_ERR_MEMORY,   // ошибка - выделения памяти
   CALC_LINE_ERR_ZERO_DIV, // ошибка - деление на 0
   CALC_LINE_ERR_BRACKETS, // ошибка - непарность скобок
   CALC_LINE_ERR_SQRT_N,   // ошибка - квадратный корень из отрицательных
+  CALC_LINE_ERR_ALGO,     // ошибка - в алгоритме что-то идёт не так
   CALC_LINE_ERR_X,        // ошибка - .... пока не придумано
   CALC_LINE_ERR_OTHER,    // ошибка - прочие
   CALC_LINE_ERR_COUNT,    // ошибка - масимальный номер перечисления
@@ -38,16 +40,18 @@ int process_line(char* input_line, double* result);
 
 
 typedef enum NodeType
-{
-  CALC_MINUS,       // -
-  CALC_U_MINUS,     // - унарный  
-  CALC_PLUS,        // +
-  CALC_U_PLUS,      // + унарный
-  CALC_DIV,         // /
-  CALC_MUL,         // *
-  CALC_MOD,         // %
-  CALC_POWER,       // ^
-  CALC_SQRT,        // sqrt()
+{                   //OK - реализовано полностью
+  CALC_MINUS,       //OK -
+  CALC_U_MINUS,     //OK - унарный - не используется, работает и так 
+  CALC_PLUS,        //OK +
+  CALC_U_PLUS,      //OK + унарный - не используется, работает и так 
+  CALC_DIV,         //OK /
+  CALC_MUL,         //OK *
+  CALC_MOD,         //OK % - остаток от деления
+  CALC_POWER,       //OK ^ - возведение в степень
+  CALC_SQRT,        //OK sqrt()
+  CALC_ABS,         //OK abs() - модуль
+  CALC_SIGN,        //OK sign - знак числа == {-1, 0, 1}
   CALC_SIN,         // sin()
   CALC_COS,         // cos()
   CALC_TAN,         // tg()
@@ -57,24 +61,24 @@ typedef enum NodeType
   CALC_ATAN,        // arctg()
   CALC_LN,          // ln()
   CALC_FLOUR,       // flour() - округление вниз
-  CALC_CEIL,        // ceil()  - округление
+  CALC_CEIL,        // ceil()  - округление к ближнему
   CALC_LOG,         // log(a,x)
-  CALC_BRACKETS,    // выражение в скобках
-  CALC_PI,          // pi
-  CALC_E,           // e
-  CALC_VAR,         // переменная
-  CALC_GLOBAL_VAR,  // глобальная переменная
-  CALC_FUNC,        // функция 
+  CALC_BRACKETS,    //OK выражение в скобках
+  CALC_PI,          //OK pi
+  CALC_E,           // e(x) e^x
+  CALC_VAR,         // переменная              - не используется
+  CALC_GLOBAL_VAR,  // глобальная переменная   
+  CALC_FUNC,        // функция                 - не используется
 } NodeType;
 
 // узел дерева
 typedef struct Node 
 {
   double value;               // значение
-  int ready;                  // 1 если значение готово
+  int ready;                  // 1 если значение готово - не используется
   NodeType type;              // какого типа
-  struct Node* left, * right; // поддерево
+  struct Node* left, * right; // поддерево левое и правое
 } Node;
 
-typedef struct Node* PNode; // указатель на узел дерева
+typedef struct Node* PNode;   // указатель на узел дерева
 
