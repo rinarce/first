@@ -27,7 +27,7 @@ int main(int arg_count, char* arg_values[])
 
   
   // Открытие файлов ---------------------------------------------------
-  FILE* input_stream = NULL;          // поток ввода
+  FILE*  input_stream = NULL;         // поток ввода
   FILE* output_stream = stdout;       // в стандартный вывод
 
   if (detect_input_stream(arg_count, arg_values, &input_stream))
@@ -61,7 +61,6 @@ int main(int arg_count, char* arg_values[])
     case CALC_LINE_SPACES:      // это строка без значащих символов
       print_spaces(output_stream, input_line);
       break;
-
 
     default:                    // всё остальное считаем ошибкой
       print_error(output_stream, input_line, err);

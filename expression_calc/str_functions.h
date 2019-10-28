@@ -56,4 +56,7 @@ int str_replace_all(char str[], char word[], char replace[]);
 // копирует строку до '\0' включая, возвращает указатель на strTo
 char* str_copy_str(char strFrom[], char strTo[]);
 
+// 1 - если в str двоичное число (тогда его возвращает в result)
+// разделитель целой и дробной части - русский - ','
+int is_binary_digit(char* str, double* result);
 

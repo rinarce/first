@@ -9,7 +9,24 @@
 #include "calc_process.h"
 #include "str_functions.h"
 
-#define MAX_PRIORITY 100     // фиктивное большое число приоритета
+// Логика приоритетов операций
+#define PRIORYTY_BIT_XOR     6      // xor
+#define PRIORYTY_BIT_OR      7      // |
+#define PRIORYTY_BIT_AND     8      // &
+#define PRIORYTY_BIT_NOT    10      // ~
+
+#define PRIORYTY_PLUS       12      // +
+#define PRIORYTY_MINUS      12      // -
+
+#define PRIORYTY_MUL_DIV    15      // * / % 
+#define PRIORYTY_POWER      18      // ^ 
+
+#define PRIORYTY_FUNCS      20      // функции
+#define PRIORYTY_CONST      20      // константы
+
+#define PRIORYTY_BRACKETS   30      // (...)
+
+#define MAX_PRIORITY       100      // фиктивное большое число приоритета
 
 // ТУТ вся предварительная подготовка строки, возвращает новую строку
 // - удаление пробелов
@@ -23,7 +40,7 @@ char* prepare_expression(char const* str)
 
   while (made_changes)                // заменить множественные --- и +++
   {
-    made_changes = str_replace_all(spaces_removed, "--", "+");
+    made_changes  = str_replace_all(spaces_removed, "--", "+");
     made_changes += str_replace_all(spaces_removed, "++", "+");
     made_changes += str_replace_all(spaces_removed, "+-", "-");
     made_changes += str_replace_all(spaces_removed, "-+", "-");
@@ -73,30 +90,24 @@ int get_priority(char* ptr, int *operand_len, int *operand_type)
   *operand_len = 1;
   switch (*ptr)
   {
-    case '+': { 
-      *operand_type = CALC_PLUS; 
-      return 1; 
-    }
-    case '-': {
-      *operand_type = CALC_MINUS;
-      return 2;
-    };
-    case '/': {
-      *operand_type = CALC_DIV;
-      return 3;
-    };
-    case '*': {
-      *operand_type = CALC_MUL;
-      return 3;
-    };
-    case '%': {
-      *operand_type = CALC_MOD;
-      return 3;
-    };
-    case '^': {
-      *operand_type = CALC_POWER;
-      return 5;
-    };
+  case '+': {   *operand_type = CALC_PLUS;
+                return PRIORYTY_PLUS;             }
+  case '-': {   *operand_type = CALC_MINUS;
+                return PRIORYTY_MINUS;            }
+  case '/': {   *operand_type = CALC_DIV;
+                return PRIORYTY_MUL_DIV;          }
+  case '*': {   *operand_type = CALC_MUL;
+                return PRIORYTY_MUL_DIV;          }
+  case '%': {   *operand_type = CALC_MOD;
+                return PRIORYTY_MUL_DIV;          }
+  case '^': {   *operand_type = CALC_POWER;
+                return PRIORYTY_POWER;            }
+  case '&': {   *operand_type = CALC_AND_BIT;
+                return PRIORYTY_BIT_AND;          }
+  case '~': {   *operand_type = CALC_NOT_BIT;
+                return PRIORYTY_BIT_NOT;          }
+  case '|': {   *operand_type = CALC_OR_BIT;
+                return PRIORYTY_BIT_OR;           }
   }
 
   if (*ptr == '(')
@@ -105,8 +116,7 @@ int get_priority(char* ptr, int *operand_len, int *operand_type)
     int nest = 0;                            // счётчик открытых скобок
     char* find_brac = ptr;
     do 
-    {
-      if (*find_brac == '(')        nest++;  // открывающая скобка
+    { if (*find_brac == '(')        nest++;  // открывающая скобка
       else if (*find_brac == ')')   nest--;  // закрывающая скобка
       find_brac++;
     } while (nest != 0);
@@ -117,62 +127,60 @@ int get_priority(char* ptr, int *operand_len, int *operand_type)
     // отладочная печать - удалить
     char* i = ptr, * j = find_brac-1;
     printf("(->");
-    while (i <= j)
-      printf("%c", *i++);
+    while (i <= j) printf("%c", *i++);
     printf("<-)\n");
 */
-    return 10;
+    return PRIORYTY_BRACKETS;
   }
 
   *operand_len = 3;
+  if (str_compare_fix_len(ptr, "xor", 3))
+  { *operand_type = CALC_XOR_BIT;
+    return PRIORYTY_BIT_XOR;
+  }
+  
   if (str_compare_fix_len(ptr, "sin(", 4))
-  {
-    *operand_type = CALC_SIN;
-    return 4;
+  { *operand_type = CALC_SIN;
+    return PRIORYTY_FUNCS;
   }
 
   if (str_compare_fix_len(ptr, "cos(", 4))
-  {
-    *operand_type = CALC_COS;
-    return 4;
+  { *operand_type = CALC_COS;
+    return PRIORYTY_FUNCS;
   }
+  
   if (str_compare_fix_len(ptr, "ctg(", 3))
-  {
-    *operand_type = CALC_COTAN;
-    return 4;
+  { *operand_type = CALC_COTAN;
+    return PRIORYTY_FUNCS;
   }
+  
   if (str_compare_fix_len(ptr, "abs(", 3))
-  {
-    *operand_type = CALC_ABS;
-    return 4;
+  { *operand_type = CALC_ABS;
+    return PRIORYTY_FUNCS;
   }
 
 
   *operand_len = 2;
   if (str_compare_fix_len(ptr, "tg(", 3))
-  {
-    *operand_type = CALC_TAN;
-    return 4;
-  };
+  { *operand_type = CALC_TAN;
+    return PRIORYTY_FUNCS;
+  }
+  
   if (str_compare_fix_len(ptr, "pi", 2))
-  {
-    *operand_type = CALC_PI;
-    return 4;
-  };
+  { *operand_type = CALC_PI;
+    return PRIORYTY_CONST;
+  }
   
 
-  
   if (str_compare_fix_len(ptr, "sqrt(", 5))
-  {
-    *operand_len = 4;
+  { *operand_len = 4;
     *operand_type = CALC_SQRT;
-    return 4;
+    return PRIORYTY_FUNCS;
   }
   if (str_compare_fix_len(ptr, "sign(", 5))
-  {
-    *operand_len = 4;
+  { *operand_len = 4;
     *operand_type = CALC_SIGN;
-    return 4;
+    return PRIORYTY_FUNCS;
   }
 
 
@@ -185,14 +193,16 @@ int get_priority(char* ptr, int *operand_len, int *operand_type)
 
 
 // первые символы строки - это число или переменная (НЕ РЕАЛИЗОВАНО)
-// Шестнадцатеричные переводит, двоичные - нет, возврат - код ошибки (0 - ОК)
+// Шестнадцатеричные переводит, двоичные - ДА, возврат - код ошибки (0 - ОК)
 int calc_evaluate(char* str, int symbols, double * result)
 {
-  if (symbols < 0) return CALC_LINE_ERR_ALGO;
-  if (symbols <= 0)
+  // такое бывает на строках (2)(3) обрезанных до 2)(3
+  if (symbols < 0) return CALC_LINE_ERR_ALGO; // ASSERT
+
+  if (symbols == 0)
   { // пустое считаем за 0 - прощаем некоторые спорные случаи 3+ или ()
     *result = 0;
-    //    printf("[EZ]");
+    //    printf("[Empty]");
     return 0;
   }
 
@@ -205,13 +215,20 @@ int calc_evaluate(char* str, int symbols, double * result)
   new_str[symbols] = '\0';                    // допишем конец строки
 
 // делаем пока для числа, пока без проверок ошибок ХХХХХХХХХХХХХХХХХХХХХХХХ
-  
-//  printf("[E:%s==", new_str);
-  int evaluated = sscanf_s(new_str, "%lf", result);
-//  printf("%g{%d}]", *result, evaluated);
-  free(new_str);
-  if (evaluated != 1) //должно быть получено ровно 1 число, иначе ошибка
-    return CALC_LINE_ERR_PARSE;
+
+  if (is_binary_digit(new_str, result))  // пробуем на двоичность
+  {
+    free(new_str);
+  }
+  else  // ТУТ все остальные варианты, 0x... работает
+  { 
+    //  printf("[E:%s==", new_str);
+    int evaluated = sscanf_s(new_str, "%lf", result);
+    //  printf("%g{%d}]", *result, evaluated);
+    free(new_str);
+    if (evaluated != 1) //должно быть получено ровно 1 число, иначе ошибка
+      return CALC_LINE_ERR_EVAL;
+  }
   return 0;
 }
 
@@ -252,7 +269,10 @@ int MakeTree(char Expr[], int first, int last, PNode * result_tree)
   for (i = first; i <= last; i+=operand_len) 
   {
     priority = get_priority(Expr+i, &operand_len, &operand_type);
-    if (priority <= min_priority)
+    // для выполнения операций слева-направо тут должно быть <=
+    // тогда операция правее выберется раньше, а выполнится позже (при равных приоритетах)
+    // операция правее перебьёт минимум приоритета такой же слева от неё
+    if (priority <= min_priority) 
     {
       min_priority = priority;
       min_priority_ptr = i;
@@ -261,7 +281,7 @@ int MakeTree(char Expr[], int first, int last, PNode * result_tree)
     }
   }
 
-  if (min_priority == 10 && Expr[first] == '(' && Expr[last] == ')') 
+  if (min_priority == PRIORYTY_BRACKETS && Expr[first] == '(' && Expr[last] == ')')
     { // всё выражение в скобках, избавимся от них в новом вызове
       // в ситуации "(2)(3)(5)" => станет => "2)(3)(5"   непонятно что
       // такое не предусмотрено пока, между скобками должны быть операции 
@@ -391,6 +411,25 @@ int CalcTree(PNode Tree, double * result)
       else                *result =  num_right;          // ОК
       return 0;
     }
+
+    // ---------- ЛОГИЧЕСКИЕ БИТОВЫЕ ----- отбрасывают дробную часть
+    case CALC_AND_BIT:   {
+      *result = (double)(((int) num_left) & ((int)num_right));
+      return 0;
+    }
+    case CALC_OR_BIT:    {
+      *result = (double)(((int)num_left) | ((int)num_right));
+      return 0;
+    }
+    case CALC_XOR_BIT:   {
+      *result = (double)(((int)num_left) ^ ((int)num_right));
+      return 0;
+    }
+    case CALC_NOT_BIT:   {
+      //       printf("[%g<not>%g] ", num_left, num_right);
+      *result = (double)(~(int)num_right);
+      return 0;
+    }
   }
   
   // ------------ ДОДЕЛАТЬ ВСЕ ОПЕРАЦИИ =-=-=-==-=-=-=-=-=-=-=-=-=-
@@ -431,7 +470,7 @@ int process_line(char* str, double* result)
   if (!error_code)   // вычислять дерево только если не было ошибок в разборе
     error_code = CalcTree(Tree, result);
     
-  delete_node(Tree);            // удалить дерево 
+  delete_node(Tree);      // удалить дерево 
   free(str_to_process);   // удалить временную строку
   return error_code;
 }

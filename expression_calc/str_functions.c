@@ -203,3 +203,43 @@ char* str_copy_str(char strFrom[], char strTo[])
   return strTo; // для удобства
 }
 
+
+// 1 - если в str двоичное число (тогда его возвращает в result)
+// разделитель целой и дробной части - русский - ','
+// Advanced feature - в двоичных вместо 0 можно писать любой символ !
+int is_binary_digit(char* str, double* result)
+{
+  unsigned int str_len = str_lenght(str);
+  if (str_len < 2)
+    return 0;
+
+  if (*str == '0' && (*(str + 1) == 'b' || *(str + 1) == 'b'))
+  {
+    // начинается на 0b или 0B - считаем это двоичным числом
+    *result = 0;
+    double multiply = 2.;
+    double x = 0;
+    str += 2; // пропустить первые два символа
+    while (*str && *str != ',') // до конца строки или десятичной запятой
+    {
+      x *= 2;
+      x += (*str == '1');    // вместо нуля может быть любой символ !!! это фича
+      str++;
+    }
+    if(*str++ == ',') // есть дробная часть
+    {
+      multiply = 0.5;
+      while (*str) // до конца строки
+      { 
+        // вместо нуля может быть любой символ !!! это фича
+        x += (*str == '1') ? multiply : 0;
+        multiply /= 2;
+        str++;
+      }
+    }
+    *result = x;
+    return 1;
+  }
+  
+  return 0;
+}

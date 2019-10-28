@@ -25,6 +25,7 @@ enum calc_line_type
   CALC_LINE_SPACES,       // это строка без значащих символов
   CALC_LINE_LAST,
   CALC_LINE_ERR_PARSE,    // ошибка - во время разбора выражения
+  CALC_LINE_ERR_EVAL ,    // ошибка - преобразования в число
   CALC_LINE_ERR_MEMORY,   // ошибка - выделения памяти
   CALC_LINE_ERR_ZERO_DIV, // ошибка - деление на 0
   CALC_LINE_ERR_BRACKETS, // ошибка - непарность скобок
@@ -60,22 +61,31 @@ typedef enum NodeType
   CALC_ACOS,        // arccos()
   CALC_ATAN,        // arctg()
   CALC_LN,          // ln()
-  CALC_FLOUR,       // flour() - округление вниз
-  CALC_CEIL,        // ceil()  - округление к ближнему
-  CALC_LOG,         // log(a,x)
+  CALC_ROUND,       // round()  - округление к ближайшему
+  CALC_FLOUR,       // flour()  - округление вниз
+  CALC_CEIL,        // ceil()   - округление вверх
+  CALC_LOG,         // log(a,x) - не реализовано
+
   CALC_BRACKETS,    //OK выражение в скобках
   CALC_PI,          //OK pi
   CALC_E,           // e(x) e^x
-  CALC_VAR,         // переменная              - не используется
-  CALC_GLOBAL_VAR,  // глобальная переменная   
-  CALC_FUNC,        // функция                 - не используется
+
+                    //  в битовых отбрасывается дробная часть !!!
+  CALC_XOR_BIT,     //OK xor битовое исключающее или
+  CALC_AND_BIT,     //OK & битовое 
+  CALC_OR_BIT,      //OK | битовое
+  CALC_NOT_BIT,     //OK ~ битовое отрицание
+  
+  CALC_VAR,         // переменная              - не реализовано
+  CALC_GLOBAL_VAR,  // глобальная переменная   - не реализовано
+  CALC_FUNC,        // функция                 - не реализовано
 } NodeType;
 
 // узел дерева
 typedef struct Node 
 {
   double value;               // значение
-  int ready;                  // 1 если значение готово - не используется
+//  int ready;                  // 1 если значение готово - не используется
   NodeType type;              // какого типа
   struct Node* left, * right; // поддерево левое и правое
 } Node;

@@ -131,7 +131,9 @@ void print_error(FILE* output_stream, char* input_line, int error_code)
   case CALC_LINE_ERR_ALGO:
     fprintf(output_stream, "ASSERT. Something wrong in algorithm.\n");
     break;
-
+  case CALC_LINE_ERR_EVAL:
+    fprintf(output_stream, "Can't evaluate number.\n");
+    break;
   default:
     fprintf(output_stream, "not recognized error type.\n");
     break;
