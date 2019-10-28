@@ -5,23 +5,6 @@
 #include "calc_process.h"     // for error codes
 #include "str_functions.h"
 
-//#define PRINT_ARGV         // печать параметров командной строки
-
-// ---------------------------------------------------------------------------
-// 1 - параметры командной строки ошибочны для данной задачи
-// 0 - норм (допустим только 1 доп параметр - имя файла с данными)
-int is_command_line_wrong(int arg_count, char* arg_values[])
-{ 
-
-#ifdef PRINT_ARGV     // печать параметров командной строки
-  for (int i = 0; i < arg_count; i++) printf("%d - %s\n", i, arg_values[i]);
-#endif // PRINT_ARGV
-
-  // перенаправление не передаётся в аргументы коммандной строки, 
-  // 1й параметр - имя программы => значит допустимо максимум 2 аргумента
-  return (arg_count > 2);
-}
-
 
 // ---------------------------------------------------------------------------
 // return - 0 == OK    1 == ошибка открытия входного файла
@@ -36,7 +19,6 @@ int detect_input_stream(int arg_count, char* arg_values[], FILE** input_file)
   fopen_s(input_file, arg_values[1], "r");
   return (NULL == *input_file);     // 0 - открыт успешно, 1 - нет (== NULL)
 }
-
 
 
 // ---------------------------------------------------------------------------
@@ -64,13 +46,15 @@ unsigned int read_input_line(FILE* input_stream, char** str)
       break;              // ПЕРЕДЕЛАТЬ НА ПЕРЕДАЧУ ОШИБКИ НАВЕРХ ХХХХХХХХХХХХХХХХХХХХХХХХ
     else
     {
-      result_str = new_str;                      //  результат возможно уже в другом месте
+      result_str = new_str;                  //  результат возможно уже в другом месте
 
       // первые ячейки уже заполнены, сместиться на длину имеющейся строки 
       char* res_pointer = result_str + str_len;
       
-      char* in_pointer = buffer;                  // добавляем очередную порцию из buffer
-      while (*res_pointer++ = *in_pointer++) {};  // копируем пока не '\0' в конце buffer
+      char* in_pointer = buffer;             // добавляем очередную порцию из buffer
+      do { *res_pointer = *in_pointer++;  }  // копируем пока не '\0' в конце buffer
+      while (*res_pointer++);
+
 
       str_len += input_len;  // новая длина строки
 
@@ -94,26 +78,26 @@ void print_expression(FILE* output_stream, char* input_line, double result)
 // печатает строку комментарий 
 void print_comment(FILE* output_stream, char* input_line)
 {
-  fprintf(output_stream, "<comment>%s\n", input_line);
+  fprintf(output_stream, "%s\n", input_line);
 }
 
 // печатает строку без значащих символов 
 void print_spaces(FILE* output_stream, char* input_line)
 {
-  fprintf(output_stream, "<spaces>%s\n", input_line);
+  fprintf(output_stream, "%s\n", input_line);
 }
 
 // печатает строку пустую (в строке только \n)
 void print_empty(FILE* output_stream)
 {
-  fprintf(output_stream, "<empty>\n");
+  fprintf(output_stream, "\n");
 }
 
 // ---------------------------------------------------------------------------
 // печатает строку с ошибкой
 void print_error(FILE* output_stream, char* input_line, int error_code)
 {
-  fprintf(output_stream, "<error>%s == ERROR: ", input_line);
+  fprintf(output_stream, "%s == ERROR: ", input_line);
   switch (error_code)
   {
   case CALC_LINE_ERR_MEMORY:
@@ -143,6 +127,10 @@ void print_error(FILE* output_stream, char* input_line, int error_code)
   case CALC_LINE_ERR_EVAL:
     fprintf(output_stream, "Can't evaluate number.\n");
     break;
+  case CALC_LINE_ERR_VARS:
+    fprintf(output_stream, "Variables.\n");
+    break;
+
   default:
     fprintf(output_stream, "not recognized error type.\n");
     break;

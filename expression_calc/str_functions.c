@@ -157,9 +157,22 @@ char* str_find_char(char const* str, char x, int start)
 
 // кусок str[start...end] -> записывает в начало subStr
 // конец строки  '\0' никак не проверяется и в subStr не дополняется
-void str_sopy_substr(char str[], int start, int end, char subStr[]) 
+void str_copy_substr(char str[], int start, int end, char subStr[]) 
 {
-  for (int pos = 0; start <= end; subStr[pos++] = str[start++]) {}
+  for (int pos = 0; start <= end; subStr[pos++] = str[start++]) {};
+}
+
+// из куска str[start...end] создаётся новая строка
+char * str_make_substr(char str[], int start, int end)
+{
+  char*     new_str = (char*)malloc(end - start + 1);
+  char* new_str_ptr = new_str;
+  if (NULL != new_str)
+    while (start <= end)
+      *(new_str_ptr++) = str[start++];
+  
+  *new_str_ptr = '\0';   // конец строки
+  return new_str;
 }
 
 
@@ -167,8 +180,9 @@ void str_sopy_substr(char str[], int start, int end, char subStr[])
 void str_remove_substr(char str[], int start, int end) 
 {
   int p1 = start, p2 = end + 1;
-  do {}		// копировать, пока на скопируем символ '\0'
-  while (str[p1++] = str[p2++]);
+  do 
+  {    str[p1] = str[p2++];    }		// копировать, пока на скопируем символ '\0'
+  while (str[p1++]);
 }
 
 
@@ -192,7 +206,7 @@ int str_replace_all(char str[], char word[], char replace[])
   {
     if (str_compare_fix_len(&str[pos], word, word_len))
     {
-      str_sopy_substr(replace, 0, replace_len - 1, &str[pos]);
+      str_copy_substr(replace, 0, replace_len - 1, &str[pos]);
       ++replaced;
       if (delta)         // слова разной длины, необходима подрезка строки
         str_remove_substr(str, pos + replace_len, pos + replace_len + delta - 1);
@@ -208,7 +222,10 @@ int str_replace_all(char str[], char word[], char replace[])
 char* str_copy_str(char strFrom[], char strTo[]) 
 {
   int pos = 0;
-  do {} while (strTo[pos++] = strFrom[pos]);
+  do 
+  {   strTo[pos] = strFrom[pos];    }
+  while (strTo[pos++]);
+
   return strTo; // для удобства
 }
 

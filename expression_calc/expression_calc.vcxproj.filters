@@ -27,6 +27,9 @@
     <ClCompile Include="str_functions.c">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="calc_variables.c">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="calc_in_out.h">
@@ -36,6 +39,9 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="str_functions.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="calc_variables.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

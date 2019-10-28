@@ -12,29 +12,35 @@
 
 #include "calc_process.h"
 #include "str_functions.h"
+#include "calc_variables.h"        // модуль для переменных и пр.
 
 // --  Неявное умножение скобок ? использовать ? -----------------------------
 #define CALC_USE_BRACKET_MULTIPLY  // считать ли 2(3) (4)5(6) умножением - ДА
 
 // -- Логика приоритетов операций --------------------------------------------
 
-#define PRIORYTY_BIT_XOR     6   // xor
-#define PRIORYTY_BIT_OR      7   // |
-#define PRIORYTY_BIT_AND     8   // &
-#define PRIORYTY_BIT_NOT    10   // ~
+#define PRIORITY_SEPARATOR   3   // ; разделитель выражений результат - правое выражение
 
-#define PRIORYTY_PLUS       12   // +
-#define PRIORYTY_MINUS      12   // -
+#define PRIORITY_LETGLOBAL   4   // := глобальное присваивание
+#define PRIORITY_LET         5   //  = присваивание
 
-#define PRIORYTY_MUL_DIV    15   // * / % 
-#define PRIORYTY_POWER      18   // ^ 
+#define PRIORITY_BIT_XOR     8   // xor
+#define PRIORITY_BIT_OR      9   // |
+#define PRIORITY_BIT_AND    10   // &
+#define PRIORITY_BIT_NOT    11   // ~
 
-#define PRIORYTY_FUNCS      20   // функции
-#define PRIORYTY_CONST      20   // константы
+#define PRIORITY_PLUS       13   // +
+#define PRIORITY_MINUS      13   // -
 
-#define PRIORYTY_BRACKETS   30   // (...)
+#define PRIORITY_MUL_DIV    15   // * / % 
+#define PRIORITY_POWER      18   // ^ 
 
-#define MAX_PRIORITY       100   // фиктивное большое число приоритета
+#define PRIORITY_FUNCS      20   // функции
+#define PRIORITY_CONST      20   // константы
+
+#define PRIORITY_BRACKETS   30   // (...)
+
+#define PRIORITY_MAX       100   // фиктивное большое число приоритета
 
 
 // ---------------------------------------------------------------------------
@@ -54,7 +60,6 @@ char* prepare_expression(char const* str)
     made_changes += str_replace_all(spaces_removed, "++", "+");
     made_changes += str_replace_all(spaces_removed, "+-", "-");
     made_changes += str_replace_all(spaces_removed, "-+", "-");
-
     char* new_str = str_remove_spaces(spaces_removed); // удалить пробелы
     if (NULL == new_str)
       return NULL;
@@ -69,31 +74,13 @@ char* prepare_expression(char const* str)
 
 
 // ---------------------------------------------------------------------------
-// проверить на корректность скобок
-int is_bracket_err_in_str(const char* str, int start, int end)
-{
-  int nest = 0;                       // счётчик открытых скобок
-  while (start <= end)
-  {
-    if (*str == '(')        ++nest;   // открывающая скобка
-    else if (*str == ')')   --nest;   // закрывающая скобка
-
-    if (nest < 0)
-      return 1;                       // закрывающая раньше открывающей
-    ++str;
-    ++start;
-  }
-  return nest;            // если >0 - остались незакрытые скобки
-}
-
-
-// ---------------------------------------------------------------------------
 // удаляет узел дерева и все его дочерние узлы
 void delete_node(PNode Tree)
 {
   if (Tree == NULL) return;
   delete_node(Tree->left);
   delete_node(Tree->right);
+  free(Tree->var_name);
   free(Tree);
 }
 
@@ -107,23 +94,34 @@ int get_priority(char* ptr, int *operand_len, int *operand_type)
   switch (*ptr)
   {
   case '+': {   *operand_type = CALC_PLUS;
-                return PRIORYTY_PLUS;             }
+                return PRIORITY_PLUS;             }
   case '-': {   *operand_type = CALC_MINUS;
-                return PRIORYTY_MINUS;            }
+                return PRIORITY_MINUS;            }
   case '/': {   *operand_type = CALC_DIV;
-                return PRIORYTY_MUL_DIV;          }
+                return PRIORITY_MUL_DIV;          }
   case '*': {   *operand_type = CALC_MUL;
-                return PRIORYTY_MUL_DIV;          }
+                return PRIORITY_MUL_DIV;          }
   case '%': {   *operand_type = CALC_MOD;
-                return PRIORYTY_MUL_DIV;          }
+                return PRIORITY_MUL_DIV;          }
   case '^': {   *operand_type = CALC_POWER;
-                return PRIORYTY_POWER;            }
+                return PRIORITY_POWER;            }
   case '&': {   *operand_type = CALC_AND_BIT;
-                return PRIORYTY_BIT_AND;          }
+                return PRIORITY_BIT_AND;          }
   case '~': {   *operand_type = CALC_NOT_BIT;
-                return PRIORYTY_BIT_NOT;          }
+                return PRIORITY_BIT_NOT;          }
   case '|': {   *operand_type = CALC_OR_BIT;
-                return PRIORYTY_BIT_OR;           }
+                return PRIORITY_BIT_OR;           }
+  case ';': {   *operand_type = CALC_SEPARATOR;
+                return PRIORITY_SEPARATOR;        }
+  case '=': {   *operand_type = CALC_LET;
+                return PRIORITY_LET;              }
+  }
+
+  if (str_compare_fix_len(ptr, ":=", 2))
+  {
+    *operand_len = 2;
+    *operand_type = CALC_LETGLOBAL;
+    return PRIORITY_LETGLOBAL;
   }
 
   if (*ptr == '(')
@@ -139,64 +137,62 @@ int get_priority(char* ptr, int *operand_len, int *operand_type)
 
     *operand_len = find_brac - ptr;
     *operand_type = CALC_BRACKETS;
- /*
-    // отладочная печать - удалить
+ 
+/* // отладочная печать - удалить
     char* i = ptr, * j = find_brac-1;
-    printf("(->");
-    while (i <= j) printf("%c", *i++);
-    printf("<-)\n");
+    printf("(->");  while (i <= j) printf("%c", *i++); printf("<-)\n");
 */
-    return PRIORYTY_BRACKETS;
+    return PRIORITY_BRACKETS;
   }
 
-  *operand_len = 3;
+  
   if (str_compare_fix_len(ptr, "xor", 3))
   { *operand_type = CALC_XOR_BIT;
-    return PRIORYTY_BIT_XOR;
+    *operand_len = 3;
+    return PRIORITY_BIT_XOR;
   }
   
   if (str_compare_fix_len(ptr, "sin(", 4))
   { *operand_type = CALC_SIN;
-    return PRIORYTY_FUNCS;
+    *operand_len = 3;
+    return PRIORITY_FUNCS;
   }
 
   if (str_compare_fix_len(ptr, "cos(", 4))
   { *operand_type = CALC_COS;
-    return PRIORYTY_FUNCS;
+    *operand_len = 3;
+    return PRIORITY_FUNCS;
   }
   
   if (str_compare_fix_len(ptr, "ctg(", 4))
   { *operand_type = CALC_COTAN;
-    return PRIORYTY_FUNCS;
+    *operand_len = 3;
+    return PRIORITY_FUNCS;
   }
   
   if (str_compare_fix_len(ptr, "abs(", 4))
   { *operand_type = CALC_ABS;
-    return PRIORYTY_FUNCS;
+    *operand_len = 3;
+    return PRIORITY_FUNCS;
   }
 
-
-  *operand_len = 2;
+ 
   if (str_compare_fix_len(ptr, "tg(", 3))
-  { *operand_type = CALC_TAN;
-    return PRIORYTY_FUNCS;
-  }
-  
-  if (str_compare_fix_len(ptr, "pi", 2))
-  { *operand_type = CALC_PI;
-    return PRIORYTY_CONST;
+  { *operand_len = 2;
+    *operand_type = CALC_TAN;
+    return PRIORITY_FUNCS;
   }
   
 
   if (str_compare_fix_len(ptr, "sqrt(", 5))
   { *operand_len = 4;
     *operand_type = CALC_SQRT;
-    return PRIORYTY_FUNCS;
+    return PRIORITY_FUNCS;
   }
   if (str_compare_fix_len(ptr, "sign(", 5))
   { *operand_len = 4;
     *operand_type = CALC_SIGN;
-    return PRIORYTY_FUNCS;
+    return PRIORITY_FUNCS;
   }
 
 
@@ -204,7 +200,7 @@ int get_priority(char* ptr, int *operand_len, int *operand_type)
   
   
   *operand_len = 1; //операция не найдена, сдвинуться на 1 символ ->
-  return MAX_PRIORITY;
+  return PRIORITY_MAX;
 }
 
 
@@ -235,6 +231,20 @@ int calc_evaluate(char* str, int symbols, double * result)
 // ---------------------------------------------------------------------------
 // ТУТ НУЖНО ПРОВЕРИТЬ НА ВСЕ КОНСТАНТЫ И ПЕРЕМЕННЫЕ, убрать их из операций
 // ---------------------------------------------------------------------------
+  if (variable_get(new_str, result))
+    return 0;
+  
+  if (symbols == 2 && str_compare_fix_len(str, "pi", 2))
+  {
+    *result = M_PI;
+    return 0;
+  }
+  if (symbols == 1 && str_compare_fix_len(str, "e", 1))
+  {
+    *result = M_E;
+    return 0;
+  }
+
 
 // делаем для числа, проверка ошибок - встроенная в Си
 
@@ -244,15 +254,17 @@ int calc_evaluate(char* str, int symbols, double * result)
   }
   else  // ТУТ все остальные варианты, 0x... работает
   { 
-    //  printf("[E:%s==", new_str);
+ //     printf("[E:%s==", new_str);
     int evaluated = sscanf_s(new_str, "%lf", result);
-    //  printf("%g{%d}]", *result, evaluated);
+ //     printf("%g{%d}]", *result, evaluated);
     free(new_str);
     if (evaluated != 1) //должно быть получено ровно 1 число, иначе ошибка
       return CALC_LINE_ERR_EVAL;
   }
   return 0;
 }
+
+
 
 // ---------------------------------------------------------------------------
 // строит дерево вычислений для str[first...last] 
@@ -263,7 +275,7 @@ int MakeTree(char str[], int first, int last, PNode * result_tree)
   int error;                        // код ошибки
   double result = 0;                // результат
   int priority;                     // найденный приоритет для очередного символа
-  int min_priority = MAX_PRIORITY;  // минимальный приоритет операции
+  int min_priority = PRIORITY_MAX;  // минимальный приоритет операции
   int min_priority_ptr = 0;         // указатель на эту операцию
   int min_priority_oparand_len = 1; // длина записи операции символов
   int min_priority_type = 0;        // минимальный приоритет - тип операции
@@ -274,6 +286,7 @@ int MakeTree(char str[], int first, int last, PNode * result_tree)
   
   Tree->left = NULL;
   Tree->right = NULL;
+  Tree->var_name = NULL;
   Tree->value = 0;
   *result_tree = Tree;
 
@@ -308,7 +321,7 @@ int MakeTree(char str[], int first, int last, PNode * result_tree)
   }
   
   // case 1 - не нашлось операций меньше СКОБОК
-  if (min_priority == PRIORYTY_BRACKETS) 
+  if (min_priority == PRIORITY_BRACKETS) 
   { 
     if (min_priority_ptr == first && min_priority_oparand_len == str_len)
     { 
@@ -367,7 +380,7 @@ int MakeTree(char str[], int first, int last, PNode * result_tree)
   }
   
   // case 2 - операция в этом куске НЕ НАЙДЕНА, 
-  if (min_priority == MAX_PRIORITY) 
+  if (min_priority == PRIORITY_MAX) 
     { 
       // считаем что это - число или переменная - вычислим операнд
       error = calc_evaluate(str + first, str_len, &result);
@@ -379,6 +392,36 @@ int MakeTree(char str[], int first, int last, PNode * result_tree)
 
   // case 3 - операция НАЙДЕНА -  записывается её тип и создаются два поддерева 
   // - то что в этом куске строки слева от операции и то что справа
+  
+
+  // case 3.1. - Это присваивание переменной
+  if  (min_priority_type == CALC_LET
+    || min_priority_type == CALC_LETGLOBAL)
+  { 
+    // считаем что слева = имя переменной, справа значение
+    Tree->type = min_priority_type;
+    
+    // создаём строку с сменем переменной
+    char* var_name = str_make_substr(str, first, min_priority_ptr - 1);
+    if (NULL == var_name) 
+      return CALC_LINE_ERR_MEMORY;
+
+    // сохраним имя в узле
+    Tree->var_name = var_name;
+//    printf("{Make var <%s>}", var_name);
+
+    PNode temp;            
+    // Левое дерево будет пустым    
+    // В правое дерево - всё что после = или :=
+    // от конца символа операции (возможно несколько символов) до конца куска строки
+    error = MakeTree(str, min_priority_ptr + min_priority_oparand_len, last, &temp);
+    if (error)  return error;
+    Tree->right = temp;
+
+    return 0;
+  }
+  
+  // case 3.1. - Прочие обычные операции
   Tree->type = min_priority_type;
   
   PNode temp;            // от начала куска до символа операции не включая
@@ -461,21 +504,7 @@ int CalcTree(PNode Tree, double * result)
         *result = pow(num_left, num_right);
         return 0;
       }
-    case CALC_PI:
-      {
-//        printf("[%g<pi>%g] ", num_left, num_right);
-        // 1 не использоват неявное умножение скобок
-#ifndef CALC_USE_BRACKET_MULTIPLY      // считать ли 2(3) (4)5(6) умножением - ДА
-       *result = M_PI;
-       return 0;
-#endif // !CALC_USE_BRACKET_MULTIPLY   // считать ли 2(3) (4)5(6) умножением - ДА
 
-        // 2 считаем, что pi(10) == pi*10 и (2)pi == 2*pi 
-        // Advanced feature : (0)pi == pi   ;-) 
-        // отказ от этой фичи -- перенести все константы в evaluate, не в операции
-        *result = (num_left?num_left:1) * M_PI * (num_right?num_right:1);
-        return 0;
-      }
     case CALC_SQRT:
       {
  //       printf("[%g<sqrt>%g] ", num_left, num_right);
@@ -518,6 +547,29 @@ int CalcTree(PNode Tree, double * result)
       *result = (double)(~(int)num_right);
       return 0;
     }
+
+    case CALC_SEPARATOR: { 
+      // разделитель формул возвращает правый результат
+      //      printf("[%g<;>%g] ", num_left, num_right);
+      *result = num_right;
+      return 0;
+    }
+
+// -----------------------------------------------------------------
+// переменные присваивание - НЕ РЕАЛИЗОВАНЫ ФУНКЦИИ, ПРОСТО ВОЗВРАЩАЕТ значение
+    case CALC_LET: {
+      // присваивание, результат правая часть
+      //      printf("[%g<=>%g] ", num_left, num_right);
+      *result = num_right;
+      return variable_make(Tree->var_name, num_right);
+    }
+    case CALC_LETGLOBAL: {
+      // присваивание, результат правая часть
+      //      printf("[%g<:=>%g] ", num_left, num_right);
+      *result = num_right;
+      return variable_make_global(Tree->var_name, num_right);
+    }
+
   }
   
   // ------------ ДОДЕЛАТЬ ВСЕ ОПЕРАЦИИ =-=-=-==-=-=-=-=-=-=-=-=-=-
@@ -553,7 +605,12 @@ int process_line(char* str, double* result)
     return CALC_LINE_ERR_MEMORY;
 
   PNode Tree;
-                          // разбор вражения, построение дерева
+  
+  int var_err = variable_clear_local();  // очистим локальные переменные
+  if (var_err) return var_err;
+
+  // разбор вражения, построение дерева
+   
   error_code = MakeTree(str_to_process, 0, str_lenght(str_to_process) - 1, &Tree);
 
   if (!error_code)        // вычислять дерево только если не было ошибок в разборе
@@ -561,5 +618,9 @@ int process_line(char* str, double* result)
     
   delete_node(Tree);      // удалить дерево 
   free(str_to_process);   // удалить временную строку
+ 
+  var_err = variable_clear_local(); // очистим локальные переменные
+  if (var_err) return var_err;
+
   return error_code;
 }

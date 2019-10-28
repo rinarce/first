@@ -156,11 +156,13 @@
     <ClCompile Include="calc_process.c" />
     <ClCompile Include="expression_calc.c" />
     <ClCompile Include="str_functions.c" />
+    <ClCompile Include="calc_variables.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="calc_in_out.h" />
     <ClInclude Include="calc_process.h" />
     <ClInclude Include="str_functions.h" />
+    <ClInclude Include="calc_variables.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

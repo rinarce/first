@@ -21,7 +21,9 @@ int main(int arg_count, char* arg_values[])
 
 
   // Корректность параметров -------------------------------------------
-  if (is_command_line_wrong(arg_count, arg_values))
+  // перенаправление не передаётся в аргументы коммандной строки, 
+  // 1й параметр - имя программы => значит допустимо максимум 2 аргумента
+  if (arg_count > 2)
   {
     printf("ERROR: bad command line. "
            " Use: expression_calc.exe inpit_file_name\n");

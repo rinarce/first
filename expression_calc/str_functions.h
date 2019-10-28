@@ -60,3 +60,6 @@ char* str_copy_str(char strFrom[], char strTo[]);
 // разделитель целой и дробной части - русский - ','
 int is_binary_digit(char* str, double* result);
 
+// из куска str[start...end] создаётся новая строка
+char* str_make_substr(char str[], int start, int end);
+
