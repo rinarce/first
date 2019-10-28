@@ -12,24 +12,26 @@
 #include "calc_process.h"
 #include "str_functions.h"
 
+#define USE_BRACKET_MULTIPLY     // считать ли 2(3) (4)5(6) умножением - ДА
+
 // Логика приоритетов операций
-#define PRIORYTY_BIT_XOR     6      // xor
-#define PRIORYTY_BIT_OR      7      // |
-#define PRIORYTY_BIT_AND     8      // &
-#define PRIORYTY_BIT_NOT    10      // ~
+#define PRIORYTY_BIT_XOR     6   // xor
+#define PRIORYTY_BIT_OR      7   // |
+#define PRIORYTY_BIT_AND     8   // &
+#define PRIORYTY_BIT_NOT    10   // ~
 
-#define PRIORYTY_PLUS       12      // +
-#define PRIORYTY_MINUS      12      // -
+#define PRIORYTY_PLUS       12   // +
+#define PRIORYTY_MINUS      12   // -
 
-#define PRIORYTY_MUL_DIV    15      // * / % 
-#define PRIORYTY_POWER      18      // ^ 
+#define PRIORYTY_MUL_DIV    15   // * / % 
+#define PRIORYTY_POWER      18   // ^ 
 
-#define PRIORYTY_FUNCS      20      // функции
-#define PRIORYTY_CONST      20      // константы
+#define PRIORYTY_FUNCS      20   // функции
+#define PRIORYTY_CONST      20   // константы
 
-#define PRIORYTY_BRACKETS   30      // (...)
+#define PRIORYTY_BRACKETS   30   // (...)
 
-#define MAX_PRIORITY       100      // фиктивное большое число приоритета
+#define MAX_PRIORITY       100   // фиктивное большое число приоритета
 
 // ТУТ вся предварительная подготовка строки, возвращает новую строку
 // - удаление пробелов
@@ -116,13 +118,13 @@ int get_priority(char* ptr, int *operand_len, int *operand_type)
   if (*ptr == '(')
   { // выражение в скобках - как единый операнд, приоритет самый высокий
     // выделим кусок до следующей скобки парной этой
-    int nest = 0;                            // счётчик открытых скобок
+    int nested = 0;                            // счётчик открытых скобок
     char* find_brac = ptr;
     do 
-    { if (*find_brac == '(')        ++nest;  // открывающая скобка
-      else if (*find_brac == ')')   --nest;  // закрывающая скобка
+    { if (*find_brac == '(')        ++nested;  // открывающая скобка
+      else if (*find_brac == ')')   --nested;  // закрывающая скобка
       ++find_brac;
-    } while (nest != 0);
+    } while (nested != 0);
 
     *operand_len = find_brac - ptr;
     *operand_type = CALC_BRACKETS;
@@ -190,13 +192,13 @@ int get_priority(char* ptr, int *operand_len, int *operand_type)
   // ДОДЕЛАТЬ ПОТОМ все операции ХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХ
   
   
-  *operand_len = 1; //операция не найдена
+  *operand_len = 1; //операция не найдена, сдвинуться на 1 символ ->
   return MAX_PRIORITY;
 }
 
 
-// первые символы строки - это число или переменная (НЕ РЕАЛИЗОВАНО)
-// Шестнадцатеричные переводит, двоичные - ДА, возврат - код ошибки (0 - ОК)
+// первые символы строки - это число (или переменная - НЕ РЕАЛИЗОВАНО)
+// Шестнадцатеричные переводит, двоичные - ДА. Возврат - код ошибки (0 - ОК)
 int calc_evaluate(char* str, int symbols, double * result)
 {
   // такое бывает на строках (2)(3) обрезанных до 2)(3
@@ -217,11 +219,14 @@ int calc_evaluate(char* str, int symbols, double * result)
   str_copy_fix_len(str, new_str, symbols);
   new_str[symbols] = '\0';                    // допишем конец строки
 
+
+// ТУТ НУЖНО ПРОВЕРИТЬ НА ВСЕ КОНСТАНТЫ И ПЕРЕМЕННЫЕ, убрать их из операций
+
 // делаем пока для числа, пока без проверок ошибок ХХХХХХХХХХХХХХХХХХХХХХХХ
 
   if (is_binary_digit(new_str, result))  // пробуем на двоичность
   {
-    free(new_str);
+    free(new_str); // тогда результат уже передан  наверх в *result
   }
   else  // ТУТ все остальные варианты, 0x... работает
   { 
@@ -245,7 +250,8 @@ int MakeTree(char Expr[], int first, int last, PNode * result_tree)
   int min_priority_ptr;             // указатель на эту операцию
   int min_priority_oparand_len = 1; // длина записи операции символов
   int min_priority_type;            // минимальный приоритет - тип операции
-
+  int str_len = last - first + 1;   // длина анализируемого куска
+  
   PNode Tree = (PNode)malloc(sizeof(Node)); // создать в памяти новую вершину
   if (NULL == Tree) 
     return CALC_LINE_ERR_MEMORY;
@@ -255,7 +261,8 @@ int MakeTree(char Expr[], int first, int last, PNode * result_tree)
   Tree->value = 0;
   *result_tree = Tree;
 
-  if (first == last) // конечная вершина 1 символ: число или переменная
+  // case 0 - в рассматриваемом куске строки 1 символ: число или переменная
+  if (first == last) 
   {
     error = calc_evaluate(Expr + first, 1, &result);
     if (error)  return error;
@@ -265,10 +272,11 @@ int MakeTree(char Expr[], int first, int last, PNode * result_tree)
   }
 
   
-  min_priority = MAX_PRIORITY;  //Находим операцию с мин приоритетом
+  min_priority = MAX_PRIORITY;  
   int operand_len = 1;
   int operand_type = 0;
 
+  // step 1 - Находим операцию с МИНИМАЛЬНЫМ ПРИОРИТЕТОМ
   for (i = first; i <= last; i+=operand_len) 
   {
     priority = get_priority(Expr+i, &operand_len, &operand_type);
@@ -283,43 +291,97 @@ int MakeTree(char Expr[], int first, int last, PNode * result_tree)
       min_priority_type = operand_type;
     }
   }
-
-  if (min_priority == PRIORYTY_BRACKETS && Expr[first] == '(' && Expr[last] == ')')
-    { // всё выражение в скобках, избавимся от них в новом вызове
-      // в ситуации "(2)(3)(5)" => станет => "2)(3)(5"   непонятно что
-      // такое не предусмотрено пока, между скобками должны быть операции 
-
+  
+  // case 1 - не нашлось операций меньше СКОБОК
+  if (min_priority == PRIORYTY_BRACKETS) 
+  { 
+    if (min_priority_ptr == first && min_priority_oparand_len == str_len)
+    { 
+      // case 1.0. - OK, всё выражение в скобках, избавимся от них в новом вызове
       free(Tree);
       return MakeTree(Expr, first + 1, last - 1, result_tree);
-  }
+    }
 
-  if (min_priority == MAX_PRIORITY) // операций в этом куске не найдено, 
-    { // считаем это = число или переменная
-      int num_sym = last - first + 1;
-      // вот тут может быть отлов ситуаций (2)(3)(5) - нет операций тут
-      error = calc_evaluate(Expr + first, num_sym, &result);
-      if (error) return error;
+    // тут ситуация, когда найденные скобки не занимают всю длину обрабатываемого куска  
+    // это значит, что и операций меньшего приоритета тоже не найдено
+    // варианты 1(2) или (3)(4) или (2)3 или 2(3)4(5)6 и т.п.
+    
+    // решение 1 - считать это ошибкой, алгоритм дальше не пойдёт
+    // тогда закоментировать #define USE_BRACKET_MULTIPLY
+#ifndef USE_BRACKET_MULTIPLY      // считать ли 2(3) (4)5(6) умножением - ДА
+    return CALC_LINE_ERR_BRACKETS;
+#endif // !USE_BRACKET_MULTIPLY   // считать ли 2(3) (4)5(6) умножением - ДА
+    
+    // решение 2 - считать что в таких случаях используется неявное умножение
+    
+    if (min_priority_ptr == first)
+    { // case 1.1. - скобки в начале строки
+      Tree->type = CALC_MUL; // умножение
+      
+      PNode temp;            // от начала куска до конца скобок - левый операнд
+      error = MakeTree(Expr, first, min_priority_ptr + min_priority_oparand_len - 1, &temp);
+      if (error)  return error;
+      Tree->left = temp;     // записываем поддерево если не было ошибок
 
-      Tree->value = result;
+      // от конца скобок до конца этого куска строки - правый
+      error = MakeTree(Expr, min_priority_ptr + min_priority_oparand_len, last, &temp);
+      if (error)  return error;
+      Tree->right = temp;     // записываем поддерево если не было ошибок
+      
+      return 0;
+    }
+    else 
+    { // case 1.2. - скобки НЕ в начале строки
+      Tree->type = CALC_MUL; // умножение
+
+      PNode temp;            // от начала куска до начала скобок - левый операнд
+      error = MakeTree(Expr, first, min_priority_ptr - 1, &temp);
+      if (error)  return error;
+      Tree->left = temp;     // записываем поддерево если не было ошибок
+
+      // от НАЧАЛА скобок до конца этого куска строки - правый
+      // в т.ч. случаи когда скобки посередине, это обработается при другом вызове
+      // когда они окажутся в начале куска
+      error = MakeTree(Expr, min_priority_ptr, last, &temp);
+      if (error)  return error;
+      Tree->right = temp;     // записываем поддерево если не было ошибок
+
       return 0;
     }
 
-  // в ситуаци (2)(-3)(+5) неправильно найдет - и +
+  }
+  
+  // case 2 - операция в этом куске НЕ НАЙДЕНА, 
+  if (min_priority == MAX_PRIORITY) 
+    { // считаем что это - число или переменная
+      int num_sym = last - first + 1;
+      // вычислим операнд
+      error = calc_evaluate(Expr + first, num_sym, &result);
+      if (error) return error;
+
+      Tree->value = result; // поддеревьев не будет, сохранить результат
+      return 0;
+    }
+
+  // case 3 - операция НАЙДЕНА -  записывается её тип и создаются два поддерева 
+  // - то что в этом куске строки слева от операции и то что справа
   Tree->type = min_priority_type;
-  PNode temp;
+  
+  PNode temp;            // от начала куска до символа операции не включая
   error = MakeTree(Expr, first, min_priority_ptr - 1, &temp);
   if (error)  return error;
-  Tree->left = temp;
-
+  Tree->left = temp;     // записываем поддерево если не было ошибок
+  
+  // от конца символа операции (возможно несколько символов) до конца куска строки
   error = MakeTree(Expr, min_priority_ptr + min_priority_oparand_len, last, &temp);
   if (error)  return error;
   Tree->right = temp;
   
-  return 0;
+  return 0;  // если добрались сюда => все этапы пройдены без ошибок
 }
 
 
-// возвращает код ошибки или 0 если всё ОК
+// вычисляет дерево в *result и возвращает код ошибки или 0 если всё ОК
 int CalcTree(PNode Tree, double * result)
 {
   int error = 0;
@@ -380,7 +442,7 @@ int CalcTree(PNode Tree, double * result)
         return 0;
       }
     case CALC_POWER:
-      {
+      { // ПРОВЕРИТЬ НА ОШИБКИ АРГУМЕТОВ ?
  //       printf("[%g^%g] ", num_left, num_right);
         *result = pow(num_left, num_right);
         return 0;
@@ -388,7 +450,16 @@ int CalcTree(PNode Tree, double * result)
     case CALC_PI:
       {
 //        printf("[%g<pi>%g] ", num_left, num_right);
-        *result = M_PI;
+        // 1 не использоват неявное умножение скобок
+#ifndef USE_BRACKET_MULTIPLY      // считать ли 2(3) (4)5(6) умножением - ДА
+       *result = M_PI;
+       return 0;
+#endif // !USE_BRACKET_MULTIPLY   // считать ли 2(3) (4)5(6) умножением - ДА
+
+        // 2 считаем, что pi(10) == pi*10 и (2)pi == 2*pi 
+        // Advanced feature : (0)pi == pi   ;-) 
+        // отказ от этой фичи -- перенести все константы в evaluate, не в операции
+        *result = (num_left?num_left:1) * M_PI * (num_right?num_right:1);
         return 0;
       }
     case CALC_SQRT:
