@@ -1,4 +1,7 @@
-﻿#include "calc_in_out.h"
+﻿// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
+
+#include "calc_in_out.h"
 #include "calc_process.h"    // for error codes
 #include "str_functions.h"
 

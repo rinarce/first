@@ -1,4 +1,7 @@
-﻿// calc_process.c
+﻿// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
+
+// calc_process.c
 
 #include <stdlib.h>
 #include <ctype.h>  // для isspace()
@@ -149,12 +152,12 @@ int get_priority(char* ptr, int *operand_len, int *operand_type)
     return PRIORYTY_FUNCS;
   }
   
-  if (str_compare_fix_len(ptr, "ctg(", 3))
+  if (str_compare_fix_len(ptr, "ctg(", 4))
   { *operand_type = CALC_COTAN;
     return PRIORYTY_FUNCS;
   }
   
-  if (str_compare_fix_len(ptr, "abs(", 3))
+  if (str_compare_fix_len(ptr, "abs(", 4))
   { *operand_type = CALC_ABS;
     return PRIORYTY_FUNCS;
   }

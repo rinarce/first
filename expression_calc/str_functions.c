@@ -1,3 +1,6 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
+
 #include <stdlib.h>
 #include <ctype.h>  // для isspace()
 
@@ -213,10 +216,9 @@ int is_binary_digit(char* str, double* result)
   if (str_len < 2)
     return 0;
 
-  if (*str == '0' && (*(str + 1) == 'b' || *(str + 1) == 'b'))
+  if (*str == '0' && (*(str + 1) == 'b' || *(str + 1) == 'B'))
   {
     // начинается на 0b или 0B - считаем это двоичным числом
-    *result = 0;
     double multiply = 2.;
     double x = 0;
     str += 2; // пропустить первые два символа
