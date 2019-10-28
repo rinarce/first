@@ -37,7 +37,7 @@ void print_spaces(FILE* output_stream, char* input_line);
 
 
 // печатает строку пустую (в строке только \n)
-void print_empty(FILE* output_stream, char* input_line);
+void print_empty(FILE* output_stream);
 
 
 // печатает строку с ошибкой

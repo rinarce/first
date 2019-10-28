@@ -2,17 +2,23 @@
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 
 #include "calc_in_out.h"
-#include "calc_process.h"    // for error codes
+#include "calc_process.h"     // for error codes
 #include "str_functions.h"
+
+//#define PRINT_ARGV         // печать параметров командной строки
 
 // ---------------------------------------------------------------------------
 // 1 - параметры командной строки ошибочны для данной задачи
 // 0 - норм (допустим только 1 доп параметр - имя файла с данными)
 int is_command_line_wrong(int arg_count, char* arg_values[])
-{ // печать параметров командной строки
-  // for (int i = 0; i < arg_count; i++) printf("%d - %s\n", i, arg_values[i]);
-  
-  // перенаправление не передаётся в параметры, 1й парамерт - имя программы
+{ 
+
+#ifdef PRINT_ARGV     // печать параметров командной строки
+  for (int i = 0; i < arg_count; i++) printf("%d - %s\n", i, arg_values[i]);
+#endif // PRINT_ARGV
+
+  // перенаправление не передаётся в аргументы коммандной строки, 
+  // 1й параметр - имя программы => значит допустимо максимум 2 аргумента
   return (arg_count > 2);
 }
 
@@ -98,7 +104,7 @@ void print_spaces(FILE* output_stream, char* input_line)
 }
 
 // печатает строку пустую (в строке только \n)
-void print_empty(FILE* output_stream, char* input_line)
+void print_empty(FILE* output_stream)
 {
   fprintf(output_stream, "<empty>\n");
 }

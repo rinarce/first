@@ -87,6 +87,7 @@ unsigned int str_count_non_spaces(char const* str)
   return count;
 }
 
+
 // из str удаляет все пробелы -> в новую созданную строку
 char* str_remove_spaces(char const* str)
 { 
@@ -109,12 +110,14 @@ char* str_remove_spaces(char const* str)
   return new_string;
 }
 
+
 // копирует символы в строках strFrom -> strTo, в количестве number
 void str_copy_fix_len(char const* strFrom, char* strTo, unsigned int number)
 { 
   while (number--)
     *(strTo++) = *(strFrom++);
 }
+
 
 // возвращает 1 символ [A–Z] -> [a–z], или не меняет
 char LowerChar(char c) { 
@@ -139,6 +142,7 @@ void UpperCase(char str[]) {
   for (int pos = 0; str[pos]; ++pos)
     str[pos] = UpperChar(str[pos]);
 }
+
 
 // находит вхождение в строку символа X, или конец строки '\0'
 char* str_find_char(char const* str, char x, int start) 
@@ -166,6 +170,7 @@ void str_remove_substr(char str[], int start, int end)
   do {}		// копировать, пока на скопируем символ '\0'
   while (str[p1++] = str[p2++]);
 }
+
 
 // заменяет в строке str : word -на-> replace 
 // (!!! заменяется не больше сиимволов чем длина word !)
@@ -197,6 +202,7 @@ int str_replace_all(char str[], char word[], char replace[])
   }
   return replaced;
 }
+
 
 // копирует строку до '\0' включая, возвращает указатель на strTo
 char* str_copy_str(char strFrom[], char strTo[]) 

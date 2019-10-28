@@ -59,7 +59,7 @@ int main(int arg_count, char* arg_values[])
       print_comment(output_stream, input_line);
       break;
     case CALC_LINE_EMPTY:      // это строка пустая (только \n)
-      print_empty(output_stream, input_line);
+      print_empty(output_stream);
       break;    
     case CALC_LINE_SPACES:      // это строка без значащих символов
       print_spaces(output_stream, input_line);
