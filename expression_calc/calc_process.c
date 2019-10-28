@@ -63,13 +63,13 @@ int is_bracket_err_in_str(const char* str, int start, int end)
   int nest = 0;                       // счётчик открытых скобок
   while (start <= end)
   {
-    if (*str == '(')        nest++;   // открывающая скобка
-    else if (*str == ')')   nest--;   // закрывающая скобка
+    if (*str == '(')        ++nest;   // открывающая скобка
+    else if (*str == ')')   --nest;   // закрывающая скобка
 
     if (nest < 0)
       return 1;                       // закрывающая раньше открывающей
-    str++;
-    start++;
+    ++str;
+    ++start;
   }
   return nest;            // если >0 - остались незакрытые скобки
 }
@@ -116,9 +116,9 @@ int get_priority(char* ptr, int *operand_len, int *operand_type)
     int nest = 0;                            // счётчик открытых скобок
     char* find_brac = ptr;
     do 
-    { if (*find_brac == '(')        nest++;  // открывающая скобка
-      else if (*find_brac == ')')   nest--;  // закрывающая скобка
-      find_brac++;
+    { if (*find_brac == '(')        ++nest;  // открывающая скобка
+      else if (*find_brac == ')')   --nest;  // закрывающая скобка
+      ++find_brac;
     } while (nest != 0);
 
     *operand_len = find_brac - ptr;

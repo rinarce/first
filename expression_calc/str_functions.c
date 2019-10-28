@@ -15,7 +15,7 @@ unsigned int str_lenght(char const* str)
 {
   int len = 0;
   if (NULL != str)          // проверка, что указатель корректен
-    while (*str++) len++;
+    while (*str++) ++len;
   return len;
 }
 
@@ -32,7 +32,7 @@ int is_only_spaces(char* str)
 int is_comment(char* str)
 {
   while (*str && isspace((int)(*str)))
-    str++;   // пропустить все незначащие символы
+    ++str;   // пропустить все незначащие символы
 
   // провер€ем что оба символа - это не конец строки и равны '//'
   return (*str && *str == '/' && *(str + 1) && *(str + 1) == '/');
@@ -44,12 +44,12 @@ int is_bracket_error(char* str)
   int nest = 0;                       // счЄтчик открытых скобок
   while (*str)
   {
-    if (*str == '(')        nest++;   // открывающа€ скобка
-    else if (*str == ')')   nest--;   // закрывающа€ скобка
+    if (*str == '(')        ++nest;   // открывающа€ скобка
+    else if (*str == ')')   --nest;   // закрывающа€ скобка
 
     if (nest < 0)  
       return 1;                       // закрывающа€ раньше открывающей
-    str++;
+    ++str;
   }
   return nest;            // если >0 - остались незакрытые скобки
 }
@@ -70,7 +70,7 @@ unsigned int str_count_spaces(char const* str)
   unsigned count = 0;
   while (*str)
     if (isspace((int)(*str++)))
-      count++;
+      ++count;
   return count;
 }
 
@@ -80,7 +80,7 @@ unsigned int str_count_non_spaces(char const* str)
   unsigned count = 0;
   while (*str)
     if (!isspace((int)(*str++)))
-      count++;
+      ++count;
   return count;
 }
 
@@ -100,7 +100,7 @@ char* str_remove_spaces(char const* str)
     if (!isspace(*old_str_ptr))   // копируем не пробел
       *(new_str_ptr++) = *(old_str_ptr++);
     else
-      old_str_ptr++;              // пробел - пропускаем
+      ++old_str_ptr;              // пробел - пропускаем
 
   *new_str_ptr = '\0';            //  конец строки
   return new_string;
@@ -127,13 +127,13 @@ char UpperChar(char c) {
 
 // замен€ет символы строки [AЦZ] -> на аналоги из [aЦz]
 void LowerCase(char str[]) { 
-  for (int pos = 0; str[pos]; pos++)
+  for (int pos = 0; str[pos]; ++pos)
     str[pos] = LowerChar(str[pos]);
 }
 
 // замен€ет символы строки [aЦz] -> [AЦZ]
 void UpperCase(char str[]) { 
-  for (int pos = 0; str[pos]; pos++)
+  for (int pos = 0; str[pos]; ++pos)
     str[pos] = UpperChar(str[pos]);
 }
 
@@ -143,7 +143,7 @@ char* str_find_char(char const* str, char x, int start)
   str += start;                          // смещение от начала строки
   while (*str)
     if (x == (*str)) return (char*)str;  // вернЄт адрес первого найденного ’
-    else str++;
+    else ++str;
   return (char*)str;                     // тут вернЄт адрес концы строки '\0'
 }
 
@@ -185,12 +185,12 @@ int str_replace_all(char str[], char word[], char replace[])
     if (str_compare_fix_len(&str[pos], word, word_len))
     {
       str_sopy_substr(replace, 0, replace_len - 1, &str[pos]);
-      replaced++;
+      ++replaced;
       if (delta)         // слова разной длины, необходима подрезка строки
         str_remove_substr(str, pos + replace_len, pos + replace_len + delta - 1);
       pos += replace_len;
     }
-    else pos++;
+    else ++pos;
   }
   return replaced;
 }
@@ -234,7 +234,7 @@ int is_binary_digit(char* str, double* result)
         // вместо нул€ может быть любой символ !!! это фича
         x += (*str == '1') ? multiply : 0;
         multiply /= 2;
-        str++;
+        ++str;
       }
     }
     *result = x;
