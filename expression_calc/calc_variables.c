@@ -36,13 +36,15 @@ P_List_Node vars_global = &head_global;       // работаем через указатели
 
 // удалить узел списка и все узлы за ним
 void list_delete_tail(P_List_Node node)
-{
-  if (NULL == node) return;     // вызвано для несуществующего узла
-  if (NULL != node->next)       // рекурсивно спуститься к последнему узлу
-    list_delete_tail(node->next);
-//  printf("{delete <%s>=%g}", node->var_name, node->value);
-  free(node->var_name);         // удалить свою строку
-  free(node);                   // удалиться самому
+{ 
+  P_List_Node next;
+  while (NULL != node)          // Избавимся от рекурсии
+  {
+    next = node->next;          // запомнить, ведь node удалится
+    free(node->var_name);       // удалить свою строку
+    free(node);                 // удалиться самому
+    node = next;                // перейти к следующему
+  }
 }
 
 // очистить связный список - указанный узел очистить, следующие - удалить
@@ -95,14 +97,15 @@ int list_add(P_List_Node list, char* var_name, double value)
 // return 1 - пременная найдена, 0 - нет
 int list_get(P_List_Node list, char* var_name, double* value)
 {
-  if (NULL == list) return 0; // вызвано для несуществующего узла 
-
-  if (str_compare(list->var_name, var_name)) 
-    {                         
+  while (NULL != list) 
+  {
+    if (str_compare(list->var_name, var_name)) {
       *value = list->value;
       return 1;               // нашли
     }
-  return list_get(list->next, var_name, value);  // поискать дальше по списку
+    list = list->next;        // перейти к следующему
+  }
+  return 0;                   // не нашли
 }
 
 
