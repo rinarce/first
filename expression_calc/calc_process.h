@@ -20,82 +20,27 @@
 //const double E = 2.71828182845904523536;
 
 // --  Результат обработки строки - тип ---------------------------------------
-enum calc_line_type       // результат обработки строки - тип
+enum calc_line_type     // результат обработки строки - тип
 {
-  CALC_LINE_OK,           // это корректное выражение
-  CALC_LINE_COMMENT,      // это комментарий
-  CALC_LINE_EMPTY,        // это совершенно пустая строка
-  CALC_LINE_SPACES,       // это строка без значащих символов
+  CALC_LINE_OK,         // это корректное выражение
+  CALC_LINE_COMMENT,    // это комментарий
+  CALC_LINE_EMPTY,      // это совершенно пустая строка
+  CALC_LINE_SPACES,     // это строка без значащих символов
   CALC_LINE_LAST,
-  CALC_LINE_ERR_PARSE,    // ошибка - во время разбора выражения
-  CALC_LINE_ERR_EVAL ,    // ошибка - преобразования в число
-  CALC_LINE_ERR_MEMORY,   // ошибка - выделения памяти
-  CALC_LINE_ERR_ZERO_DIV, // ошибка - деление на 0
-  CALC_LINE_ERR_BRACKETS, // ошибка - непарность скобок
-  CALC_LINE_ERR_SQRT_N,   // ошибка - квадратный корень из отрицательных
-  CALC_LINE_ERR_ALGO,     // ошибка - в алгоритме что-то идёт не так
-  CALC_LINE_ERR_X,        // ошибка - .... пока не придумано
-  CALC_LINE_ERR_VARS,     // ошибка - с переменными
-  CALC_LINE_ERR_OTHER,    // ошибка - прочие
-  CALC_LINE_ERR_COUNT,    // ошибка - масимальный номер перечисления
+  CALC_ERR_PARSE,       // ошибка - во время разбора выражения
+  CALC_ERR_EVAL ,       // ошибка - преобразования в число
+  CALC_ERR_MEMORY,      // ошибка - выделения памяти
+  CALC_ERR_ZERO_DIV,    // ошибка - деление на 0
+  CALC_ERR_BRACKETS,    // ошибка - непарность скобок
+  CALC_ERR_SQRT_N,      // ошибка - квадратный корень из отрицательных
+  CALC_ERR_ALGO,        // ошибка - в алгоритме что-то идёт не так
+  CALC_ERR_X,           // ошибка - .... пока не придумано
+  CALC_ERR_VARS,        // ошибка - с переменными
+  CALC_ERR_VAR_BADNAME, // ошибка - переменная - плохое имя - не реализовано
+                        // не дискриминируем переменную из-за необычного имени
+  CALC_ERR_OTHER,       // ошибка - прочие
+  CALC_ERR_COUNT,       // ошибка - масимальный номер перечисления
 };
-
-
-// --  Типы операций  --------------------------------------------------------
-typedef enum NodeType     // типы операций, OK - реализовано полностью
-{                   
-  CALC_MINUS,       //OK -
-  CALC_U_MINUS,     //OK - унарный - не используется, работает и так 
-  CALC_PLUS,        //OK +
-  CALC_U_PLUS,      //OK + унарный - не используется, работает и так 
-  CALC_DIV,         //OK /
-  CALC_MUL,         //OK *
-  CALC_MOD,         //OK % - остаток от деления
-  CALC_POWER,       //OK ^ - возведение в степень
-  CALC_SQRT,        //OK sqrt()
-  CALC_ABS,         //OK abs() - модуль
-  CALC_SIGN,        //OK sign - знак числа == {-1, 0, 1}
-  CALC_SIN,         // sin()
-  CALC_COS,         // cos()
-  CALC_TAN,         // tg()
-  CALC_COTAN,       // ctg()
-  CALC_ASIN,        // arcsin() 
-  CALC_ACOS,        // arccos()
-  CALC_ATAN,        // arctg()
-  CALC_LN,          // ln()
-  CALC_ROUND,       // round()  - округление к ближайшему
-  CALC_FLOUR,       // flour()  - округление вниз
-  CALC_CEIL,        // ceil()   - округление вверх
-  CALC_LOG,         // log(a,x) - не реализовано
-
-  CALC_BRACKETS,    //OK выражение в скобках
-  CALC_PI,          //OK pi
-  CALC_E,           // e(x) e^x
-
-                    //  в битовых отбрасывается дробная часть !!!
-  CALC_XOR_BIT,     //OK xor битовое исключающее или
-  CALC_AND_BIT,     //OK & битовое 
-  CALC_OR_BIT,      //OK | битовое
-  CALC_NOT_BIT,     //OK ~ битовое отрицание
-  
-  CALC_VAR,         // переменная               - не реализовано
-  CALC_SEPARATOR,   //OK ; разделитель подстрок 
-  CALC_LET,         // переменная =             - не реализовано
-  CALC_LETGLOBAL,   // глобальная переменная := - не реализовано
-  CALC_FUNC,        // функция                  - не реализовано
-} NodeType;
-
-// --  Типы для двоичного дерева   -------------------------------------------
-
-typedef struct Node           // узел дерева
-{
-  double value;               // значение
-  char* var_name;             // имя переменной
-  NodeType type;              // какого типа
-  struct Node* left, * right; // поддерево левое и правое
-} Node;
-
-typedef struct Node* PNode;   // указатель на узел дерева
 
 
 // --  Функции  --------------------------------------------------------------

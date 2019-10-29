@@ -9,6 +9,7 @@
 
 #include "calc_in_out.h"    // ввод-вывод
 #include "calc_process.h"   // обработка
+#include "calc_variables.h" // очистить глобальные переменные перед выходом
 
 
 
@@ -76,7 +77,8 @@ int main(int arg_count, char* arg_values[])
   }
 
   // Освобождение памяти ---------------------------------------------
-  free(input_line);       
+  free(input_line); 
+  variable_clear_global();  // удалить созданные глобальные переменные
   
   // Закрытие файлов --------------------------------------------------
   if (input_stream != stdin)     fclose(input_stream);

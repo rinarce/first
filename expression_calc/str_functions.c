@@ -61,10 +61,28 @@ int is_bracket_error(char* str)
 // сравнивает строки на длину distance, возврат 1 если равны, 0 иначе
 int str_compare_fix_len(char const* str1, char const* str2, unsigned int distance)
 {
+  if (NULL == str1 || NULL == str2) return 0;  // ошибочные указатели
   while (distance--)
-    if (*(str1++) != *(str2++)) // до первого несовпадения
+  {
+    if (*(str1) != *(str2)) // до первого несовпадения
       return 0;
+    else { ++str1; ++str2; }
+  }
   return 1;
+}
+
+// сравнивает строки, возврат 1 если равны, 0 иначе
+int str_compare(char const* str1, char const* str2, unsigned int distance)
+{
+  if (NULL == str1 || NULL == str2) return 0;  // ошибочные указатели
+  do
+  {
+    if (*(str1++) != *(str2++))   // до первого несовпадения
+      return 0;
+  } while (*str1);                // до конца строки str1
+  
+  if (*str2 == '\0')  return 1;   // вторая строка тоже закончилась
+  else                return 0;
 }
 
 // подсчёт пробелов

@@ -100,34 +100,34 @@ void print_error(FILE* output_stream, char* input_line, int error_code)
   fprintf(output_stream, "%s == ERROR: ", input_line);
   switch (error_code)
   {
-  case CALC_LINE_ERR_MEMORY:
+  case CALC_ERR_MEMORY:
     fprintf(output_stream, "not enough memory.\n");
     break;
-  case CALC_LINE_ERR_ZERO_DIV:
+  case CALC_ERR_ZERO_DIV:
     fprintf(output_stream, "divide by 0.\n");
     break;
-  case CALC_LINE_ERR_BRACKETS:
+  case CALC_ERR_BRACKETS:
     fprintf(output_stream, "brackets mismatch.\n");
     break;
-  case CALC_LINE_ERR_OTHER:
+  case CALC_ERR_OTHER:
     fprintf(output_stream, "other error.\n");
     break;
-  case CALC_LINE_ERR_X:
+  case CALC_ERR_X:
     fprintf(output_stream, "jet not defined error !!!!! \n");
     break;
-  case CALC_LINE_ERR_SQRT_N:
+  case CALC_ERR_SQRT_N:
     fprintf(output_stream, "square root from negative number.\n");
     break;
-  case CALC_LINE_ERR_PARSE:
+  case CALC_ERR_PARSE:
     fprintf(output_stream, "Can't parse line.\n");
     break;
-  case CALC_LINE_ERR_ALGO:
+  case CALC_ERR_ALGO:
     fprintf(output_stream, "ASSERT. Something wrong in algorithm.\n");
     break;
-  case CALC_LINE_ERR_EVAL:
+  case CALC_ERR_EVAL:
     fprintf(output_stream, "Can't evaluate number.\n");
     break;
-  case CALC_LINE_ERR_VARS:
+  case CALC_ERR_VARS:
     fprintf(output_stream, "Variables.\n");
     break;
 
