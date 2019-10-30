@@ -145,7 +145,7 @@ void delete_node(PNode Tree)
 // ---------------------------------------------------------------------------
 // определяет приоритет операции для указателя ptr, длину операнда
 // и тип операции (многовато)
-int get_priority(char* ptr, int *oper_len, OperatorType* oper_type)
+int get_priority(char const* ptr, int *oper_len, OperatorType* oper_type)
 {
   *oper_len = 1;
   switch (*ptr)
@@ -184,7 +184,7 @@ int get_priority(char* ptr, int *oper_len, OperatorType* oper_type)
   { // выражение в скобках - как единый операнд, приоритет самый высокий
     // выделим кусок до следующей скобки парной этой
     int nested = 0;                            // счётчик открытых скобок
-    char* find_brac = ptr;
+    char const* find_brac = ptr;
     do 
     { if (*find_brac == '(')        ++nested;  // открывающая скобка
       else if (*find_brac == ')')   --nested;  // закрывающая скобка
@@ -260,7 +260,7 @@ int get_priority(char* ptr, int *oper_len, OperatorType* oper_type)
 // ---------------------------------------------------------------------------
 // первые символы строки - это число или переменная
 // Шестнадцатеричные переводит, двоичные - ДА. Возврат - код ошибки (0 - ОК)
-int calc_evaluate(char* str, int symbols, double * result)
+int calc_evaluate(char const* str, int symbols, double * result)
 {
   // такое бывало на строках (2)(3) обрезанных до 2)(3
   if (symbols < 0) return CALC_ERR_ALGO; // ASSERT
@@ -421,7 +421,7 @@ int CalcTree(PNode Tree, double* result)
 // строит дерево вычислений для str[first...last] 
 // построенное дерево возвращает в *result_tree 
 // return - код ошибки (0 - ОК)
-int MakeTree(char str[], int first, int last, PNode * result_tree)
+int MakeTree(char const str[], int first, int last, PNode * result_tree)
 {
   int error;                        // код ошибки
   double result = 0;                // результат
@@ -616,7 +616,7 @@ int MakeTree(char str[], int first, int last, PNode * result_tree)
 // ------------ Главная функция -------------------------------------------
 
 // вычисляет строку выражений, возвращает тип строки (ок или ошибка) и *result
-int process_line(char* str, double* result)
+int process_line(char const* str, double* result)
 {
   int error_code = 0;
   *result = 0;

@@ -49,4 +49,4 @@ typedef enum            // результат обработки строки - 
 // --  Функции  --------------------------------------------------------------
 
 // вычисляет строку выражений, возвращает тип строки (ок или ошибка) и результат
-int process_line(char* input_line, double* result);
+int process_line(char const* input_line, double* result);

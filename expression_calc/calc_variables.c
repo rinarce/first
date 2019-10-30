@@ -59,7 +59,7 @@ void list_clear(P_List_Node list)
 
 // Добавить переменную к списку, для имени создаётся новая строка в памяти
 // return - код ошибки 
-int list_add(P_List_Node list, char* var_name, double value)
+int list_add(P_List_Node list, char const* var_name, double const value)
 { 
   if (NULL == list) return CALC_ERR_ALGO;  //вызвано для несуществующего списка
   
@@ -97,7 +97,7 @@ int list_add(P_List_Node list, char* var_name, double value)
 
 // ищет в списке переменную, если нашло - то изменяет *value
 // return 1 - пременная найдена, 0 - нет
-int list_get(P_List_Node list, char* var_name, double* value)
+int list_get(P_List_Node list, char const* var_name, double* value)
 {
   while (NULL != list) 
   {
@@ -115,18 +115,18 @@ int list_get(P_List_Node list, char* var_name, double* value)
 // ИНТЕРФЕЙС 
 // ---------------------------------------------------------------------------
 // создаёт локальную переменную var_name, return - код ошибки
-int variable_make(char* var_name, double value) {
+int variable_make(char const* var_name, double const value) {
   return list_add(vars_local, var_name, value);
 }
 
 // создаёт глобальную переменную var_name, return - код ошибки
-int variable_make_global(char* var_name, double value) {
+int variable_make_global(char const* var_name, double const value) {
   return list_add(vars_global, var_name, value);
 }
 
 // значение переменной var_name -> *value,
 // return 0 - не найдено, 1 - есть такая
-int variable_get(char* var_name, double *value)
+int variable_get(char const* var_name, double *value)
 {
   int name_len = str_lenght(var_name);
   if (name_len == 0) return 0;    //  не передано имя переменной

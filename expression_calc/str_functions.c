@@ -23,7 +23,7 @@ unsigned int str_lenght(char const* str)
 }
 
 // 1 - если в строке только всевозможные пробелы ( \t\n\v\f\r)
-int is_only_spaces(char* str)
+int is_only_spaces(char const* str)
 {
   while (*str)
     if (!isspace((int)(*str++)))
@@ -32,7 +32,7 @@ int is_only_spaces(char* str)
 }
 
 // 1 - если в строке первые значащие символы //
-int is_comment(char* str)
+int is_comment(char const* str)
 {
   while (*str && isspace((int)(*str)))
     ++str;   // пропустить все незначащие символы
@@ -42,7 +42,7 @@ int is_comment(char* str)
 }
 
 // 1 - если в строке нарушена парность скобок (()
-int is_bracket_error(char* str)
+int is_bracket_error(char const* str)
 {
   int nest = 0;                       // счётчик открытых скобок
   while (*str)
@@ -175,13 +175,13 @@ char* str_find_char(char const* str, char x, int start)
 
 // кусок str[start...end] -> записывает в начало subStr
 // конец строки  '\0' никак не проверяется и в subStr не дополняется
-void str_copy_substr(char str[], int start, int end, char subStr[]) 
+void str_copy_substr(char const str[], int start, int end, char subStr[])
 {
   for (int pos = 0; start <= end; subStr[pos++] = str[start++]) {};
 }
 
 // из куска str[start...end] создаётся новая строка
-char * str_make_substr(char str[], int start, int end)
+char * str_make_substr(char const str[], int start, int end)
 {
   char*     new_str = (char*)malloc(end - start + 1);
   char* new_str_ptr = new_str;
@@ -238,7 +238,7 @@ int str_replace_all(char str[], char word[], char replace[])
 
 
 // копирует строку до '\0' включая, возвращает указатель на strTo
-char* str_copy_str(char strFrom[], char strTo[]) 
+char* str_copy_str(char const strFrom[], char strTo[]) 
 {
   int pos = 0;
   do 
@@ -252,7 +252,7 @@ char* str_copy_str(char strFrom[], char strTo[])
 // 1 - если в str двоичное число (тогда его возвращает в result)
 // разделитель целой и дробной части - русский - ','
 // Advanced feature - в двоичных вместо 0 можно писать любой символ !
-int is_binary_digit(char* str, double* result)
+int is_binary_digit(char const* str, double* result)
 {
   unsigned int str_len = str_lenght(str);
   if (str_len < 2)
