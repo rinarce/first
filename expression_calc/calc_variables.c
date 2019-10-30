@@ -61,17 +61,19 @@ void list_clear(P_List_Node list)
 // return - код ошибки 
 int list_add(P_List_Node list, char* var_name, double value)
 { 
-  if (NULL == list) return CALC_ERR_ALGO;  //вызвано для несущесвующего списка
+  if (NULL == list) return CALC_ERR_ALGO;  //вызвано для несуществующего списка
   
 // для упрощения 
 // 1 - не проверять наличие (переопределение), добавлять в начало списка
 //     тогда ранние определения будут дальше и при поиске не найдутся
-// 2 - имя не проверяется, считаем что правил для имён переменных НЕТ
+// 2 - имя не проверяется, считаем что ПРАВИЛ ДЛЯ ИМЁН переменных НЕТ
 //     тогда возможно переопределение числовых констант, и прочее
 //     например 2=3 [###]=8 pi=3 
 
-  int name_len = str_lenght(var_name);       // создать новую строку для имени
-  char* new_str = (char*)malloc(name_len + 1);
+  int name_len = str_lenght(var_name);        
+  if (name_len == 0) return CALC_ERR_VARZ;    // попытка создать переменную без имени
+
+  char* new_str = (char*)malloc(name_len + 1);// создать новую строку для имени
   if (NULL == new_str)  return CALC_ERR_MEMORY;
 
   P_List_Node next_node = (P_List_Node)malloc(sizeof(List_Node));
@@ -129,10 +131,9 @@ int variable_get(char* var_name, double *value)
   int name_len = str_lenght(var_name);
   if (name_len == 0) return 0;    //  не передано имя переменной
   
-  // сначала ищем в локальных
+                // сначала ищем в локальных
   if(list_get(vars_local, var_name, value)) return 1;
-  
-  // потом в глобальных
+                // потом в глобальных
   return list_get(vars_global, var_name, value);
 }
 

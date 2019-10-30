@@ -72,7 +72,7 @@ int str_compare_fix_len(char const* str1, char const* str2, unsigned int distanc
 }
 
 // сравнивает строки, возврат 1 если равны, 0 иначе
-int str_compare(char const* str1, char const* str2, unsigned int distance)
+int str_compare(char const* str1, char const* str2)
 {
   if (NULL == str1 || NULL == str2) return 0;  // ошибочные указатели
   do
@@ -186,10 +186,11 @@ char * str_make_substr(char str[], int start, int end)
   char*     new_str = (char*)malloc(end - start + 1);
   char* new_str_ptr = new_str;
   if (NULL != new_str)
+  {
     while (start <= end)
       *(new_str_ptr++) = str[start++];
-  
-  *new_str_ptr = '\0';   // конец строки
+    *new_str_ptr = '\0';   // конец строки
+  }
   return new_str;
 }
 

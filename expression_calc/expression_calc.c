@@ -45,35 +45,43 @@ int main(int arg_count, char* arg_values[])
 
 
   // Цикл обработки строк  -------------------------------------------
-  char* input_line;                   // очередная строка до символа \n
+  char* input_line;               // очередная строка до символа \n
+  int error = 0;                  // результат вызовов функции, 0 == OK
   
   // будем вводить строки, выделяя память динамически
-  
-  while (read_input_line(input_stream, &input_line)) // 0 признак конца ввода
+  while (1) // условие выхода - строка нулевого размера => конец потока данных
   {
-    double result = 0;                               // результат выражения
-    int err = process_line(input_line, &result);     // тип обработанной строки
-    switch (err)
+    unsigned line_len;
+    error = read_input_line(input_stream, &input_line, &line_len);
+    if (error || NULL == input_line)
+      print_input_error(output_stream);
+    else if (line_len == 0)       // конец входного потока - выход
+      break;
+    else                          // успешно прочитана строка
     {
-    case CALC_LINE_OK:          // это корректное выражение
-      print_expression(output_stream, input_line, result);
-      break;
-    case CALC_LINE_COMMENT:     // это комментарий
-      print_comment(output_stream, input_line);
-      break;
-    case CALC_LINE_EMPTY:      // это строка пустая (только \n)
-      print_empty(output_stream);
-      break;    
-    case CALC_LINE_SPACES:      // это строка без значащих символов
-      print_spaces(output_stream, input_line);
-      break;
+      double result = 0;          // результат выражения
+      error = process_line(input_line, &result);  // обработать строку
+      switch (error)
+      {
+      case CALC_LINE_OK:          // это корректное выражение
+        print_expression(output_stream, input_line, result);
+        break;
+      case CALC_LINE_COMMENT:     // это комментарий
+        print_comment(output_stream, input_line);
+        break;
+      case CALC_LINE_EMPTY:       // это строка пустая (только \n)
+        print_empty(output_stream);
+        break;
+      case CALC_LINE_SPACES:      // это строка без значащих символов
+        print_spaces(output_stream, input_line);
+        break;
 
-    default:                    // всё остальное считаем ошибкой
-      print_error(output_stream, input_line, err);
-      break;
+      default:                    // всё остальное считаем ошибкой
+        print_error_v2(output_stream, input_line, error);
+        break;
+      }
     }
-
-    free(input_line);           // строка обработана, больше не нужна
+    free(input_line);             // строка обработана, больше не нужна
   }
 
   // Освобождение памяти ---------------------------------------------

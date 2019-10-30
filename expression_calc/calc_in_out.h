@@ -3,8 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>             // для выделения памяти
 
-#define DST_BUFFER_SIZE 100     // порции считывания строки (увеличить в релизе!)
-//#define DEBUG_IO              // отладка ввода, закомментировать !
+#define DST_BUFFER_SIZE 10     // порции считывания строки (увеличить в релизе!)
 
 
 // 1 - параметры командной строки ошибочны для данной задачи
@@ -19,9 +18,10 @@ int detect_input_stream(int arg_count, char* arg_values[], FILE** input_file);
 
 
 // вводит строку произвольной длины, самостоятельно выделяет память
-// в *str возвращает указатель на строку, return = длина строки
+// в *str возвращает указатель на строку, return = код ошибки
 // \n в конце обрезается, но считается в длине (длина == 0 - конец потока ввода)
-unsigned int read_input_line(FILE* input_stream, char** str);
+// при нехватке памяти - пропуск до конца строки, введённое отбросить
+int read_input_line(FILE* input_stream, char** str, unsigned int* readed_len);
 
 
 // печатает строку правильное выражение == результат
@@ -42,3 +42,9 @@ void print_empty(FILE* output_stream);
 
 // печатает строку с ошибкой
 void print_error(FILE* output_stream, char* input_line, int error_code);
+
+// печатает строку с ошибкой, 2я редакция
+void print_error_v2(FILE* output_stream, char* input_line, int error_code);
+
+// печатает строку с ошибкой, возникшей во время ввода строки
+void print_input_error(FILE* output_stream);

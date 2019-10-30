@@ -20,6 +20,9 @@ int is_bracket_error(char* str);
 // сравнивает строки на длину distance, возврат 1 если равны, 0 иначе
 int str_compare_fix_len(char const* str1, char const* str2, unsigned int distance);
 
+// сравнивает строки, возврат 1 если равны, 0 иначе
+int str_compare(char const* str1, char const* str2);
+
 // копирует символы в строках strFrom -> strTo, в количестве number
 void str_copy_fix_len(char const* strFrom, char* strTo, unsigned int number);
 
