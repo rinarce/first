@@ -71,8 +71,9 @@ typedef enum NodeType     // типы операций, OK - реализова�
   CALC_LOG,         // log(a,x) - не реализовано
 
   CALC_BRACKETS,    //OK выражение в скобках
-  CALC_PI,          //OK pi
-  CALC_E,           // e(x) e^x
+  CALC_PI,          //OK pi == M_PI ==  3.14159265358979323846
+  CALC_E,           //OK e  == M_E  ==  2.71828182845904523536
+  CALC_EXP,         // e(x) e^x
 
                     //  в битовых отбрасывается дробная часть !!!
   CALC_XOR_BIT,     //OK xor битовое исключающее или
@@ -80,11 +81,11 @@ typedef enum NodeType     // типы операций, OK - реализова�
   CALC_OR_BIT,      //OK | битовое
   CALC_NOT_BIT,     //OK ~ битовое отрицание
 
-  CALC_VAR,         // переменная               - не реализовано
+  
   CALC_SEPARATOR,   //OK ; разделитель подстрок 
-  CALC_LET,         // переменная =             - не реализовано
-  CALC_LETGLOBAL,   // глобальная переменная := - не реализовано
-  CALC_FUNC,        // функция                  - не реализовано
+  CALC_LET,         //OK переменная =             
+  CALC_LETGLOBAL,   //OK глобальная переменная := 
+  CALC_USER_FUNC,   // определение функции        - не реализовано
 } NodeType;
 
 // --  Типы для двоичного дерева   -------------------------------------------
@@ -108,8 +109,7 @@ char* prepare_expression(char const* str)
 {
   int made_changes = 1;
   char* new_str = str_remove_spaces(str);      // удалить пробелы
-  if (NULL == new_str)
-    return NULL;
+  if (NULL == new_str)  return NULL;
 
   while (made_changes)                // заменить множественные --- и +++
   {
@@ -119,8 +119,7 @@ char* prepare_expression(char const* str)
     made_changes += str_replace_all(new_str, "-+", "-");
 
     char* temp_str = str_remove_spaces(new_str); // удалить пробелы
-    if (NULL == temp_str)
-      return NULL;
+    if (NULL == temp_str)  return NULL;
 
     str_copy_str(temp_str, new_str);
     free(temp_str);
@@ -279,8 +278,7 @@ int calc_evaluate(char* str, int symbols, double * result)
 
   // создаём новую строку
   char* new_str = (char*)malloc(symbols + 1);
-  if (NULL == new_str)
-    return CALC_ERR_MEMORY;
+  if (NULL == new_str)  return CALC_ERR_MEMORY;
   
   str_copy_fix_len(str, new_str, symbols);
   new_str[symbols] = '\0';                    // допишем конец строки
@@ -289,20 +287,18 @@ int calc_evaluate(char* str, int symbols, double * result)
 // ---------------------------------------------------------------------------
 // ТУТ НУЖНО ПРОВЕРИТЬ НА ВСЕ КОНСТАНТЫ И ПЕРЕМЕННЫЕ, убрать их из операций
 // ---------------------------------------------------------------------------
-  if (variable_get(new_str, result))
+  if (variable_get(new_str, result))          // нашлась такая переменная
   {
-    free(new_str);
+    free(new_str); 
     return 0;
   }
   
-  if (symbols == 2 && str_compare_fix_len(str, "pi", 2))  
-  {
+  if (symbols == 2 && str_compare_fix_len(str, "pi", 2)) {
     *result = M_PI;     
     free(new_str);    
     return 0;
   }
-  if (symbols == 1 && str_compare_fix_len(str, "e", 1))
-  {
+  if (symbols == 1 && str_compare_fix_len(str, "e", 1))  {
     *result = M_E;      
     free(new_str);    
     return 0;
@@ -338,20 +334,17 @@ int CalcTree(PNode Tree, double* result)
   double num_left = 0, num_right = 0;
   
   // 1. если нет потомков - это число, или была пременная, стало тоже число
-  if (Tree->left == NULL && Tree->right == NULL)  
-  {
+  if (Tree->left == NULL && Tree->right == NULL) {
     *result = Tree->value;      // вернули число
     return 0;
   }
 
   // 2. вычисляем поддеревья
-  if (NULL != Tree->left)
-  {
+  if (NULL != Tree->left)  {
     error = CalcTree(Tree->left, &num_left);
     if (error)  return error;    // если ошибка - дальше не вычислять
   }
-  if (NULL != Tree->right)
-  {
+  if (NULL != Tree->right) {
     error = CalcTree(Tree->right, &num_right);
     if (error)  return error;    // если ошибка - дальше не вычислять
   }
@@ -359,94 +352,65 @@ int CalcTree(PNode Tree, double* result)
   // 3. выполняем операцию
   switch (Tree->type)
   { 
-  case CALC_PLUS:
-  {  //        printf("[%g+%g] ", num_left, num_right);
-    *result = num_left + num_right;
-    return 0;
-  }
-  case CALC_MINUS:
-  {  //      printf("[%g-%g] ", num_left, num_right);
-    *result = num_left - num_right;
-    return 0;
-  }
-  case CALC_MUL:
-  {  //        printf("[%g*%g] ", num_left, num_right);
-    *result = num_left * num_right;
-    return 0;
-  }
-  case CALC_DIV:
-  {
-    if (num_right == 0)                   // Проверим на деление на 0
-      return CALC_ERR_ZERO_DIV;      // Ошибка
-//        printf("[%g/%g] ", num_left, num_right);
-    *result = num_left / num_right;       // ОК
-    return 0;
-  }
-  case CALC_MOD:
-  {
-    if (num_right == 0)                   // Проверим на деление на 0
-      return CALC_ERR_ZERO_DIV;           // Ошибка
-    *result = fmod(num_left, num_right);  // ОК
-    return 0;
-  }
-  case CALC_POWER:
-  { // ПРОВЕРИТЬ НА ОШИБКИ АРГУМЕТОВ ?
-    *result = pow(num_left, num_right);
-    return 0;
-  }
-
-  case CALC_SQRT:
-  { 
-    if (num_right < 0)                    // Проверим на отрицательность
-      return CALC_ERR_SQRT_N;             // Ошибка
-    *result = sqrt(num_right);            // ОК
-    return 0;
-  }
-  case CALC_SIGN:
-  {
-    //       printf("[%g<sign>%g] ", num_left, num_right);
-    if (num_right == 0)     *result = 0;
-    else if (num_right < 0)  *result = -1;
-    else if (num_right > 0)  *result = 1;
-    return 0;
-  }
-  case CALC_ABS:
-  {
-    //       printf("[%g<abs>%g] ", num_left, num_right);
-    if (num_right < 0)  *result = -num_right;
-    else                *result = num_right;          // ОК
-    return 0;
-  }
+  case CALC_PLUS:     *result = num_left + num_right;
+                      return 0;
+  
+  case CALC_MINUS:    *result = num_left - num_right;
+                      return 0;
+    
+  case CALC_MUL:      *result = num_left * num_right;
+                      return 0;
+  
+  case CALC_DIV:      // Проверим на деление на 0
+                      if (num_right == 0)                   
+                          return CALC_ERR_ZERO_DIV;         // Ошибка
+                      *result = num_left / num_right;       // ОК
+                      return 0;
+  
+  case CALC_MOD:      // Проверим на деление на 0
+                      if (num_right == 0)                   
+                          return CALC_ERR_ZERO_DIV;         // Ошибка
+                      *result = fmod(num_left, num_right);  // ОК
+                      return 0;
+  
+  case CALC_POWER:    // ПРОВЕРИТЬ НА ОШИБКИ АРГУМЕТОВ ?
+                      *result = pow(num_left, num_right);
+                      return 0;
+  
+  case CALC_SQRT:     // Проверим на отрицательность
+                      if (num_right < 0)                    
+                          return CALC_ERR_SQRT_N;           // Ошибка
+                      *result = sqrt(num_right);            // ОК
+                      return 0;
+  
+  case CALC_SIGN:     if (num_right == 0)       *result = 0;
+                      else if (num_right < 0)   *result = -1;
+                      else if (num_right > 0)   *result = 1;
+                      return 0;
+  
+  case CALC_ABS:      if (num_right < 0)  *result = -num_right;
+                      else                *result =  num_right;      
+                      return 0;
+  
 
   // ---------- ЛОГИЧЕСКИЕ БИТОВЫЕ ----- отбрасывают дробную часть
-  case CALC_AND_BIT: {
-    *result = (double)(((int)num_left) & ((int)num_right));
-    return 0;
-  }
-  case CALC_OR_BIT: {
-    *result = (double)(((int)num_left) | ((int)num_right));
-    return 0;
-  }
-  case CALC_XOR_BIT: {
-    *result = (double)(((int)num_left) ^ ((int)num_right));
-    return 0;
-  }
-  case CALC_NOT_BIT: {
-    //       printf("[%g<not>%g] ", num_left, num_right);
-    *result = (double)(~(int)num_right);
-    return 0;
-  }
+  case CALC_AND_BIT:  *result = (double)(((int)num_left) & ((int)num_right));
+                      return 0;
+  case CALC_OR_BIT:   *result = (double)(((int)num_left) | ((int)num_right));
+                      return 0;
+  case CALC_XOR_BIT:  *result = (double)(((int)num_left) ^ ((int)num_right));
+                      return 0;
+  case CALC_NOT_BIT:  //       printf("[%g<not>%g] ", num_left, num_right);
+                      *result = (double)(~(int)num_right);
+                      return 0;
 
-  case CALC_SEPARATOR: {
-    // разделитель формул возвращает правый результат
-    //      printf("[%g<;>%g] ", num_left, num_right);
-    *result = num_right;
-    return 0;
-  }
-
+  case CALC_SEPARATOR:  // разделитель формул возвращает правый результат
+                        //      printf("[%g<;>%g] ", num_left, num_right);
+                      *result = num_right;
+                      return 0;
+  
   // ------------ ДОДЕЛАТЬ ВСЕ ОПЕРАЦИИ =-=-=-==-=-=-=-=-=-=-=-=-=-
   }
-
 
   // неизвестная операция - таких не должно быть
   return CALC_ERR_ALGO;
