@@ -93,8 +93,7 @@ typedef enum        // типы операций, OK - реализовано п
 typedef struct Node           // узел дерева
 {
   double value;               // значение
-  char* var_name;             // имя переменной
-  OperatorType type;         // какого типа
+  OperatorType type;          // тип операции
   struct Node* left, * right; // поддерево левое и правое
 } Node;
 
@@ -111,24 +110,15 @@ char* prepare_expression(char const* str)
   char* new_str = str_remove_spaces(str);      // удалить пробелы
   if (NULL == new_str)  return NULL;
 
-  while (made_changes)                // заменить множественные --- и +++
+  while (made_changes)        // заменить множественные --- и +++
   {
     made_changes  = str_replace_all(new_str, "--", "+");
     made_changes += str_replace_all(new_str, "++", "+");
     made_changes += str_replace_all(new_str, "+-", "-");
     made_changes += str_replace_all(new_str, "-+", "-");
-
-    char* temp_str = str_remove_spaces(new_str); // удалить пробелы
-    if (NULL == temp_str)  return NULL;
-
-    str_copy_str(temp_str, new_str);
-    free(temp_str);
   }
-
-  // LowerCase(spaces_removed);
   return new_str;
 }
-
 
 // ---------------------------------------------------------------------------
 // удаляет узел дерева и все его дочерние узлы
@@ -137,10 +127,8 @@ void delete_node(PNode Tree)
   if (Tree == NULL) return;
   delete_node(Tree->left);
   delete_node(Tree->right);
-  free(Tree->var_name);       // удалить свою строку, если есть
   free(Tree);                 // удалить себя
 }
-
 
 // ---------------------------------------------------------------------------
 // определяет приоритет операции для указателя ptr, длину операнда
@@ -432,7 +420,6 @@ int MakeTree(char const str[], int first, int last, PNode * result_tree)
   
   Tree->left = NULL;
   Tree->right = NULL;
-  Tree->var_name = NULL;
   Tree->value = 0;
   *result_tree = Tree;
 

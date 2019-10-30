@@ -137,42 +137,6 @@ void str_copy_fix_len(char const* strFrom, char* strTo, unsigned int number)
 }
 
 
-// возвращает 1 символ [A–Z] -> [a–z], или не меняет
-char LowerChar(char c) { 
-  if (c >= 'A' && c <= 'Z') c += 32;
-  return c;
-}
-
-// возвращает 1 символ [a–z] -> [A–Z], или не меняет
-char UpperChar(char c) { 
-  if (c >= 'a' && c <= 'z') c -= 32;
-  return c;
-}
-
-// заменяет символы строки [A–Z] -> на аналоги из [a–z]
-void LowerCase(char str[]) { 
-  for (int pos = 0; str[pos]; ++pos)
-    str[pos] = LowerChar(str[pos]);
-}
-
-// заменяет символы строки [a–z] -> [A–Z]
-void UpperCase(char str[]) { 
-  for (int pos = 0; str[pos]; ++pos)
-    str[pos] = UpperChar(str[pos]);
-}
-
-
-// находит вхождение в строку символа X, или конец строки '\0'
-char* str_find_char(char const* str, char x, int start) 
-{
-  str += start;                          // смещение от начала строки
-  while (*str)
-    if (x == (*str)) return (char*)str;  // вернёт адрес первого найденного Х
-    else ++str;
-  return (char*)str;                     // тут вернёт адрес концы строки '\0'
-}
-
-
 // кусок str[start...end] -> записывает в начало subStr
 // конец строки  '\0' никак не проверяется и в subStr не дополняется
 void str_copy_substr(char const str[], int start, int end, char subStr[])

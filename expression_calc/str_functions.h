@@ -35,21 +35,6 @@ unsigned int str_count_non_spaces(char const* str);
 // из str удаляет все пробелы -> в новую созданную строку
 char* str_remove_spaces(char const* str);
 
-// возвращает 1 символ [AЦZ] -> [aЦz], или не меняет
-char LowerChar(char c);
-
-// возвращает 1 символ [aЦz] -> [AЦZ], или не меняет
-char UpperChar(char c);
-
-// заменяет символы строки [AЦZ] -> на аналоги из [aЦz]
-void LowerCase(char str[]);
-
-// заменяет символы строки [aЦz] -> [AЦZ]
-void UpperCase(char str[]); 
-
-// находит вхождение в строку символа X, или конец строки '\0'
-char* str_find_char(char const* str, char x, int start);
-
 // заменяет в строке str : word -на-> replace 
 // (!!! заменяется не больше сиимволов чем длина word !)
 // т.е. строка str - может только сокращаться (простой сдвиг конца строки)

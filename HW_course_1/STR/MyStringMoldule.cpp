@@ -233,3 +233,13 @@ void FillStr(char str[], int start, int end, char filler) {
 		str[start++] = filler;
 }
 
+
+// находит вхождение в строку символа X, или конец строки '\0'
+char* str_find_char(char const* str, char x, int start) 
+{
+  str += start;                          // смещение от начала строки
+  while (*str)
+    if (x == (*str)) return (char*)str;  // вернёт адрес первого найденного Х
+    else ++str;
+  return (char*)str;                     // тут вернёт адрес концы строки '\0'
+}

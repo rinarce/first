@@ -22,8 +22,8 @@ result_message  result_types[] = {
 { CALC_LINE_COMMENT,  "Comment",                      "Комментарий"                 },
 { CALC_LINE_EMPTY,    "Empty",                        "Пустая строка"               },
 { CALC_LINE_SPACES,   "Only spaces",                  "Строка без значащих символов"},
-{ CALC_ERR_INPUT,     "Input. Not enought memory", "Ввод. Не хватает памяти ввести строку" },
 
+{ CALC_ERR_INPUT,     "Input. Not enought memory",    "Ввод. Не хватает памяти"     },
 { CALC_ERR_PARSE,     "Can' parse expression.",       "Во время разбора выражения"  },
 { CALC_ERR_EVAL,      "Can't evaluate number.",       "Преобразования в число"      },
 { CALC_ERR_MEMORY,    "Not enough memory.",           "Выделения памяти"            },
@@ -78,14 +78,13 @@ int read_input_line(FILE* input_stream, char** str, unsigned int * readed_len)
     unsigned int input_len = str_lenght(fgets(buffer, DST_BUFFER_SIZE + 1, input_stream));
 
     if (buffer[input_len - 1] == '\n')    // отрезаем '\n'
-        buffer[input_len - 1] = '\0';  
+        buffer[input_len - 1] =  '\0';  
 
     // просим новый кусок памяти
     char* new_str = (char*)realloc(result_str, str_len + input_len + 1);
 
     if (NULL == new_str)  // выделение памяти не удалось, 
     { // обнуление введёной строки и пропуск данных до конца строки ! п 2.4.7.
-
       free(result_str);
       *str = NULL;
       *readed_len = 0;
@@ -95,7 +94,7 @@ int read_input_line(FILE* input_stream, char** str, unsigned int * readed_len)
       { // пропускать всё до конца строки
         input_len = str_lenght(fgets(buffer, DST_BUFFER_SIZE + 1, input_stream));
         if (buffer[input_len - 1] == '\n')    // отрезаем '\n'
-          buffer[input_len - 1] = '\0';
+            buffer[input_len - 1] =  '\0';
       }
       return CALC_ERR_INPUT;
     }                      

@@ -11,6 +11,18 @@ unsigned int STR_Lenght(char const* str) {  // длина строки до '\0'
   return len;
 }
 
+
+// находит вхождение в строку символа X, или конец строки '\0'
+char* str_find_char(char const* str, char x, int start) 
+{
+  str += start;                          // смещение от начала строки
+  while (*str)
+    if (x == (*str)) return (char*)str;  // вернёт адрес первого найденного Х
+    else ++str;
+  return (char*)str;                     // тут вернёт адрес концы строки '\0'
+}
+
+
 int STR_IsEmpty(char const* str)
 { // 1 - если строка пустая, иначе 0
   return ((NULL != str) && *str) ? 0 : 1;
