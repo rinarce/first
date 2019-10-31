@@ -104,7 +104,7 @@ calc_err read_input_line(FILE* input_stream, char** str)
 
 // ---------------------------------------------------------------------------
 // печатает строку с ошибкой, 2я редакция - через массив 
-void print_error(FILE* output_stream, char* input_line, int error_code)
+void print_error(FILE* output_stream, char* input_line, calc_err error_code)
 {
 #ifdef MESSAGE_EN    
     char* message_text = default_message.text_en;
@@ -130,7 +130,7 @@ void print_error(FILE* output_stream, char* input_line, int error_code)
 
 // ---------------------------------------------------------------------------
 // печатает строку по условиям задачи, с учётом кода ошибки
-void print_line(FILE* output_stream, char* line, int error, double result)
+void print_line(FILE* output_stream, char* line, calc_err error, double result)
 {
   switch (error)
   {
