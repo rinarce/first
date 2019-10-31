@@ -89,15 +89,15 @@ abs(-3)*abs(2^2+1)
 // VARIABLES
 Пример из методички = 68; x = 2 * 2; y = 1 + 2; x^y + x
 Все пробелы удаляются! = 100500; В с епро белыуда ля  ю тся! /100
-x=2;  ye:=80,7; д е с я т ь := 10; Пи2 := pi*x
+x=2;  ye:=80,7; д е с я т ь := 10; 2Пи := pi*x
 s=3; 3*s
 3*s; s=3
-s:=3; 3*s
+S:=3; 3*S
 // локальные заслоняют глобальные в текущей строке, поздние - ранних
-old_global_s = s; new_local_s = 7; s = 7; old_global_s + s
-global s don't change = s
+old_global_S = S; new_local_S = 7; S = 7; old_global_S + S
+global S don't change = S
 w = 3; w =4; w = 5; The last w = w
-Пи2(10) / десять / 2
+2Пи(10) / десять / 2
 =2;;;;
 
 

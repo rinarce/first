@@ -4,15 +4,6 @@
 #include <stdlib.h>
 #include <ctype.h>  // для isspace()
 
-// выделяет место для строки размером (size + 1)
-char* AllocateString(unsigned int size)
-{ 
-  char* new_str = (char*)malloc(size + 1);
-  if (NULL != new_str)
-    *new_str = '\0';   // на всякий случай в начале делаем конец строки
-  return new_str;
-}
-
 // длина строки до '\0'
 unsigned int str_lenght(char const* str) 
 {
@@ -35,7 +26,7 @@ int is_only_spaces(char const* str)
 int is_comment(char const* str)
 {
   while (*str && isspace((int)(*str)))
-    ++str;   // пропустить все незначащие символы
+    ++str;                // пропустить все незначащие символы
 
   // проверяем что оба символа - это не конец строки и равны '//'
   return (*str && *str == '/' && *(str + 1) && *(str + 1) == '/');
@@ -104,7 +95,6 @@ unsigned int str_count_non_spaces(char const* str)
       ++count;
   return count;
 }
-
 
 // из str удаляет все пробелы -> в новую созданную строку
 char* str_remove_spaces(char const* str)
@@ -248,6 +238,6 @@ int is_binary_digit(char const* str, double* result)
     *result = x;
     return 1;
   }
-  
+ 
   return 0;
 }

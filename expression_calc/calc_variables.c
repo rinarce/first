@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>         // memory
 
-#include "calc_process.h"   // код ошибки
+#include "common_defs.h"    // общие определения
 #include "str_functions.h"  // для строк
 
 
@@ -24,14 +24,24 @@ typedef struct List_Node  // узел списка
   struct List_Node* next; // указатель на следующий узел (NULL у последнего)
 } List_Node;
 
-typedef struct List_Node* P_List_Node;    // указатель на узел списка
+// ---------------------------------------------------------------------------
+// Предопределённые глобальные переменные 
+List_Node pi = { M_PI, "pi", NULL };           // будет последней
+List_Node  e = { M_E,  "e",  &pi };            // будет перед pi
+// ..... - добавлять сюда, связывая друг с другом
+// ---------------------------------------------------------------------------
+
+typedef struct List_Node* P_List_Node;         // указатель на узел списка
 
 // Первые узлы для связных списков, эти узлы статические, постоянные
-// В них ничего не храню
-List_Node   head_local  = { 0, NULL, NULL };  // для локальных переменных
-List_Node   head_global = { 0, NULL, NULL };  // для глобальных переменных
-P_List_Node vars_local  = &head_local;        // работаем через указатели
-P_List_Node vars_global = &head_global;       // работаем через указатели
+// В них ничего не храню, только сслылка на следующий узел
+List_Node     head_local = { 0, NULL, NULL };  // для локальных переменных
+List_Node    head_global = { 0, NULL, NULL };  // для глобальных переменных
+List_Node   head_defined = { 0, NULL, &e   };  // для предопределённых
+
+P_List_Node   vars_local = &head_local;        // работаем через указатели
+P_List_Node  vars_global = &head_global;        
+P_List_Node vars_defined = &head_defined;
 
 
 // удалить узел списка и все узлы за ним
@@ -64,11 +74,11 @@ int list_add(P_List_Node list, char const* var_name, double const value)
   if (NULL == list) return CALC_ERR_ALGO;  //вызвано для несуществующего списка
   
 // для упрощения 
-// 1 - не проверять наличие (переопределение), добавлять в начало списка
+// 1 - не проверять наличие (возможно переопределение), добавлять в начало списка
 //     тогда ранние определения будут дальше и при поиске не найдутся
 // 2 - имя не проверяется, считаем что ПРАВИЛ ДЛЯ ИМЁН переменных НЕТ
 //     тогда возможно переопределение числовых констант, и прочее
-//     например 2=3 [###]=8 pi=3 
+//     например 2=3 3=2 [####]=4 pi=3 и т.п.
 
   int name_len = str_lenght(var_name);        
   if (name_len == 0) return CALC_ERR_VARZ;    // попытка создать переменную без имени
@@ -84,13 +94,12 @@ int list_add(P_List_Node list, char const* var_name, double const value)
   }
 
   str_copy_fix_len(var_name, new_str, name_len);    // скопировать имя в созданную строку
-  new_str[name_len] = '\0';                         // конец строки
+  new_str[name_len]   = '\0';                       // конец строки
 
   next_node->var_name = new_str;      // имя переменной 
   next_node->value    = value;        // значение
   next_node->next     = list->next;   // присоединить хвост списка 
-
-  list->next = next_node;             // новый узел будет за головой
+  list->next          = next_node;    // новый узел будет за головой
   return 0;                           // дошли до сюда - ошибок нет
 }
 
@@ -129,10 +138,12 @@ int variable_make_global(char const* var_name, double const value) {
 int variable_get(char const* var_name, double *value)
 {
   int name_len = str_lenght(var_name);
-  if (name_len == 0) return 0;    //  не передано имя переменной
+  if (name_len == 0) return 0;    //  не передано имя переменной (такой запрос не ошибка)
   
                 // сначала ищем в локальных
-  if(list_get(vars_local, var_name, value)) return 1;
+  if (list_get(vars_local, var_name, value)) return 1;
+                // предопределённые в программе
+  if (list_get(vars_defined, var_name, value)) return 1;
                 // потом в глобальных
   return list_get(vars_global, var_name, value);
 }

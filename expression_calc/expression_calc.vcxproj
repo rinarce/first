@@ -159,10 +159,8 @@
     <ClCompile Include="calc_variables.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="calc_in_out.h" />
-    <ClInclude Include="calc_process.h" />
+    <ClInclude Include="common_defs.h" />
     <ClInclude Include="str_functions.h" />
-    <ClInclude Include="calc_variables.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

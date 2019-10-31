@@ -1,13 +1,8 @@
 ﻿// This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 
-#include "calc_in_out.h"
-#include "calc_process.h"     // for error codes
+#include "common_defs.h"
 #include "str_functions.h"
-
-#define MESSAGE_EN            // Сообщения об ошибках на английском? иначе на русском
-
-// ---------------------------------------------------------------------------
 
 typedef struct                // тип структуры для одного собщения
 {
@@ -42,24 +37,9 @@ result_message  result_types[] = {
 };
 
 result_message default_message = 
-                 { 0, "Not recognized error type!",   "Таких ошибок не бывает!" };
+                 { 0, "Not recognized error type!",   "Таких ошибок не бывает!"     };
 
 int result_message_count = sizeof(result_types) / sizeof(result_message); // Количество разных сообщений
-
-// ---------------------------------------------------------------------------
-// return - 0 == OK    1 == ошибка открытия входного файла
-// input_file - если указан файл в коммандной строке, то он откроется на ввод
-// иначе input_file = stdin  - файл не указан, или ввод перенаправлен (этим займётся windows)
-int detect_input_stream(int arg_count, char* arg_values[], FILE** input_file)
-{
-  if (arg_count == 1) {             // входной файл не задан
-    *input_file = stdin;
-    return 0;                       // OK
-  }
-  fopen_s(input_file, arg_values[1], "r");
-  return (NULL == *input_file);     // 0 - открыт успешно, 1 - нет (== NULL)
-}
-
 
 // ---------------------------------------------------------------------------
 // вводит строку произвольной длины, самостоятельно выделяет память
@@ -115,104 +95,16 @@ int read_input_line(FILE* input_stream, char** str, unsigned int * readed_len)
         break;
     }
   }
-
   *str = result_str;
   *readed_len = str_len;
   return 0;
 }
 
-// ---------------------------------------------------------------------------
-// печатает строку правильное выражение == результат
-void print_expression(FILE* output_stream, char* input_line, double result)
-{
-  fprintf(output_stream, "%s == %g\n", input_line, result);
-}
-
-// печатает строку комментарий 
-void print_comment(FILE* output_stream, char* input_line)
-{
-  fprintf(output_stream, "%s\n", input_line);
-}
-
-// печатает строку без значащих символов 
-void print_spaces(FILE* output_stream, char* input_line)
-{
-  fprintf(output_stream, "%s\n", input_line);
-}
-
-// печатает строку пустую (в строке только \n)
-void print_empty(FILE* output_stream)
-{
-  fprintf(output_stream, "\n");
-}
 
 // ---------------------------------------------------------------------------
-// печатает строку с ошибкой
+// печатает строку с ошибкой, 2я редакция - через массив 
 void print_error(FILE* output_stream, char* input_line, int error_code)
 {
-  fprintf(output_stream, "%s == ERROR: ", input_line);
-  switch (error_code)
-  {
-  case CALC_ERR_MEMORY:
-    fprintf(output_stream, "Not enough memory.\n");
-    break;
-  case CALC_ERR_ZERO_DIV:
-    fprintf(output_stream, "Divide by 0.\n");
-    break;
-  case CALC_ERR_BRACKETS:
-    fprintf(output_stream, "Brackets mismatch.\n");
-    break;
-  case CALC_ERR_OTHER:
-    fprintf(output_stream, "Other error.\n");
-    break;
-  case CALC_ERR_X:
-    fprintf(output_stream, "Jet not defined error !\n");
-    break;
-  case CALC_ERR_SQRT_N:
-    fprintf(output_stream, "Square root from negative number.\n");
-    break;
-  case CALC_ERR_PARSE:
-    fprintf(output_stream, "Can't parse line.\n");
-    break;
-  case CALC_ERR_ALGO:
-    fprintf(output_stream, "ASSERT. Something wrong in algorithm.\n");
-    break;
-  case CALC_ERR_EVAL:
-    fprintf(output_stream, "Can't evaluate number.\n");
-    break;
-  case CALC_ERR_VARS:
-    fprintf(output_stream, "Variables.\n");
-    break;
-  case CALC_ERR_NAN:
-    fprintf(output_stream, "NaN - bad opers made result = Not a Number.\n");
-    break;
-  case CALC_ERR_INF:
-    fprintf(output_stream, "Inf - bad opers made result = Infinity.\n");
-    break;
-
-  default:
-    fprintf(output_stream, "Not recognized error type.\n");
-    break;
-  }
-}
-
-
-// печатает строку с ошибкой, возникшей во время ввода строки
-void print_input_error(FILE* output_stream)
-{
-#ifdef MESSAGE_EN
-  fprintf(output_stream, "ERROR: Input. Not enought memory");
-#else
-  fprintf(output_stream, "ERROR: Ввод. Не хватает памяти ввести строку");
-#endif // MESSAGE_EN
-}
-
-
-
-// печатает строку с ошибкой, 2я редакция
-void print_error_v2(FILE* output_stream, char* input_line, int error_code)
-{
-
 #ifdef MESSAGE_EN    
     char* message_text = default_message.text_en;
 #else                
@@ -233,4 +125,42 @@ void print_error_v2(FILE* output_stream, char* input_line, int error_code)
     }
   }
   fprintf(output_stream, "%s == ERROR: %s\n", input_line, message_text);
+}
+
+// ---------------------------------------------------------------------------
+// печатает строку по условиям задачи, с учётом кода ошибки
+void print_line(FILE* output_stream, char* line, int error, double result)
+{
+  switch (error)
+  {
+  case CALC_ERR_ARGS:         // ошибка в параметрах запуска программы
+        fprintf(output_stream, "ERROR: bad command line. "
+                               " Use: expression_calc.exe inpit_file_name\n");
+        break;
+
+  case CALC_ERR_OPEN_FILE:    // ошибка открытия входного файла
+        fprintf(output_stream, "ERROR: can't open input file [%s]\n", line);
+        break;
+
+  case CALC_LINE_OK:          // это корректное выражение
+        fprintf(output_stream, "%s == %g\n", line, result);
+        break;
+
+  case CALC_LINE_COMMENT:     // это комментарий
+  case CALC_LINE_EMPTY:       // это строка пустая (только \n)
+  case CALC_LINE_SPACES:      // это строка без значащих символов
+        fprintf(output_stream, "%s\n", line);
+        break;
+
+  case CALC_ERR_INPUT:        // ошибка, возникшая во время ввода строки 
+#ifdef MESSAGE_EN
+        fprintf(output_stream, "ERROR: Input. Not enought memory");
+#else
+        fprintf(output_stream, "ERROR: Ввод. Не хватает памяти ввести строку");
+#endif // MESSAGE_EN
+
+  default:                    // всё остальное считаем ошибкой строки
+        print_error(output_stream, line, error);
+        break;
+  }
 }

@@ -10,12 +10,9 @@
 #include <math.h>
 #include <stdio.h>
 
-#include "calc_process.h"
+#include "common_defs.h"
 #include "str_functions.h"
-#include "calc_variables.h"        // модуль для переменных и пр.
 
-// --  Неявное умножение скобок ? использовать ? -----------------------------
-#define CALC_USE_BRACKET_MULTIPLY  // считать ли 2(3) (4)5(6) умножением - ДА
 
 // -- Логика приоритетов операций --------------------------------------------
 
@@ -71,8 +68,9 @@ typedef enum        // типы операций, OK - реализовано п
   CALC_LOG,         // log(a,x) - не реализовано
 
   CALC_BRACKETS,    //OK выражение в скобках
-  CALC_PI,          //OK pi == M_PI ==  3.14159265358979323846
-  CALC_E,           //OK e  == M_E  ==  2.71828182845904523536
+                    // Pi e теперь сделаны через переменные
+ // CALC_PI,        //OK pi == M_PI ==  3.14159265358979323846
+ // CALC_E,         //OK e  == M_E  ==  2.71828182845904523536
   CALC_EXP,         // e(x) e^x
 
                     //  в битовых отбрасывается дробная часть !!!
@@ -132,7 +130,7 @@ void delete_node(PNode Tree)
 
 // ---------------------------------------------------------------------------
 // определяет приоритет операции для указателя ptr, длину операнда
-// и тип операции (многовато)
+// и тип операции (всё сразу за один проход)
 int get_priority(char const* ptr, int *oper_len, OperatorType* oper_type)
 {
   *oper_len = 1;
@@ -177,15 +175,11 @@ int get_priority(char const* ptr, int *oper_len, OperatorType* oper_type)
     { if (*find_brac == '(')        ++nested;  // открывающая скобка
       else if (*find_brac == ')')   --nested;  // закрывающая скобка
       ++find_brac;
-    } while (nested != 0);
+    } while (nested != 0);                     // ищем только парную скобку
 
     *oper_len = find_brac - ptr;
     *oper_type = CALC_BRACKETS;
- 
-/* // отладочная печать - удалить
-    char* i = ptr, * j = find_brac-1;
-    printf("(->");  while (i <= j) printf("%c", *i++); printf("<-)\n");
-*/
+
     return PRIORITY_BRACKETS;
   }
 
@@ -240,7 +234,7 @@ int get_priority(char const* ptr, int *oper_len, OperatorType* oper_type)
   // ДОДЕЛАТЬ ПОТОМ все операции ХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХ
   
   
-  *oper_len = 1; //операция не найдена, сдвинуться на 1 символ ->
+  *oper_len = 1;      //операция не найдена, сдвинуться на 1 символ ->
   return PRIORITY_MAX;
 }
 
@@ -255,8 +249,8 @@ int calc_evaluate(char const* str, int symbols, double * result)
 
   if (symbols == 0)
   { // всё пустое считаем за 0 - прощаем некоторые спорные случаи 3+ или ()
+    // так же для унарных операций, вызовов функций - слева ничего нет
     *result = 0;
-    //    printf("[Empty]");
     return 0;
   }
 
@@ -266,42 +260,27 @@ int calc_evaluate(char const* str, int symbols, double * result)
   
   str_copy_fix_len(str, new_str, symbols);
   new_str[symbols] = '\0';                    // допишем конец строки
-
-
-// ---------------------------------------------------------------------------
-// ТУТ НУЖНО ПРОВЕРИТЬ НА ВСЕ КОНСТАНТЫ И ПЕРЕМЕННЫЕ, убрать их из операций
-// ---------------------------------------------------------------------------
+  
+  // ТУТ ПРОВЕРКА НА ВСЕ КОНСТАНТЫ И ПЕРЕМЕННЫЕ
   if (variable_get(new_str, result))          // нашлась такая переменная
   {
     free(new_str); 
     return 0;
   }
   
-  if (symbols == 2 && str_compare_fix_len(str, "pi", 2)) {
-    *result = M_PI;     
-    free(new_str);    
-    return 0;
-  }
-  if (symbols == 1 && str_compare_fix_len(str, "e", 1))  {
-    *result = M_E;      
-    free(new_str);    
-    return 0;
-  }
-
-
-// делаем для числа, проверка ошибок - встроенная в Си
+  // делаем для числа, проверка ошибок - встроенная в Си
 
   if (is_binary_digit(new_str, result))  // пробуем на двоичность
   {
     free(new_str); // тогда результат уже передан  наверх в *result
   }
-  else  // ТУТ все остальные варианты, 0x... работает
+  else             // ТУТ все остальные варианты, 0x... работает
   { 
     // sscanf_s относится к строкам довольно либерально, считаем это фичей
     // берёт из начала строки сколько сможет, в конце может быть 2фигни == 2
 
     int evaluated = sscanf_s(new_str, "%lf", result);
-//    printf("[<%s>=%g{%d}]", new_str, *result, evaluated);
+//    printf("[<%s>=%g]", new_str, *result);
     free(new_str);
     if (evaluated != 1) //должно быть получено ровно 1 число, иначе ошибка
       return CALC_ERR_EVAL;
@@ -338,49 +317,36 @@ int CalcTree(PNode Tree, double* result)
   { 
   case CALC_PLUS:     *result = num_left + num_right;
                       return 0;
-  
   case CALC_MINUS:    *result = num_left - num_right;
                       return 0;
-    
   case CALC_MUL:      *result = num_left * num_right;
                       return 0;
-  
-  case CALC_DIV:      // Проверим на деление на 0
-                      if (num_right == 0)                   
+  case CALC_DIV:      if (num_right == 0)                   // Проверим на деление на 0
                           return CALC_ERR_ZERO_DIV;         // Ошибка
                       *result = num_left / num_right;       // ОК
                       return 0;
-  
-  case CALC_MOD:      // Проверим на деление на 0
-                      if (num_right == 0)                   
+  case CALC_MOD:      if (num_right == 0)                   // Проверим на деление на 0
                           return CALC_ERR_ZERO_DIV;         // Ошибка
                       *result = fmod(num_left, num_right);  // ОК
                       return 0;
-  
-  case CALC_POWER:    // ПРОВЕРИТЬ НА ОШИБКИ АРГУМЕТОВ ?
-                      *result = pow(num_left, num_right);
-                      if (isnan(*result))     // Получено не число NaN (Not a Number)
-                        return CALC_ERR_NAN;  // скорее всего - чётные корни из отрицательных
-                      if (isinf(*result))     // Получена бесконечность Inf
-                        return CALC_ERR_INF;  // скорее всего - 0 в отрицательной степени
+  case CALC_POWER:    *result = pow(num_left, num_right);   // Проверить на ошибки уже результат
+                      if (isnan(*result))                   // Получено не число NaN (Not a Number)
+                        return CALC_ERR_NAN;                // скорее всего - чётные корни из отрицательных
+                      if (isinf(*result))                   // Получена бесконечность Inf
+                        return CALC_ERR_INF;                // скорее всего - 0 в отрицательной степени
                       return 0;
-  
-  case CALC_SQRT:     // Проверим на отрицательность
-                      if (num_right < 0)                    
+  case CALC_SQRT:     if (num_right < 0)                    // Проверим на отрицательность
                           return CALC_ERR_SQRT_N;           // Ошибка
                       *result = sqrt(num_right);            // ОК
                       return 0;
-  
-  case CALC_SIGN:     if (num_right == 0)       *result = 0;
-                      else if (num_right < 0)   *result = -1;
-                      else if (num_right > 0)   *result = 1;
+  case CALC_SIGN:     if (num_right == 0)     *result =  0;
+                      else if (num_right < 0) *result = -1;
+                      else if (num_right > 0) *result =  1;
+                      return 0;
+  case CALC_ABS:      if (num_right < 0)      *result = -num_right;
+                      else                    *result =  num_right;      
                       return 0;
   
-  case CALC_ABS:      if (num_right < 0)  *result = -num_right;
-                      else                *result =  num_right;      
-                      return 0;
-  
-
   // ---------- ЛОГИЧЕСКИЕ БИТОВЫЕ ----- отбрасывают дробную часть
   case CALC_AND_BIT:  *result = (double)(((int)num_left) & ((int)num_right));
                       return 0;
@@ -393,7 +359,7 @@ int CalcTree(PNode Tree, double* result)
                       return 0;
 
   case CALC_SEPARATOR:  // разделитель формул возвращает правый результат
-                        //      printf("[%g<;>%g] ", num_left, num_right);
+                      //      printf("[%g<;>%g] ", num_left, num_right);
                       *result = num_right;
                       return 0;
   
@@ -624,8 +590,7 @@ int process_line(char const* str, double* result)
   
   variable_clear_local();  // очистим локальные переменные
   
-  // разбор вражения, построение дерева
-   
+  // разбор выражения, построение дерева
   error_code = MakeTree(str_to_process, 0, str_lenght(str_to_process) - 1, &Tree);
 
   if (!error_code)        // вычислять дерево только если не было ошибок в разборе
@@ -635,6 +600,5 @@ int process_line(char const* str, double* result)
   free(str_to_process);   // удалить временную строку
  
   variable_clear_local(); // очистим локальные переменные
-
   return error_code;
 }

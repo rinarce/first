@@ -2,9 +2,6 @@
 
 #include <stdlib.h>
 
-// выделяет место для строки размером (size + 1)
-char* AllocateString(unsigned int size);
-
 // длина строки до '\0'
 unsigned int str_lenght(char const* str);
 
