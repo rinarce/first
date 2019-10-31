@@ -1,12 +1,10 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 
-// calc_variables.c
-// все функции для работы с переменными 
-// и структурами данных для их хранения
+// calc_variables.c все функции для работы с переменными и структурами данных для их хранения
 
 #include <stdio.h>
-#include <stdlib.h>         // memory
+#include <stdlib.h> 
 
 #include "common_defs.h"    // общие определения
 #include "str_functions.h"  // для строк
@@ -17,60 +15,58 @@
 // ---------------------------------------------------------------------------
 
 // Связный список
-typedef struct List_Node  // узел списка
+typedef struct list_node_t  
 {
-  double value;           // значение
-  char* var_name;         // имя переменной
-  struct List_Node* next; // указатель на следующий узел (NULL у последнего)
-} List_Node;
+  double value;             // значение
+  char* varName;            // имя переменной
+  struct list_node_t* next; // указатель на следующий узел (NULL у последнего)
+} list_node_t;
 
 // ---------------------------------------------------------------------------
 // Предопределённые глобальные переменные 
-List_Node pi = { M_PI, "pi", NULL };           // будет последней
-List_Node  e = { M_E,  "e",  &pi };            // будет перед pi
+list_node_t s_pi = { M_PI, "pi", NULL };            // будет последней
+list_node_t  s_e = { M_E,  "e",  &s_pi };             // будет перед pi
 // ..... - добавлять сюда, связывая друг с другом
 // ---------------------------------------------------------------------------
 
-typedef struct List_Node* P_List_Node;         // указатель на узел списка
+typedef struct list_node_t* p_list_node_t;        // указатель на узел списка
 
 // Первые узлы для связных списков, эти узлы статические, постоянные
 // В них ничего не храню, только сслылка на следующий узел
-List_Node     head_local = { 0, NULL, NULL };  // для локальных переменных
-List_Node    head_global = { 0, NULL, NULL };  // для глобальных переменных
-List_Node   head_defined = { 0, NULL, &e   };  // для предопределённых
+list_node_t     s_headLocal = { 0, NULL, NULL };  // для локальных переменных
+list_node_t    s_headGlobal = { 0, NULL, NULL };  // для глобальных переменных
+list_node_t   s_headDefined = { 0, NULL, &s_e };  // для предопределённых
 
-P_List_Node   vars_local = &head_local;        // работаем через указатели
-P_List_Node  vars_global = &head_global;        
-P_List_Node vars_defined = &head_defined;
+p_list_node_t   s_varsLocal = &s_headLocal;         // работаем через указатели
+p_list_node_t  s_varsGlobal = &s_headGlobal;        
+p_list_node_t s_varsDefined = &s_headDefined;
 
 
 // удалить узел списка и все узлы за ним
-void list_delete_tail(P_List_Node node)
+static void _listDeleteTail (p_list_node_t node)
 { 
-  P_List_Node next;
-  while (NULL != node)          // Избавимся от рекурсии
-  {
+  p_list_node_t next;           // Избавимся от рекурсии
+  while (NULL != node) {
     next = node->next;          // запомнить, ведь node удалится
-    free(node->var_name);       // удалить свою строку
+    free(node->varName);        // удалить свою строку
     free(node);                 // удалиться самому
     node = next;                // перейти к следующему
   }
 }
 
 // очистить связный список - указанный узел очистить, следующие - удалить
-void list_clear(P_List_Node list)
-{
-  list_delete_tail(list->next);  // удалить все после указанного узла
-  free(list->var_name);          // возможно вызов не из головы списка
-  list->value = 0;               // себя обнулить, не удалять
-  list->next = NULL;  
-  list->var_name = NULL;
+static void _listClear(p_list_node_t list) {
+  _listDeleteTail(list->next);  // удалить все после указанного узла
+  free(list->varName);          // возможно вызов не из головы списка
+  list->value   = 0;            // себя обнулить, не удалять
+  list->next    = NULL;  
+  list->varName = NULL;
 }
 
 // Добавить переменную к списку, для имени создаётся новая строка в памяти
-calc_err list_add(P_List_Node list, char const* var_name, double const value)
-{ 
-  if (NULL == list) return CALC_ERR_ALGO;  //вызвано для несуществующего списка
+static calc_err_t _listAdd(p_list_node_t list, char const* varName, double const value) { 
+  if (NULL == list) 
+    return CALC_ERR_ALGO;   //вызвано для несуществующего списка
   
 // для упрощения 
 // 1 - не проверять наличие (возможно переопределение), добавлять в начало списка
@@ -79,37 +75,36 @@ calc_err list_add(P_List_Node list, char const* var_name, double const value)
 //     тогда возможно переопределение числовых констант, и прочее
 //     например 2=3 3=2 [####]=4 pi=3 и т.п.
 
-  int name_len = str_lenght(var_name);        
-  if (name_len == 0) return CALC_ERR_VARZ;    // попытка создать переменную без имени
+  int nameLen = StrLenght(varName);        
+  if (nameLen == 0) 
+    return CALC_ERR_VARZ;    // попытка создать переменную без имени
 
-  char* new_str = (char*)malloc(name_len + 1);// создать новую строку для имени
-  if (NULL == new_str)  return CALC_ERR_MEMORY;
+  char* newStr = (char*)malloc(nameLen + 1); // создать новую строку для имени
+  if (NULL == newStr)  
+    return CALC_ERR_MEMORY;
 
-  P_List_Node next_node = (P_List_Node)malloc(sizeof(List_Node));
-  if (NULL == next_node)
-  {
-    free(new_str);  // не удалось создать узел => строка уже тоже не нужна
+  p_list_node_t nextNode = (p_list_node_t)malloc(sizeof(list_node_t));
+  if (NULL == nextNode) {
+    free(newStr);           // не удалось создать узел => строка уже тоже не нужна
     return CALC_ERR_MEMORY;
   }
 
-  str_copy_fix_len(var_name, new_str, name_len);    // скопировать имя в созданную строку
-  new_str[name_len]   = '\0';                       // конец строки
+  StrCopyFixLen(varName, newStr, nameLen);    // скопировать имя в созданную строку
+  newStr[nameLen]   = '\0';                      // конец строки
 
-  next_node->var_name = new_str;      // имя переменной 
-  next_node->value    = value;        // значение
-  next_node->next     = list->next;   // присоединить хвост списка 
-  list->next          = next_node;    // новый узел будет за головой
-  return CALC_OK;                     // дошли до сюда - ошибок нет
+  nextNode->varName = newStr;      
+  nextNode->value   = value;      
+  nextNode->next    = list->next;    // присоединить хвост списка 
+  list->next        = nextNode;      // новый узел будет за головой
+  return CALC_OK;
 }
 
 
 // ищет в списке переменную, если нашло - то изменяет *value
 // return 1 - пременная найдена, 0 - нет
-int list_get(P_List_Node list, char const* var_name, double* value)
-{
-  while (NULL != list) 
-  {
-    if (str_compare(list->var_name, var_name)) {
+static int _listGet(p_list_node_t list, char const* varName, double* value) {
+  while (NULL != list) {
+    if (StrCompare(list->varName, varName)) {
       *value = list->value;
       return 1;               // нашли
     }
@@ -119,40 +114,37 @@ int list_get(P_List_Node list, char const* var_name, double* value)
 }
 
 
-// ---------------------------------------------------------------------------
-// ИНТЕРФЕЙС 
-// ---------------------------------------------------------------------------
-// создаёт локальную переменную var_name
-calc_err variable_make(char const* var_name, double const value) {
-  return list_add(vars_local, var_name, value);
+// --  ИНТЕРФЕЙС  ------------------------------------------------------------
+
+// создаёт локальную переменную varName
+calc_err_t VariableMake(char const* varName, double const value) {  
+  return _listAdd(s_varsLocal, varName, value);  
 }
 
-// создаёт глобальную переменную var_name
-calc_err variable_make_global(char const* var_name, double const value) {
-  return list_add(vars_global, var_name, value);
+// создаёт глобальную переменную varName
+calc_err_t VariableMakeGlobal(char const* varName, double const value){
+  return _listAdd(s_varsGlobal, varName, value); 
 }
 
-// значение переменной var_name -> *value,
-// return 0 - не найдено, 1 - есть такая
-int variable_get(char const* var_name, double *value)
-{
-  int name_len = str_lenght(var_name);
-  if (name_len == 0) return 0;    //  не передано имя переменной (такой запрос не ошибка)
-  
-                // сначала ищем в локальных
-  if (list_get(vars_local, var_name, value)) return 1;
-                // предопределённые в программе
-  if (list_get(vars_defined, var_name, value)) return 1;
-                // потом в глобальных
-  return list_get(vars_global, var_name, value);
+// значение переменной varName -> *value, return 0 - не найдено, 1 - есть такая
+int VariableGet(char const* varName, double *value) {
+  int nameLen = StrLenght(varName);
+  if (nameLen == 0) 
+    return 0;   //  не передано имя переменной (такой запрос не ошибка)
+                
+  if (_listGet(s_varsLocal, varName, value))      // сначала ищем в локальных
+    return 1;
+  if (_listGet(s_varsDefined, varName, value))    // потом в предопределённых
+    return 1;
+  return _listGet(s_varsGlobal, varName, value);  // а потом в глобальных
 }
 
 // очистить локальные (для одной строки) переменные 
-void variable_clear_local(void) {
-  list_clear(vars_local);    // удалить все после первого узла
+void VariableClearLocal(void) {
+  _listClear(s_varsLocal);   
 }
 
 // очистить глобальные (для следующих строк) переменные
-void variable_clear_global(void) {
-   list_clear(vars_global);  // удалить все после первого узла
+void VariableClearGlobal(void) {
+  _listClear(s_varsGlobal);  
 }

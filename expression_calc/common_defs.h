@@ -1,3 +1,5 @@
+#ifndef COMMON_DEFS_H_INCLUDED__
+#define COMMON_DEFS_H_INCLUDED__
 #pragma once
 
 #include <stdio.h>
@@ -12,42 +14,41 @@
 
 // --  Результат обработки строки - тип ---------------------------------------
 
-typedef enum            // результат обработки строки - тип
-{
-                        // НАПЕЧАТАТЬ РЕЗУЛЬТАТ
-  CALC_OK,              // это корректное выражение, или иная функция без ошибки
+typedef enum calc_err_t { // результат обработки строки - тип
+                          // НАПЕЧАТАТЬ РЕЗУЛЬТАТ
+  CALC_OK,                // это корректное выражение, или иная функция без ошибки
 
-                        // ПЕЧАТЬ СТРОКИ БЕЗ ИЗМЕНЕНИЙ
-  CALC_LINE_COMMENT,    // это комментарий
-  CALC_LINE_EMPTY,      // это совершенно пустая строка
-  CALC_LINE_SPACES,     // это строка без значащих символов
+                          // ПЕЧАТЬ СТРОКИ БЕЗ ИЗМЕНЕНИЙ
+  CALC_LINE_COMMENT,      // это комментарий
+  CALC_LINE_EMPTY,        // это совершенно пустая строка
+  CALC_LINE_SPACES,       // это строка без значащих символов
                         
-                        // ФАТАЛЬНЫЕ ОШИБКИ - ЗАВЕРШИТЬ ПРОГРАММУ
-  CALC_ERR_ARGS,        // ошибка - неправильные аргументы комамндной строки
-  CALC_ERR_OPEN_FILE,   // ошибка - не удалось открыть входной файл
-  CALC_LINE_THE_END,    // не ошибка, но закончился поток ввода
+                          // ФАТАЛЬНЫЕ ОШИБКИ - ЗАВЕРШИТЬ ПРОГРАММУ
+  CALC_ERR_ARGS,          // ошибка - неправильные аргументы командной строки
+  CALC_ERR_OPEN_FILE,     // ошибка - не удалось открыть входной файл
+  CALC_LINE_THE_END,      // не ошибка, но закончился поток ввода
 
-                        // НАПЕЧАТАТЬ СООБЩЕНИЕ БЕЗ ВВЕДЁНОЙ СТРОКИ
-  CALC_ERR_INPUT,       // ошибка - не хватает памяти для чтения строки
+                          // НАПЕЧАТАТЬ СООБЩЕНИЕ БЕЗ ВВЕДЁНОЙ СТРОКИ
+  CALC_ERR_INPUT,         // ошибка - не хватает памяти для чтения строки
 
-                        // НАПЕЧАТАТЬ СТРОКУ И СООБЩЕНИЕ ОБ ОШИБКЕ
-  CALC_ERR_PARSE,       // ошибка - во время разбора выражения
-  CALC_ERR_EVAL,        // ошибка - преобразования в число
-  CALC_ERR_MEMORY,      // ошибка - выделения памяти
-  CALC_ERR_ZERO_DIV,    // ошибка - деление на 0
-  CALC_ERR_BRACKETS,    // ошибка - непарность скобок
-  CALC_ERR_SQRT_N,      // ошибка - квадратный корень из отрицательных
-  CALC_ERR_NAN,         // ошибка - NaN - не число
-  CALC_ERR_INF,         // ошибка - Inf - бесконечность (например 0 в отрицательных ^)
-  CALC_ERR_ALGO,        // ошибка - в алгоритме что-то идёт не так
-  CALC_ERR_X,           // ошибка - .... пока не придумано
-  CALC_ERR_VARS,        // ошибка - с переменными
-  CALC_ERR_VARZ,        // ошибка - переменная без имени
-  CALC_ERR_VAR_BADNAME, // ошибка - переменная - плохое имя - не реализовано
-                        // не дискриминируем переменную из-за необычного имени
-  CALC_ERR_OTHER,       // ошибка - прочие
-  CALC_ERR_COUNT,       // ошибка - масимальный номер перечисления
-} calc_err;
+                          // НАПЕЧАТАТЬ СТРОКУ И СООБЩЕНИЕ ОБ ОШИБКЕ
+  CALC_ERR_PARSE,         // ошибка - во время разбора выражения
+  CALC_ERR_EVAL,          // ошибка - преобразования в число
+  CALC_ERR_MEMORY,        // ошибка - выделения памяти
+  CALC_ERR_ZERO_DIV,      // ошибка - деление на 0
+  CALC_ERR_BRACKETS,      // ошибка - непарность скобок
+  CALC_ERR_SQRT_N,        // ошибка - квадратный корень из отрицательных
+  CALC_ERR_NAN,           // ошибка - NaN - не число
+  CALC_ERR_INF,           // ошибка - Inf - бесконечность (например 0 в отрицательных ^)
+  CALC_ERR_ALGO,          // ошибка - в алгоритме что-то идёт не так
+  CALC_ERR_X,             // ошибка - .... пока не придумано
+  CALC_ERR_VARS,          // ошибка - с переменными
+  CALC_ERR_VARZ,          // ошибка - переменная без имени
+  CALC_ERR_VAR_BADNAME,   // ошибка - переменная - плохое имя - не реализовано
+                          // не дискриминируем переменную из-за необычного имени
+  CALC_ERR_OTHER,         // ошибка - прочие
+  CALC_ERR_COUNT,         // ошибка - масимальный номер перечисления
+} calc_err_t;
 
 // --  Константы  ------------------------------------------------------------
 
@@ -60,32 +61,32 @@ typedef enum            // результат обработки строки - тип
 
 // вводит строку произвольной длины, выделяет память, return = код ошибки
 // при нехватке памяти - пропуск до конца строки, введённое отбросить
-calc_err read_input_line(FILE* input_stream, char** str);
+calc_err_t ReadInputLine(FILE* input_stream, char** str);
 
 // печатает строку по условиям задачи, с учётом кода ошибки
-void print_line(FILE* output_stream, char* input_line, int error, double result);
+void PrintLine(FILE* output_stream, char* input_line, calc_err_t error, double result);
 
 
 // --  Обработка строки  -----------------------------------------------------
 
 // вычисляет строку выражений, возвращает тип строки (ок или ошибка) и результат
-calc_err process_line(char const* input_line, double* result);
-
+calc_err_t ProcessLine (char const* input_line, double* result);
 
 // --  Интерфейс работы с переменными  ---------------------------------------
 
-// очистить глобальные (для следующих строк) переменные
-void variable_clear_global(void);
+// clear global variables
+void VariableClearGlobal(void);
 
-// очистить локальные (для одной строки) переменные 
-void variable_clear_local(void);
+// clear local (for current line) variables
+void VariableClearLocal(void);
 
-// создаёт локальную переменную var_name, return - код ошибки
-calc_err variable_make(char const* var_name, double const value);
+// create local (for current line) variable
+calc_err_t VariableMake(char const* varName, double const value);
 
-// создаёт глобальную переменную var_name, return - код ошибки
-calc_err variable_make_global(char const* var_name, double const value);
+// create global variable
+calc_err_t VariableMakeGlobal(char const* varName, double const value);
 
-// получить значение переменной var_name -> *value, 
-// return 0 - не найдено, 1 - есть такая
-int variable_get(char const* var_name, double* value);
+// get value by variable name (if exist), return 0 - variable not exist, 1 - exist
+int VariableGet(char const* varName, double* value);
+
+#endif COMMON_DEFS_H_INCLUDED__
