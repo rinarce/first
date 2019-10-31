@@ -15,7 +15,7 @@
 typedef enum            // результат обработки строки - тип
 {
                         // НАПЕЧАТАТЬ РЕЗУЛЬТАТ
-  CALC_LINE_OK,         // это корректное выражение
+  CALC_OK,              // это корректное выражение, или иная функция без ошибки
 
                         // ПЕЧАТЬ СТРОКИ БЕЗ ИЗМЕНЕНИЙ
   CALC_LINE_COMMENT,    // это комментарий
@@ -25,6 +25,7 @@ typedef enum            // результат обработки строки - тип
                         // ФАТАЛЬНЫЕ ОШИБКИ - ЗАВЕРШИТЬ ПРОГРАММУ
   CALC_ERR_ARGS,        // ошибка - неправильные аргументы комамндной строки
   CALC_ERR_OPEN_FILE,   // ошибка - не удалось открыть входной файл
+  CALC_LINE_THE_END,    // не ошибка, но закончился поток ввода
 
                         // НАПЕЧАТАТЬ СООБЩЕНИЕ БЕЗ ВВЕДЁНОЙ СТРОКИ
   CALC_ERR_INPUT,       // ошибка - не хватает памяти для чтения строки
@@ -46,7 +47,7 @@ typedef enum            // результат обработки строки - тип
                         // не дискриминируем переменную из-за необычного имени
   CALC_ERR_OTHER,       // ошибка - прочие
   CALC_ERR_COUNT,       // ошибка - масимальный номер перечисления
-} calc_result_type;
+} calc_err;
 
 // --  Константы  ------------------------------------------------------------
 
@@ -57,19 +58,18 @@ typedef enum            // результат обработки строки - тип
 
 // --  Ввод-вывод  -----------------------------------------------------------
 
-// вводит строку произвольной длины, самостоятельно выделяет память
-// в *str возвращает указатель на строку, return = код ошибки
-// \n в конце обрезается, но считается в длине (длина == 0 - конец потока ввода)
+// вводит строку произвольной длины, выделяет память, return = код ошибки
 // при нехватке памяти - пропуск до конца строки, введённое отбросить
-int read_input_line(FILE* input_stream, char** str, unsigned int* readed_len);
+calc_err read_input_line(FILE* input_stream, char** str);
 
 // печатает строку по условиям задачи, с учётом кода ошибки
 void print_line(FILE* output_stream, char* input_line, int error, double result);
 
+
 // --  Обработка строки  -----------------------------------------------------
 
 // вычисляет строку выражений, возвращает тип строки (ок или ошибка) и результат
-int process_line(char const* input_line, double* result);
+calc_err process_line(char const* input_line, double* result);
 
 
 // --  Интерфейс работы с переменными  ---------------------------------------
@@ -81,13 +81,11 @@ void variable_clear_global(void);
 void variable_clear_local(void);
 
 // создаёт локальную переменную var_name, return - код ошибки
-int variable_make(char const* var_name, double const value);
+calc_err variable_make(char const* var_name, double const value);
 
 // создаёт глобальную переменную var_name, return - код ошибки
-int variable_make_global(char const* var_name, double const value);
+calc_err variable_make_global(char const* var_name, double const value);
 
 // получить значение переменной var_name -> *value, 
 // return 0 - не найдено, 1 - есть такая
 int variable_get(char const* var_name, double* value);
-
-

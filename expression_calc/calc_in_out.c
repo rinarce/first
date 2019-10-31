@@ -6,14 +6,14 @@
 
 typedef struct                // тип структуры для одного собщения
 {
-  calc_result_type type;
+  calc_err type;
   char* text_en;
   char* text_ru;
 } result_message; 
 
 result_message  result_types[] = { 
 // все типы результата и соответствующие им сообщения EN, RU
-{ CALC_LINE_OK,       "OK",                           "OK - корректное выражение"   },
+{ CALC_OK,            "OK",                           "OK - корректное выражение"   },
 { CALC_LINE_COMMENT,  "Comment",                      "Комментарий"                 },
 { CALC_LINE_EMPTY,    "Empty",                        "Пустая строка"               },
 { CALC_LINE_SPACES,   "Only spaces",                  "Строка без значащих символов"},
@@ -46,7 +46,7 @@ int result_message_count = sizeof(result_types) / sizeof(result_message); // К�
 // в *str возвращает указатель на строку, return = код ошибки
 // \n в конце обрезается, но считается в длине (длина == 0 - конец потока ввода)
 // при нехватке памяти - пропуск до конца строки, введённое отбросить
-int read_input_line(FILE* input_stream, char** str, unsigned int * readed_len)
+calc_err read_input_line(FILE* input_stream, char** str)
 {
   char* result_str = NULL;  // Это указатель на итоговую строку, тут накапливаем ввод
   unsigned int str_len = 0; // Накапливаем длину строки, в конце - возвращаем
@@ -56,6 +56,9 @@ int read_input_line(FILE* input_stream, char** str, unsigned int * readed_len)
   {
     // fgets читает на 1 символ меньше, так как в конце всегда добавляет '\0'
     unsigned int input_len = str_lenght(fgets(buffer, DST_BUFFER_SIZE + 1, input_stream));
+    
+    if (0 == input_len)
+      return CALC_LINE_THE_END; //  закончился поток ввода, 
 
     if (buffer[input_len - 1] == '\n')    // отрезаем '\n'
         buffer[input_len - 1] =  '\0';  
@@ -67,7 +70,6 @@ int read_input_line(FILE* input_stream, char** str, unsigned int * readed_len)
     { // обнуление введёной строки и пропуск данных до конца строки ! п 2.4.7.
       free(result_str);
       *str = NULL;
-      *readed_len = 0;
 
       // если использован не весь входной буфер, или обрезан \n => ввод закончен
       while (input_len == DST_BUFFER_SIZE && buffer[input_len-1] != '\0')
@@ -96,8 +98,7 @@ int read_input_line(FILE* input_stream, char** str, unsigned int * readed_len)
     }
   }
   *str = result_str;
-  *readed_len = str_len;
-  return 0;
+  return CALC_OK;
 }
 
 
@@ -142,7 +143,7 @@ void print_line(FILE* output_stream, char* line, int error, double result)
         fprintf(output_stream, "ERROR: can't open input file [%s]\n", line);
         break;
 
-  case CALC_LINE_OK:          // это корректное выражение
+  case CALC_OK:          // это корректное выражение
         fprintf(output_stream, "%s == %g\n", line, result);
         break;
 

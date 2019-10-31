@@ -17,8 +17,7 @@ int main(int arg_count, char* arg_values[])
   SetConsoleCP(1251);
   SetConsoleOutputCP(1251);
 
-
-  // Корректность параметров -------------------------------------------
+    // Корректность параметров -------------------------------------------
   // перенаправление не передаётся в аргументы коммандной строки, 
   // 1й параметр - имя программы => значит допустимо максимум 2 аргумента
   if (arg_count > 2)
@@ -27,7 +26,6 @@ int main(int arg_count, char* arg_values[])
     return 1;                         // Допустим только 1 параметр запуска
   }
 
-  
   // Открытие файлов ---------------------------------------------------
   FILE*  input_stream = stdin;        // поток ввода
   FILE* output_stream = stdout;       // в стандартный вывод
@@ -43,19 +41,17 @@ int main(int arg_count, char* arg_values[])
  
   // Цикл обработки строк  -------------------------------------------
   char* input_line;               // очередная строка до символа \n
-  int error = 0;                  // результат вызовов функции, 0 == OK
 
   // будем вводить строки, выделяя память динамически
   while (1) // условие выхода - строка нулевого размера => конец потока данных
   {
-    unsigned line_len;
-    error = read_input_line(input_stream, &input_line, &line_len);
+     calc_err error = read_input_line(input_stream, &input_line);
     
-    if (error || NULL == input_line)  // Не удалось ввести строку
+    if (CALC_LINE_THE_END == error)
+      break;                          // конец входного потока - выход
+    if (CALC_ERR_INPUT == error || NULL == input_line)  
       print_line(output_stream, "", CALC_ERR_INPUT, 0);
-    else if (line_len == 0)           // конец входного потока - выход
-      break;
-    
+        
     else                              // успешно прочитана строка
     {
       double result = 0;              // результат выражения
@@ -66,17 +62,12 @@ int main(int arg_count, char* arg_values[])
   }
 
   // Освобождение памяти ---------------------------------------------
-  free(input_line); 
   variable_clear_global();            // удалить созданные глобальные переменные
   
   // Закрытие файлов --------------------------------------------------
   if (input_stream != stdin)     fclose(input_stream);
-
   // на случай переделки вывода в файл
   if (output_stream != stdout)   fclose(output_stream); 
   
-  // Удалить      ХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХХ
-  // int _x = getchar();     // пока для отладки
-
   return 0;
 }

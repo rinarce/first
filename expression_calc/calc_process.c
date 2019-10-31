@@ -242,7 +242,7 @@ int get_priority(char const* ptr, int *oper_len, OperatorType* oper_type)
 // ---------------------------------------------------------------------------
 // первые символы строки - это число или переменная
 // Шестнадцатеричные переводит, двоичные - ДА. Возврат - код ошибки (0 - ОК)
-int calc_evaluate(char const* str, int symbols, double * result)
+calc_err calc_evaluate(char const* str, int symbols, double * result)
 {
   // такое бывало на строках (2)(3) обрезанных до 2)(3
   if (symbols < 0) return CALC_ERR_ALGO; // ASSERT
@@ -251,7 +251,7 @@ int calc_evaluate(char const* str, int symbols, double * result)
   { // всё пустое считаем за 0 - прощаем некоторые спорные случаи 3+ или ()
     // так же для унарных операций, вызовов функций - слева ничего нет
     *result = 0;
-    return 0;
+    return CALC_OK;
   }
 
   // создаём новую строку
@@ -265,7 +265,7 @@ int calc_evaluate(char const* str, int symbols, double * result)
   if (variable_get(new_str, result))          // нашлась такая переменная
   {
     free(new_str); 
-    return 0;
+    return CALC_OK;
   }
   
   // делаем для числа, проверка ошибок - встроенная в Си
@@ -285,13 +285,13 @@ int calc_evaluate(char const* str, int symbols, double * result)
     if (evaluated != 1) //должно быть получено ровно 1 число, иначе ошибка
       return CALC_ERR_EVAL;
   }
-  return 0;
+  return CALC_OK;
 }
 
 
 // ---------------------------------------------------------------------------
 // вычисляет дерево Tree -в-> *result и возвращает код ошибки или 0 если всё ОК
-int CalcTree(PNode Tree, double* result)
+calc_err CalcTree(PNode Tree, double* result)
 {
   int error = 0;
   double num_left = 0, num_right = 0;
@@ -299,7 +299,7 @@ int CalcTree(PNode Tree, double* result)
   // 1. если нет потомков - это число, или была пременная, стало тоже число
   if (Tree->left == NULL && Tree->right == NULL) {
     *result = Tree->value;      // вернули число
-    return 0;
+    return CALC_OK;
   }
 
   // 2. вычисляем поддеревья
@@ -316,52 +316,52 @@ int CalcTree(PNode Tree, double* result)
   switch (Tree->type)
   { 
   case CALC_PLUS:     *result = num_left + num_right;
-                      return 0;
+                      return CALC_OK;
   case CALC_MINUS:    *result = num_left - num_right;
-                      return 0;
+                      return CALC_OK;
   case CALC_MUL:      *result = num_left * num_right;
-                      return 0;
+                      return CALC_OK;
   case CALC_DIV:      if (num_right == 0)                   // Проверим на деление на 0
                           return CALC_ERR_ZERO_DIV;         // Ошибка
                       *result = num_left / num_right;       // ОК
-                      return 0;
+                      return CALC_OK;
   case CALC_MOD:      if (num_right == 0)                   // Проверим на деление на 0
                           return CALC_ERR_ZERO_DIV;         // Ошибка
                       *result = fmod(num_left, num_right);  // ОК
-                      return 0;
+                      return CALC_OK;
   case CALC_POWER:    *result = pow(num_left, num_right);   // Проверить на ошибки уже результат
                       if (isnan(*result))                   // Получено не число NaN (Not a Number)
                         return CALC_ERR_NAN;                // скорее всего - чётные корни из отрицательных
                       if (isinf(*result))                   // Получена бесконечность Inf
                         return CALC_ERR_INF;                // скорее всего - 0 в отрицательной степени
-                      return 0;
+                      return CALC_OK;
   case CALC_SQRT:     if (num_right < 0)                    // Проверим на отрицательность
                           return CALC_ERR_SQRT_N;           // Ошибка
                       *result = sqrt(num_right);            // ОК
-                      return 0;
+                      return CALC_OK;
   case CALC_SIGN:     if (num_right == 0)     *result =  0;
                       else if (num_right < 0) *result = -1;
                       else if (num_right > 0) *result =  1;
-                      return 0;
+                      return CALC_OK;
   case CALC_ABS:      if (num_right < 0)      *result = -num_right;
                       else                    *result =  num_right;      
-                      return 0;
+                      return CALC_OK;
   
   // ---------- ЛОГИЧЕСКИЕ БИТОВЫЕ ----- отбрасывают дробную часть
   case CALC_AND_BIT:  *result = (double)(((int)num_left) & ((int)num_right));
-                      return 0;
+                      return CALC_OK;
   case CALC_OR_BIT:   *result = (double)(((int)num_left) | ((int)num_right));
-                      return 0;
+                      return CALC_OK;
   case CALC_XOR_BIT:  *result = (double)(((int)num_left) ^ ((int)num_right));
-                      return 0;
+                      return CALC_OK;
   case CALC_NOT_BIT:  //       printf("[%g<not>%g] ", num_left, num_right);
                       *result = (double)(~(int)num_right);
-                      return 0;
+                      return CALC_OK;
 
   case CALC_SEPARATOR:  // разделитель формул возвращает правый результат
                       //      printf("[%g<;>%g] ", num_left, num_right);
                       *result = num_right;
-                      return 0;
+                      return CALC_OK;
   
   // ------------ ДОДЕЛАТЬ ВСЕ ОПЕРАЦИИ =-=-=-==-=-=-=-=-=-=-=-=-=-
   }
@@ -375,7 +375,7 @@ int CalcTree(PNode Tree, double* result)
 // строит дерево вычислений для str[first...last] 
 // построенное дерево возвращает в *result_tree 
 // return - код ошибки (0 - ОК)
-int MakeTree(char const str[], int first, int last, PNode * result_tree)
+calc_err MakeTree(char const str[], int first, int last, PNode * result_tree)
 {
   int error;                        // код ошибки
   double result = 0;                // результат
@@ -396,7 +396,7 @@ int MakeTree(char const str[], int first, int last, PNode * result_tree)
     if (error) { free(Tree);  return error; }
 
     Tree->value = result;           
-    return 0;
+    return CALC_OK;
   }
   
   
@@ -490,7 +490,7 @@ int MakeTree(char const str[], int first, int last, PNode * result_tree)
 
     Tree->right = temp;     // записываем поддерево если не было ошибок
 
-    return 0;               // ОК. ошибок нет
+    return CALC_OK;         // ОК. ошибок нет
   }
   
   // case 2 - операция в этом куске НЕ НАЙДЕНА, 
@@ -501,7 +501,7 @@ int MakeTree(char const str[], int first, int last, PNode * result_tree)
       if (error) { free(Tree);  return error; }
 
       Tree->value = result; // поддеревьев не будет, сохранить результат
-      return 0;
+      return CALC_OK;
     }
 
   // case 3 - операция НАЙДЕНА -  записывается её тип и создаются два поддерева 
@@ -561,7 +561,7 @@ int MakeTree(char const str[], int first, int last, PNode * result_tree)
   if (error) { free(Tree);  return error; }
   Tree->right = temp;
   
-  return 0;  // если добрались сюда => все этапы пройдены без ошибок
+  return CALC_OK;         // если добрались сюда => все этапы пройдены без ошибок
 }
 
 
@@ -569,7 +569,7 @@ int MakeTree(char const str[], int first, int last, PNode * result_tree)
 // ------------ Главная функция -------------------------------------------
 
 // вычисляет строку выражений, возвращает тип строки (ок или ошибка) и *result
-int process_line(char const* str, double* result)
+calc_err process_line(char const* str, double* result)
 {
   int error_code = 0;
   *result = 0;

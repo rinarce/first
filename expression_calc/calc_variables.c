@@ -68,8 +68,7 @@ void list_clear(P_List_Node list)
 }
 
 // Добавить переменную к списку, для имени создаётся новая строка в памяти
-// return - код ошибки 
-int list_add(P_List_Node list, char const* var_name, double const value)
+calc_err list_add(P_List_Node list, char const* var_name, double const value)
 { 
   if (NULL == list) return CALC_ERR_ALGO;  //вызвано для несуществующего списка
   
@@ -100,7 +99,7 @@ int list_add(P_List_Node list, char const* var_name, double const value)
   next_node->value    = value;        // значение
   next_node->next     = list->next;   // присоединить хвост списка 
   list->next          = next_node;    // новый узел будет за головой
-  return 0;                           // дошли до сюда - ошибок нет
+  return CALC_OK;                     // дошли до сюда - ошибок нет
 }
 
 
@@ -123,13 +122,13 @@ int list_get(P_List_Node list, char const* var_name, double* value)
 // ---------------------------------------------------------------------------
 // ИНТЕРФЕЙС 
 // ---------------------------------------------------------------------------
-// создаёт локальную переменную var_name, return - код ошибки
-int variable_make(char const* var_name, double const value) {
+// создаёт локальную переменную var_name
+calc_err variable_make(char const* var_name, double const value) {
   return list_add(vars_local, var_name, value);
 }
 
-// создаёт глобальную переменную var_name, return - код ошибки
-int variable_make_global(char const* var_name, double const value) {
+// создаёт глобальную переменную var_name
+calc_err variable_make_global(char const* var_name, double const value) {
   return list_add(vars_global, var_name, value);
 }
 
