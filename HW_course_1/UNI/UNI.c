@@ -185,13 +185,13 @@ int main() {
       figure_type_t type = figures[figureIndex].type;
       figure_color_t color = figures[figureIndex].color;
 
-      if (0 <= type && type < FIG_COUNT_TYPE)
-      { // считаем для каждого типа - количество и общую площадь
+      if (_isTypeOK(type)) { 
+        // считаем для каждого типа - количество и общую площадь
         double square = _figureSquare(&figures[figureIndex]);
         countersType[type]++;
         countersSquareByType[type] += square;
         
-        if (0 <= color && color < FIG_COUNT_COLOR) {
+        if (_isColorOK(color)) {
           countersColor[color]++;    // считаем количество по цвету
           countersSquareByColor[color] += square;
         }
