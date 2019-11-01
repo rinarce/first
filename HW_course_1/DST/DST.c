@@ -7,22 +7,21 @@
 #include "DST_functions.h"
 #define DST_SEPARATOR ", "
 
-int main()
-{
+int main() {
   setlocale(LC_ALL, "Russian");
   SetConsoleCP(1251);         // для ввода русских букв
   SetConsoleOutputCP(1251);
-  // очередная введённая строка, создаётся каждый раз в DST_InputStr,
+  // очередная введённая строка, создаётся каждый раз в DstInputStr,
   // освобождается перед вводом новой строки
   char* str;
   char* mask;             // маска для DST–6-7
   char* result;           // новая строка - результат выполнения каждого задания
   char* paragraph = NULL; // накапливаю все строки str, \n заменён на пробел
-  unsigned int str_len;
+  unsigned int strLen;
 
-  while (str_len = DST_InputStr(&str, "Введите строку :"))
+  while (strLen = DstInputStr(&str, "Введите строку :"))
   {
-    DST_InputStr(&mask, " Введите маску :");
+    DstInputStr(&mask, " Введите маску :");
 
     printf("\nDST–0               (Введено) : %s\n", str);
     result = ExtractWords(str, DST_SEPARATOR);
@@ -41,7 +40,7 @@ int main()
     printf("DST–4      (Уникальные буквы) : %s\n", result);
     free(result);
 
-    result = STR_GetOnlyLetters(str);
+    result = StrGetOnlyLetters(str);
     printf("DST–50         (Только буквы) : %s\n", result);
     free(result);
 
@@ -62,7 +61,7 @@ int main()
     free(result);
 
     // накапливаем строки в одной строке paragraph, разделены пробелом
-    STR_Joint_Separ_Str(&paragraph, " ", str);
+    StrJointSeparStr(&paragraph, " ", str);
 
     free(str);
     free(mask);
@@ -74,11 +73,11 @@ int main()
     printf("\nDST-11/12       Ширина абзаца : ");
     scanf_s("%u", &width);
 
-    result = STR_JustifyLeft(paragraph, width);
+    result = StrJustifyLeft(paragraph, width);
     printf("DST–11   (Выравнивание влево) :\n%s\n\n", result);
     free(result);
 
-    result = STR_JustifyWidth(paragraph, width);
+    result = StrJustifyWidth(paragraph, width);
     printf("DST–12            (По ширине) :\n%s\n\n", result);
     free(result);
 

@@ -15,10 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BIT.cpp">
+    <ClCompile Include="MyBITfuncs.c">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="MyBITfuncs.cpp">
+    <ClCompile Include="BIT.c">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>

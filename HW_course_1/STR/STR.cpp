@@ -8,7 +8,7 @@
 #include ".\MyStringModule.h"
 
 
-int IsAlNum(char c) {
+int CharIsAlNum(char c) {
   // определяет, что является допустимой буквой в данной задаче
   // 1 - если [A–Z] или [a–z] или [0–9], иначе - 0
   return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9');

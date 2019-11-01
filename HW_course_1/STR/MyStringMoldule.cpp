@@ -2,7 +2,7 @@
 // общие строковые функции - реализаци€
 #include ".\MyStringModule.h"
 
-int IsAlNum(char c); 
+int CharIsAlNum(char c); 
 // определ€ет, что €вл€етс€ допустимой буквой в данной задаче
 // реализовано в основном модуле
 
@@ -94,7 +94,7 @@ int RemoveAllWords(char str[], char word[]) {
 	int deleted = 0;
 	int subLen = StrLenght(word);
 	for (int pos = FindNextWord(str, 0); str[pos]; ) {
-		if (CompareStr(&str[pos], word, subLen) && !IsAlNum(str[pos + subLen])) {
+		if (CompareStr(&str[pos], word, subLen) && !CharIsAlNum(str[pos + subLen])) {
 			RemoveSubStr(str, pos, pos + subLen - 1);
 			deleted++;
 		}
@@ -114,7 +114,7 @@ int ReplaceAllWords(char str[], char word[], char replace[]) {
 	if (replaceLen > wordLen) replaceLen = wordLen; // образаем по длине исходного слова
 	int delta = wordLen - replaceLen;				// разница в длине (уже обрезаного replace)
 	for (int pos = FindNextWord(str, 0); str[pos]; ) {
-		if (CompareStr(&str[pos], word, replaceLen) && !IsAlNum(str[pos + wordLen])) {
+		if (CompareStr(&str[pos], word, replaceLen) && !CharIsAlNum(str[pos + wordLen])) {
 			CopySubStr(replace, 0, replaceLen-1, &str[pos]);
 			replaced++;
 			if (delta)  // слова разной длины, необходима подрезка строки
@@ -128,20 +128,20 @@ int ReplaceAllWords(char str[], char word[], char replace[]) {
 int FindWordEnd(char str[], int start) {
 	// в строке с позиции start, находит позицию последней буквы слова
 	int end = start;
-	while ((str[end]) && IsAlNum(str[end])) end++;
+	while ((str[end]) && CharIsAlNum(str[end])) end++;
 	// сейчас end указывает на небукву или конец строки \0,
 	return --end;   // поэтому уменьшаем end
 }
 
 int FindNextWord(char str[], int pos) {
 	// в str с позиции pos, находит позицию следующей буквы или конца строки
-	while ((str[pos]) && ! IsAlNum(str[pos])) pos++;
+	while ((str[pos]) && ! CharIsAlNum(str[pos])) pos++;
 	return pos;
 }
 
 int FindNextSeparator(char str[], int pos) {
 	// в str с позиции pos, находит позицию следующей Ќ≈буквы или конца строки
-	while ((str[pos]) && IsAlNum(str[pos])) pos++;
+	while ((str[pos]) && CharIsAlNum(str[pos])) pos++;
 	return pos;
 }
 
@@ -192,7 +192,7 @@ void Reverse(char str[]) { // разворачивает строку задом наперЄд
 }
 
 int RemoveSeparators(char str[]) {
-	// ”дал€ет все Ќ≈буквы (IsAlNum() == 0), возвращает количество удалЄнных символов
+	// ”дал€ет все Ќ≈буквы (_charIsAlNum() == 0), возвращает количество удалЄнных символов
 	int deleted = 0;
 	for (int pos = FindNextSeparator(str, 0); str[pos]; ) {
 		int next = FindNextWord(str, pos); // cлед буква или конец строки
@@ -205,7 +205,7 @@ int RemoveSeparators(char str[]) {
 }
 
 int RemoveSymbols(char str[]) {
-	// ”дал€ет все буквы (IsAlNum() == 1), возвращает количество удалЄнных символов
+	// ”дал€ет все буквы (_charIsAlNum() == 1), возвращает количество удалЄнных символов
 	int deleted = 0;
 	for (int pos = FindNextWord(str, 0); str[pos]; ) {
 		int next = FindNextSeparator(str, pos); // cлед Ќ≈буква или конец строки
@@ -235,7 +235,7 @@ void FillStr(char str[], int start, int end, char filler) {
 
 
 // находит вхождение в строку символа X, или конец строки '\0'
-char* str_find_char(char const* str, char x, int start) 
+char* StrFindChar(char const* str, char x, int start) 
 {
   str += start;                          // смещение от начала строки
   while (*str)

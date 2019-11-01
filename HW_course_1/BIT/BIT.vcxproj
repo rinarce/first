@@ -151,8 +151,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BIT.cpp" />
-    <ClCompile Include="MyBITfuncs.cpp" />
+    <ClCompile Include="BIT.c" />
+    <ClCompile Include="MyBITfuncs.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MyBITfuncs.h" />
