@@ -15,10 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DST.cpp">
+    <ClCompile Include="DST.c">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="DST_functions.cpp">
+    <ClCompile Include="DST_functions.c">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>

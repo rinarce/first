@@ -6,15 +6,14 @@
 #include <stdio.h>
 #include <stdlib.h> 
 
+#include "calc_variables.h"
 #include "common_defs.h"    // общие определени€
 #include "str_functions.h"  // дл€ строк
 
 
 // ---------------------------------------------------------------------------
-// ¬Ќ”“–≈ЌЌяя –≈јЋ»«ј÷»я - 2 св€зных списка дл€ локальных и глобальных переменных
-// ---------------------------------------------------------------------------
+// ¬Ќ”“–≈ЌЌяя –≈јЋ»«ј÷»я - 3 св€зных списка
 
-// —в€зный список
 typedef struct list_node_t  
 {
   double value;             // значение
@@ -24,8 +23,8 @@ typedef struct list_node_t
 
 // ---------------------------------------------------------------------------
 // ѕредопределЄнные глобальные переменные 
-list_node_t s_pi = { M_PI, "pi", NULL };            // будет последней
-list_node_t  s_e = { M_E,  "e",  &s_pi };             // будет перед pi
+list_node_t s_pi = { M_PI, "pi", NULL  };         // будет последней
+list_node_t  s_e = { M_E,  "e",  &s_pi };         // будет перед s_pi
 // ..... - добавл€ть сюда, св€зыва€ друг с другом
 // ---------------------------------------------------------------------------
 
@@ -37,10 +36,9 @@ list_node_t     s_headLocal = { 0, NULL, NULL };  // дл€ локальных переменных
 list_node_t    s_headGlobal = { 0, NULL, NULL };  // дл€ глобальных переменных
 list_node_t   s_headDefined = { 0, NULL, &s_e };  // дл€ предопределЄнных
 
-p_list_node_t   s_varsLocal = &s_headLocal;         // работаем через указатели
+p_list_node_t   s_varsLocal = &s_headLocal;       // работаем через указатели
 p_list_node_t  s_varsGlobal = &s_headGlobal;        
 p_list_node_t s_varsDefined = &s_headDefined;
-
 
 // удалить узел списка и все узлы за ним
 static void _listDeleteTail (p_list_node_t node)
@@ -54,7 +52,7 @@ static void _listDeleteTail (p_list_node_t node)
   }
 }
 
-// очистить св€зный список - указанный узел очистить, следующие - удалить
+// указанный узел св€зного списка очистить, следующие - удалить
 static void _listClear(p_list_node_t list) {
   _listDeleteTail(list->next);  // удалить все после указанного узла
   free(list->varName);          // возможно вызов не из головы списка
@@ -90,12 +88,12 @@ static calc_err_t _listAdd(p_list_node_t list, char const* varName, double const
   }
 
   StrCopyFixLen(varName, newStr, nameLen);    // скопировать им€ в созданную строку
-  newStr[nameLen]   = '\0';                      // конец строки
+  newStr[nameLen]   = '\0';                   // конец строки
 
   nextNode->varName = newStr;      
   nextNode->value   = value;      
-  nextNode->next    = list->next;    // присоединить хвост списка 
-  list->next        = nextNode;      // новый узел будет за головой
+  nextNode->next    = list->next;             // присоединить хвост списка 
+  list->next        = nextNode;               // новый узел будет за головой
   return CALC_OK;
 }
 

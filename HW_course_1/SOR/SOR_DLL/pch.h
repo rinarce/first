@@ -63,4 +63,4 @@ typedef struct
 } sort_info_t;
 
 
-extern "C" _declspec(dllexport) sort_info_t* GetSortList(int* count);
+extern _declspec(dllexport) sort_info_t* GetSortList(int* count);

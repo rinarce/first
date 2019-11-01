@@ -1,5 +1,6 @@
 ﻿#include <stdio.h>
 #include <stdlib.h>           // для выделения памяти
+#include "DST_functions.h"
           
 // #define DEBUG                 // Отладка
 #define DST_BUFFER_SIZE 5     // порции считывания строки

@@ -355,14 +355,17 @@ static calc_err_t _calcTree(p_tree_t tree, double* result) {
       *result = (double)(~(int)valueRight);
       return CALC_OK;
 
-    case CALC_SEPARATOR:  // разделитель формул возвращает правый результат
+    case CALC_SEPARATOR:      // разделитель формул возвращает правый результат
       *result = valueRight;
       return CALC_OK;
   
   // ------------ ДОДЕЛАТЬ ВСЕ ОПЕРАЦИИ =-=-=-==-=-=-=-=-=-=-=-=-=-
+
+    default:
+      return CALC_ERR_ALGO;   // неизвестная операция - таких не должно быть
   }
   
-  return CALC_ERR_ALGO;   // неизвестная операция - таких не должно быть
+  return CALC_ERR_ALGO;       // Unreacheble
 }
 
 

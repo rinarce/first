@@ -152,10 +152,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="getCPUTime.c" />
-    <ClCompile Include="SOR.cpp" />
-    <ClCompile Include="testing_system.cpp" />
+    <ClCompile Include="SOR.c" />
+    <ClCompile Include="testing_system.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="getCPUTime.h" />
     <ClInclude Include="SOR.h" />
     <ClInclude Include="testing_system.h" />
   </ItemGroup>

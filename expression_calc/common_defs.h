@@ -72,21 +72,4 @@ void PrintLine(FILE* output_stream, char* input_line, calc_err_t error, double r
 // вычисляет строку выражений, возвращает тип строки (ок или ошибка) и результат
 calc_err_t ProcessLine (char const* input_line, double* result);
 
-// --  Интерфейс работы с переменными  ---------------------------------------
-
-// clear global variables
-void VariableClearGlobal(void);
-
-// clear local (for current line) variables
-void VariableClearLocal(void);
-
-// create local (for current line) variable
-calc_err_t VariableMake(char const* varName, double const value);
-
-// create global variable
-calc_err_t VariableMakeGlobal(char const* varName, double const value);
-
-// get value by variable name (if exist), return 0 - variable not exist, 1 - exist
-int VariableGet(char const* varName, double* value);
-
 #endif COMMON_DEFS_H_INCLUDED__

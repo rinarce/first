@@ -8,7 +8,7 @@
 #include <windows.h>              // для русских букв
 
 #include "common_defs.h"          // общие определения
-
+#include "calc_variables.h"
 
 int main(int arg_count, char* arg_values[]) { 
   

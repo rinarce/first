@@ -1,3 +1,8 @@
+#ifndef DST_FUNCTIONS_H_INCLUDED__
+#define DST_FUNCTIONS_H_INCLUDED__
+#pragma once
+
+
 char* AllocateString(unsigned int size);
 // выделяет место для строки размером (size + 1)
 
@@ -50,3 +55,5 @@ char* STR_JustifyWidth(char* str, unsigned width);
 // возврат - новая строка, где str разбита на строки шириной width
 // выравнивание- по ширине, изменяя количество пробелов
 // между строками - \n, если слово > width, оно разбивается на куски
+
+#endif DST_FUNCTIONS_H_INCLUDED__

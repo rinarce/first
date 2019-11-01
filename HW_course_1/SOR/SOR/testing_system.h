@@ -1,3 +1,5 @@
+#ifndef TESTING_SYSTEM_H_INCLUDED__
+#define TESTING_SYSTEM_H_INCLUDED__
 #pragma once
 #include <time.h>
 #include "SOR.h"
@@ -14,9 +16,10 @@ typedef void (*sort_func_t)(int array[], int size);
 
 // формирую в файле первую строку, там будут значения 
 // == размеры массива на каждом шаге тестирования
-void test_MakeFirstLine(FILE* out_file);
+void TestMakeFirstLine(FILE* out_file);
 
 
 // Тестирует алгоритм на массивах разного размера, результат в CSV файл
-void test_algorithm(sort_func_t fun, const char* algorithm, FILE* out_file);
+void TestAlgorithm(sort_func_t fun, const char* algorithm, FILE* out_file);
 
+#endif TESTING_SYSTEM_H_INCLUDED__

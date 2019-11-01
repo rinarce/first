@@ -10,14 +10,14 @@ int _cmpInt(const void* a, const void* b)
 }
 
 // Стандартная функция Си qsort()
-extern void etalon_sort(int array[], int size)
+extern void ProperSort(int array[], int size)
 { // Обёртка для единообразного вызова сортировок
   qsort(array, size, sizeof(int), _cmpInt); 
 }
 
 // -----------------------------------------------------------
 // сортировка Пузырьком - вариант 1
-extern  void bubble_sort_1(int array[], int size)
+extern  void BubbleSort1(int array[], int size)
 {
   int temp, finish;
 
@@ -39,7 +39,7 @@ extern  void bubble_sort_1(int array[], int size)
 
 // -----------------------------------------------------------
 //  сортировка Пузырьком вариант 2 - указатели вместо массивов
-extern  void bubble_sort_2(int array[], int size)
+extern  void BubbleSort2(int array[], int size)
 {
   int temp, finish;
   int* start = array, * end = array + size, * i, * j;
@@ -63,7 +63,7 @@ extern  void bubble_sort_2(int array[], int size)
 
 // -----------------------------------------------------------
 // Выбором
-extern  void select_sort_1(int array[], int size)
+extern  void SelectSort1(int array[], int size)
 {
   for (int i = size - 1; i; i--)
   { // начнём с конца, просто так, до второго элемента
@@ -86,7 +86,7 @@ extern  void select_sort_1(int array[], int size)
 
 // -----------------------------------------------------------
 // Вставками http://rosettacode.org/wiki/Sorting_algorithms/Insertion_sort
-extern void insertion_sort(int array[], int size) 
+extern void InsertionSort(int array[], int size) 
 {
   for (int i = 1; i < size; ++i) 
   {
@@ -108,7 +108,7 @@ extern void insertion_sort(int array[], int size)
 
 //функция, сливающая массивы 
 // С дополнительной памятью, выделяю память на каждом слиянии
-void Merge_1(int array[], int first, int last)
+void _merge1(int array[], int first, int last)
 { 
   int middle, start, final, j;
   // выделяю вспомогательный массив (размер неоптимален -
@@ -134,32 +134,32 @@ void Merge_1(int array[], int first, int last)
   free(mas);
 };
 
-void MergeSort_1(int array[], int first, int last)
+void _mergeSort1(int array[], int first, int last)
 {
   //first, last – номера первого и последнего элементов соответственно
   if (first < last)
   {
-    MergeSort_1(array, first, (first + last) / 2);     //сортировка левой части
-    MergeSort_1(array, (first + last) / 2 + 1, last);  //сортировка правой части
-    Merge_1(array, first, last);                       //слияние двух частей
+    _mergeSort1(array, first, (first + last) / 2);     //сортировка левой части
+    _mergeSort1(array, (first + last) / 2 + 1, last);  //сортировка правой части
+    _merge1(array, first, last);                       //слияние двух частей
   }
 }
 
 // Обёртка для единообразного вызова сортировок
-extern void merge_sort_1(int array[], int size)
+extern void MergeSort1(int array[], int size)
 {
-  MergeSort_1(array, 0, size - 1);
+  _mergeSort1(array, 0, size - 1);
 }
 
 
 // -----------------------------------------------------------
 // Слиянием вариант 2         // http://kvodo.ru/mergesort.html 
 // С дополнительной памятью, выделяю память только 1 раз
-static int* tempo = NULL;
-void Merge_2(int array[], int first, int last)
+static int* s_tempo = NULL;
+void _merge2(int array[], int first, int last)
 {
   int middle, start, final, j;
-  int* mas = tempo;
+  int* mas = s_tempo;
   middle = (first + last) / 2;         //вычисление среднего элемента
   start = first;                       //начало левой части
   final = middle + 1;                  //начало правой части
@@ -180,24 +180,24 @@ void Merge_2(int array[], int first, int last)
 
 };
 
-void MergeSort_2(int array[], int first, int last)
+void _mergeSort2(int array[], int first, int last)
 {
   //first, last – номера первого и последнего элементов соответственно
   if (first < last)
   {
-    MergeSort_2(array, first, (first + last) / 2);     //сортировка левой части
-    MergeSort_2(array, (first + last) / 2 + 1, last);  //сортировка правой части
-    Merge_2(array, first, last);                       //слияние двух частей
+    _mergeSort2(array, first, (first + last) / 2);     //сортировка левой части
+    _mergeSort2(array, (first + last) / 2 + 1, last);  //сортировка правой части
+    _merge2(array, first, last);                       //слияние двух частей
   }
 }
 
 // Обёртка для единообразного вызова сортировок, // и тут выделю память
 extern void merge_sort_2(int array[], int size)
 { // без выделения каждый раз, выделяю 1 раз, 
-  // передаю через глобальную переменную tempo
-  tempo = (int*)malloc(size * sizeof(int));;
-  MergeSort_2(array, 0, size - 1);
-  free(tempo);
+  // передаю через глобальную переменную s_tempo
+  s_tempo = (int*)malloc(size * sizeof(int));;
+  _mergeSort2(array, 0, size - 1);
+  free(s_tempo);
 }
 
 
@@ -211,7 +211,7 @@ extern void merge_sort_2(int array[], int size)
   * возвращает: указатель на отсортированный массив. Из-за особенностей работы данной реализации
   * отсортированная версия массива может оказаться либо в 'up', либо в 'down'
   **/
-int* merge_sort_wiki(int* up, int* down, unsigned int left, unsigned int right)
+int* _mergeSortWiki(int* up, int* down, unsigned int left, unsigned int right)
 {
   if (left == right)
   {
@@ -222,8 +222,8 @@ int* merge_sort_wiki(int* up, int* down, unsigned int left, unsigned int right)
   unsigned int middle = (left + right) / 2;
 
   // разделяй и сортируй
-  int* l_buff = merge_sort_wiki(up, down, left, middle);
-  int* r_buff = merge_sort_wiki(up, down, middle + 1, right);
+  int* l_buff = _mergeSortWiki(up, down, left, middle);
+  int* r_buff = _mergeSortWiki(up, down, middle + 1, right);
 
   // слияние двух отсортированных половин
   int* target = l_buff == up ? down : up;
@@ -260,12 +260,12 @@ int* merge_sort_wiki(int* up, int* down, unsigned int left, unsigned int right)
 
 // алгоритм отсюда // https://ru.wikipedia.org/wiki/Сортировка_слиянием
 // только без выделения массива каждый раз, выделяю 1 раз, */
-extern void merge_sort_wiki(int array[], int size)
+extern void MergeSortWiki(int array[], int size)
 { 
   if (size <= 0) return; // с нулевым размером не дружит
 
   int* temp = (int*)malloc(size * sizeof(int));
-  int* result = merge_sort_wiki(array, temp, 0, size - 1);
+  int* result = _mergeSortWiki(array, temp, 0, size - 1);
 
   // особенности данной реализации - результат может быть в любом массиве из 2х
   if (result == temp) // тут результат не там где надо
@@ -278,38 +278,38 @@ extern void merge_sort_wiki(int array[], int size)
 // -----------------------------------------------------------
 // Быстрая сортировка  («qsort») Чарльз Хоар (Charles Antony Richard Hoare)
 // вариант // http://kvodo.ru/quicksort.html
-void qiuckSort_Hoare(int* mas, int first, int last)
+void _qiuckSortHoare(int* array, int first, int last)
 {
   int mid, count;
   int f = first, l = last;
-  mid = mas[(f + l) / 2]; //вычисление опорного элемента
+  mid = array[(f + l) / 2]; //вычисление опорного элемента
   do
   {
-    while (mas[f] < mid) f++;
-    while (mas[l] > mid) l--;
+    while (array[f] < mid) f++;
+    while (array[l] > mid) l--;
     if (f <= l) //перестановка элементов
     {
-      count = mas[f];
-      mas[f] = mas[l];
-      mas[l] = count;
+      count = array[f];
+      array[f] = array[l];
+      array[l] = count;
       f++;
       l--;
     }
   } while (f < l);
-  if (first < l) qiuckSort_Hoare(mas, first, l);
-  if (f < last) qiuckSort_Hoare(mas, f, last);
+  if (first < l) _qiuckSortHoare(array, first, l);
+  if (f < last) _qiuckSortHoare(array, f, last);
 }
 
 // Быстрая сортировка  («qsort») Чарльз Хоар (Charles Antony Richard Hoare)
 // вариант // http://kvodo.ru/quicksort.html
 // вариант - для малых размеров переходить на другую сортировку
-void qiuckSort_Hoare_2(int* mas, int first, int last)
+void _qiuckSortHoare2(int* mas, int first, int last)
 {
   int size = last - first + 1;
   if (size < 66)  // меньше этого размера не сортировать (размер с потолка)
   {
     return; // так лучше, ничего не делать, а потом отсортировать весь
-    insertion_sort(mas + first, size); // вар 2
+    InsertionSort(mas + first, size); // вар 2
   }
   
   int mid, count;
@@ -328,34 +328,34 @@ void qiuckSort_Hoare_2(int* mas, int first, int last)
       l--;
     }
   } while (f < l);
-  if (first < l) qiuckSort_Hoare_2(mas, first, l);
-  if (f < last) qiuckSort_Hoare_2(mas, f, last);
+  if (first < l) _qiuckSortHoare2(mas, first, l);
+  if (f < last) _qiuckSortHoare2(mas, f, last);
 }
 
 
 // Обёртка для единообразного вызова сортировок,
 // Быстрая сортировка  («qsort») Чарльз Хоар
 // вариант // http://kvodo.ru/quicksort.html
-extern void qiuck_sort_Hoare(int array[], int size)
+extern void QiuckSortHoare(int array[], int size)
 {
-  qiuckSort_Hoare(array, 0, size - 1);
+  _qiuckSortHoare(array, 0, size - 1);
 }
 
 // Обёртка для единообразного вызова сортировок,
 // Быстрая сортировка  («qsort») Чарльз Хоар
 // вариант // http://kvodo.ru/quicksort.html
 // вариант - для малых размеров переходить на другую сортировку
-extern void qiuck_sort_Hoare_2(int array[], int size)
+extern void QiuckSortHoare2(int array[], int size)
 {
-  qiuckSort_Hoare_2(array, 0, size - 1);
+  _qiuckSortHoare2(array, 0, size - 1);
   // остались неотсортированные кусочки в массиве - отсортируем ВСТАВКАМИ
-  insertion_sort(array, size);   
+  InsertionSort(array, size);   
 }
 
 
 // -----------------------------------------------------------
 // Гномья сортировка Hamid Sarbazi-Azad (вставками)
-  extern void gnome_sort(int array[], int size)
+  extern void GnomeSort(int array[], int size)
 {
   int i = 1, j = 2;               // j граница, до которой дошёл гном
   while (i < size)
@@ -381,7 +381,7 @@ extern void qiuck_sort_Hoare_2(int array[], int size)
 
 // -----------------------------------------------------------
 //сортировка Шелла
-extern void shell_sort(int array[], int size)
+extern void ShellSort(int array[], int size)
 {
   int d = size / 2;
   while (d > 0)
@@ -391,7 +391,7 @@ extern void shell_sort(int array[], int size)
       int j = i;
       while (j >= 0 && array[j] > array[j + d])
       {
-        int temp = array[j];      // swap
+        int temp = array[j];      // _swapUnsigned
         array[j] = array[j + d]; 
         array[j + d] = temp;
         j--;
@@ -405,7 +405,7 @@ extern void shell_sort(int array[], int size)
 //сортировка Шелла  /* Пример из книги Герберта Шилдта */
 // https://ru.wikibooks.org/wiki/Реализации_алгоритмов/Сортировка/Шелла
 // фиксированные значения расстояния между сравнениями
-extern void shell_sort_2(int array[], int size)
+extern void ShellSort2(int array[], int size)
 { 
   register int i, j, gap, k, x;
   // int a[5] = { 9, 5, 3, 2, 1 }; /* Пример из книги Герберта Шилдта */
@@ -452,7 +452,7 @@ int increment(int inc[], int size) { // Robert Sedgewick
   return s > 0 ? --s : 0;// возвращаем количество элементов в массиве
 }
 
-extern void shell_sort_3(int array[], int size) {
+extern void ShellSort3(int array[], int size) {
   // inc инкремент, расстояние между элементами сравнения
   // seq[40] массив, в котором хранятся инкременты
   int inc, i, j, seq[40];
@@ -480,7 +480,7 @@ extern void shell_sort_3(int array[], int size) {
 
 // -----------------------------------------------------------
 //сортировка расчёска // https://ru.wikipedia.org/wiki/Сортировка_расчёской
-extern void comb_sort(int array[], int size)
+extern void CombSort(int array[], int size)
 {
   double fakt = 1.2473309; // фактор уменьшения
   register int i, j, temp, finish, step = size - 1;
@@ -518,24 +518,24 @@ extern void comb_sort(int array[], int size)
 }
 
 // http://rosettacode.org/wiki/Sorting_algorithms/Comb_sort#C
-extern void comb_sort_2(int a[], int nElements)
+extern void CombSort2(int array[], int size)
 {
   register int i, j, gap, temp, swapped = 1;
 
-  gap = nElements;
+  gap = size;
   while (gap > 1 || swapped == 1)
   {
     gap = gap * 10 / 13;
     if (gap == 9 || gap == 10) gap = 11;
     if (gap < 1) gap = 1;
     swapped = 0;
-    for (i = 0, j = gap; j < nElements; i++, j++)
+    for (i = 0, j = gap; j < size; i++, j++)
     {
-      if (a[i] > a[j])
+      if (array[i] > array[j])
       {
-        temp = a[i];
-        a[i] = a[j];
-        a[j] = temp;
+        temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
         swapped = 1;
       }
     }
@@ -548,7 +548,7 @@ extern void comb_sort_2(int a[], int nElements)
 // Radix sort
 // http://rosettacode.org/wiki/Sorting_algorithms/Radix_sort#C
 
-static void swap(unsigned* a, unsigned* b) {
+static void _swapUnsigned(unsigned* a, unsigned* b) {
   unsigned tmp = *a;
   *a = *b;
   *b = tmp;
@@ -556,17 +556,17 @@ static void swap(unsigned* a, unsigned* b) {
 
 /* sort unsigned ints */
 
-static void rad_sort_u(unsigned* from, unsigned* to, unsigned bit)
+static void _radixSortUnsigned(unsigned* from, unsigned* to, unsigned bit)
 {
   if (!bit || to < from + 1) return;
   
   unsigned* ll = from, * rr = to - 1;
   for (;;) {
-    /* find left most with bit, and right most without bit, swap */
+    /* find left most with bit, and right most without bit, _swapUnsigned */
     while (ll < rr && !(*ll & bit)) ll++;
     while (ll < rr && (*rr & bit)) rr--;
     if (ll >= rr) break;
-    // swap(ll, rr);
+    // _swapUnsigned(ll, rr);
     unsigned temp = *ll;
     *ll = *rr;
     *rr = temp;
@@ -575,12 +575,12 @@ static void rad_sort_u(unsigned* from, unsigned* to, unsigned bit)
   if (!(bit & *ll) && ll < to) ll++;
   bit >>= 1;
 
-  rad_sort_u(from, ll, bit);
-  rad_sort_u(ll, to, bit);
+  _radixSortUnsigned(from, ll, bit);
+  _radixSortUnsigned(ll, to, bit);
 }
 
 /* sort signed ints: flip highest bit, sort as unsigned, flip back */
-static void radix_sort_s(int* array, const size_t size)
+static void _radixSortSigned(int* array, const size_t size)
 {
   size_t i;
   unsigned* unsigned_array = (unsigned*)array;
@@ -588,16 +588,16 @@ static void radix_sort_s(int* array, const size_t size)
   for (i = 0; i < size; i++)          // избавляемся от знака
     unsigned_array[i] ^= INT_MIN;
 
-  rad_sort_u(unsigned_array, unsigned_array + size, INT_MIN);
+  _radixSortUnsigned(unsigned_array, unsigned_array + size, INT_MIN);
 
   for (i = 0; i < size; i++)          // восстанавливаем знак обратно
     unsigned_array[i] ^= INT_MIN;
 }
 
 // обёртка
-extern void radix_sort(int array[], int size)
+extern void RadixSort(int array[], int size)
 {
-  radix_sort_s(array, size); // для целых со знаком
+  _radixSortSigned(array, size); // для целых со знаком
 }
 
 
@@ -605,7 +605,7 @@ extern void radix_sort(int array[], int size)
 // Пирамидальная https://www.codelab.ru/task/pyramid_sort/
 
 /* Функция "балансировки" пирамиды.   (просеивания, добавления элементов) */
-void Screening(int array[], int k, int n) 
+void _screening(int array[], int k, int n) 
 {
   /* Это чтобы при k=0 и n=0 не делалось лишней  перестановки*/
   if (0 == n) return;
@@ -635,14 +635,14 @@ void Screening(int array[], int k, int n)
 }
 
 
-extern void pyramid_sort(int array[], int size) 
+extern void PyramidSort(int array[], int size) 
 {
   register int i, tmp;
 
   // Построение пирамиды 
   for (i = size / 2; i >= 0; i--) 
   {
-    Screening(array, i, size - 1);
+    _screening(array, i, size - 1);
   }
 
   /* Формирование конечной отсортированной
@@ -655,7 +655,7 @@ extern void pyramid_sort(int array[], int size)
     array[i] = tmp;
 
     /* Восстановление баланса  для пирамиды x[0..i-2] */
-    Screening(array, 0, i - 1);
+    _screening(array, 0, i - 1);
   }
 }
 
@@ -664,7 +664,7 @@ extern void pyramid_sort(int array[], int size)
 // -----------------------------------------------------------
 // Heap sort 
 // http://rosettacode.org/wiki/Sorting_algorithms/Heapsort
-int max_HS(int array[], int size, int i, int j, int k)
+int _maxHS(int array[], int size, int i, int j, int k)
 {
   int mx = i;
   
@@ -677,11 +677,11 @@ int max_HS(int array[], int size, int i, int j, int k)
   return mx;
 }
 
-void downheap(int array[], int n, int i) 
+void _downHeap(int array[], int n, int i) 
 {
   while (1) 
   {
-    int j = max_HS(array, n, i, 2 * i + 1, 2 * i + 2);
+    int j = _maxHS(array, n, i, 2 * i + 1, 2 * i + 2);
     
     if (j == i)   break;
     
@@ -692,12 +692,12 @@ void downheap(int array[], int n, int i)
   }
 }
 
-extern void heap_sort(int array[], int size) 
+extern void HeapSort(int array[], int size) 
 {
   int i;
   for (i = (size - 2) / 2; i >= 0; i--) 
   {
-    downheap(array, size, i);
+    _downHeap(array, size, i);
   }
   for (i = 0; i < size; i++) 
   {
@@ -705,6 +705,6 @@ extern void heap_sort(int array[], int size)
     array[size - i - 1] = array[0];
     array[0] = t;
 
-    downheap(array, size - i - 1, 0);
+    _downHeap(array, size - i - 1, 0);
   }
 }

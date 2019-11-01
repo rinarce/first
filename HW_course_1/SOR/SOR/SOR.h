@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿#ifndef SOR_H_INCLUDED__
+#define SOR_H_INCLUDED__
+#pragma once
 
 // Описание стандарта заголовка функции сортировки
 typedef void (*sort_func_t)(int array[], int size);
@@ -46,3 +48,4 @@ typedef struct
   char const* name;               // Имя, описывающее вариацию
 } sort_info_t;
 
+#endif SOR_H_INCLUDED__

@@ -55,7 +55,7 @@ int main(int argc, char* argv[])
 
   // формирую в файле первую строку, там будут значения 
   // размер массива на каждом шаге тестирования.
-  test_MakeFirstLine(file_out);
+  TestMakeFirstLine(file_out);
 
 
   // Тестируем методы сортировки
@@ -65,7 +65,7 @@ int main(int argc, char* argv[])
     sort_func_t sort_func = sortings[i].sort;
   
     printf("\nTest <%s>\n", sort_name);
-    test_algorithm(sort_func, sort_name, file_out);   // тестирование тут
+    TestAlgorithm(sort_func, sort_name, file_out);   // тестирование тут
   }
   
   fclose(file_out);

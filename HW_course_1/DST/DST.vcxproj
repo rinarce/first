@@ -151,8 +151,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="DST.cpp" />
-    <ClCompile Include="DST_functions.cpp" />
+    <ClCompile Include="DST.c" />
+    <ClCompile Include="DST_functions.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DST_functions.h" />

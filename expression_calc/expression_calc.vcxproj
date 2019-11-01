@@ -159,6 +159,7 @@
     <ClCompile Include="calc_variables.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="calc_variables.h" />
     <ClInclude Include="common_defs.h" />
     <ClInclude Include="str_functions.h" />
   </ItemGroup>
