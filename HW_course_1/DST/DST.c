@@ -11,19 +11,19 @@ int main() {
   setlocale(LC_ALL, "Russian");
   SetConsoleCP(1251);         // для ввода русских букв
   SetConsoleOutputCP(1251);
-  // очередная введённая строка, создаётся каждый раз в DstInputStr,
-  // освобождается перед вводом новой строки
-  char* str;
-  char* mask;             // маска для DST–6-7
-  char* result;           // новая строка - результат выполнения каждого задания
-  char* paragraph = NULL; // накапливаю все строки str, \n заменён на пробел
+  
+  char* str;                  // очередная введённая строка
+  char* mask;                 // маска для DST–6-7
+  char* result;               // новая строка - результат выполнения каждого задания
+  char* paragraph = NULL;     // накапливаю все строки str, \n заменён на пробел
   unsigned int strLen;
 
-  while (strLen = DstInputStr(&str, "Введите строку :"))
+  while (strLen = DstInputStr(&str, "Введите строку :")) // пока не введена пустая строка
   {
     DstInputStr(&mask, " Введите маску :");
 
     printf("\nDST–0               (Введено) : %s\n", str);
+
     result = ExtractWords(str, DST_SEPARATOR);
     printf("DST–1            (Выбор слов) : %s\n", result);
     free(result);
@@ -68,7 +68,7 @@ int main() {
     printf("\n");
   }
 
-  { // Выравнивание
+  { // Задания на выравнивание параграфа
     int width = 0;
     printf("\nDST-11/12       Ширина абзаца : ");
     scanf_s("%u", &width);

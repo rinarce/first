@@ -1,17 +1,18 @@
 ﻿#include <stdio.h>
-#include <stdlib.h>           // для выделения памяти
+#include <stdlib.h> 
 #include "DST_functions.h"
           
-// #define DEBUG                 // Отладка
-#define DST_BUFFER_SIZE 5     // порции считывания строки
+//#define DEBUG                 // Отладка
+#define DST_BUFFER_SIZE 10     // порции считывания строки
 
-unsigned int StrLenght(char const* str) {  // длина строки до '\0'
+// длина строки до '\0'
+unsigned int _strLenght(char const* str) {  
   int lenght = 0;
   if (NULL != str)
-    while (*str++) lenght++;
+    while (*str++) 
+      lenght++;
   return lenght;
 }
-
 
 // находит вхождение в строку символа, или конец строки '\0'
 char* _strFindChar(char const* str, char symbol, int start) 
@@ -25,40 +26,41 @@ char* _strFindChar(char const* str, char symbol, int start)
   return (char*)str;                          // тут вернёт адрес концы строки '\0'
 }
 
-
-int _strIsEmpty(char const* str)
-{ // 1 - если строка пустая, иначе 0
+// 1 - если строка пустая (ни обного символа), иначе 0
+int _strIsEmpty(char const* str) { 
   return ((NULL != str) && *str) ? 0 : 1;
 }
 
+// определяет, что является допустимой буквой в данной задаче
+// 1 - если [A–Z] или [a–z] или [0–9], иначе - 0
 int _charIsAlNum(char c) {
-  // определяет, что является допустимой буквой в данной задаче
-  // 1 - если [A–Z] или [a–z] или [0–9], иначе - 0
   return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9');
 }
 
+// возвращает указатель на следующую букву в str или на конец строки
 char* _strFindNextWord(char const* str) {
-  // возвращает указатель на следующую букву в str или на конец строки
-  while (*str && !_charIsAlNum(*str)) str++;
+  while (*str && !_charIsAlNum(*str)) 
+    str++;
   return (char*)str;
 }
 
+// возвращает указатель на следующую НЕбукву в str или на конец строки
 char* _strFindNextSeparator(char const* str) {
-  // возвращает указатель на следующую НЕбукву в str или на конец строки
-  while (*str && _charIsAlNum(*str)) str++;
+  while (*str && _charIsAlNum(*str)) 
+    str++;
   return (char*)str;
 }
 
-int _strCompareFixLen(char const* str1, char const* str2, unsigned int distance)
-{ // сравнивает строки на длину distance, возврат 1 если равны, 0 иначе
+// сравнивает строки на длину distance, возврат 1 если равны, 0 иначе
+int _strCompareFixLen(char const* str1, char const* str2, unsigned int distance) { 
   while (distance--)
-    if (*(str1++) != *(str2++)) // до первого несовпадения
+    if (*(str1++) != *(str2++))   // до первого несовпадения
       return 0;
   return 1;
 }
 
-void _charTransliterate(char* str)
-{  // транслитерация 1 русского символа, в строке должно быть минимум 5 байта длины
+// транслитерация 1 русского символа, в строке должно быть минимум 5 байта длины
+void _charTransliterate(char* str) {  
    // по правилам - ПРИКАЗ МИД РФ от 29 марта 2016 г. N 4271
   switch (*str)
   {
@@ -141,7 +143,8 @@ int _strCompareWithMask(char const* str, char const* mask) {
   if (*str == 0) {            // строка закончилась, шанс есть только для '*'
     if (*mask == '*')
       return _strCompareWithMask(str, mask+1);  // укорачиваем маску на *
-    else return 0;
+    else 
+      return 0;
   }
   else if (*mask == '?' || *mask == *str)     // символы совпали или шаблон '?'
     return _strCompareWithMask(str+1, mask+1);  // укорачиваем обе строки
@@ -158,15 +161,16 @@ int _strCompareWithMask(char const* str, char const* mask) {
     // вариант 3 - продвигаем маску, сразу возвращаем результат
     return _strCompareWithMask(str, mask+1);
   }
-  else return 0; // не совпали символы, или закончилась маска, а строка нет
+  else 
+    return 0; // не совпали символы, или закончилась маска, а строка нет
 }
 
 // ищет в строке str с позиции pos слово word
 // return - позиция (от начала строки) или -1 == не найдено
 int _strFindWord(char const* str, char* word, unsigned int pos) {  
   char const* strPtr = str + pos;
-  int wordLen = StrLenght(word);
-  int str_len = StrLenght(str);
+  int wordLen = _strLenght(word);
+  int str_len = _strLenght(str);
   if (wordLen && str_len) {  
     char const* limit = str + str_len - wordLen;  // до куда искать
     while (strPtr <= limit) {
@@ -187,19 +191,18 @@ int _strFindWord(char const* str, char* word, unsigned int pos) {
 // return - позиция (от начала строки) или -1 == не найдено
 int _strFindSubStr(char const* str, char* subStr, unsigned int pos) { 
   char const* strPtr = str + pos;
-  int subStr_len = StrLenght(subStr);
-  int str_len = StrLenght(str);
-  if (subStr_len && str_len)  {
-    char const* limit = str + str_len - subStr_len;  // до куда искать
+  int subStrLen = _strLenght(subStr);
+  int strLen = _strLenght(str);
+  if (subStrLen && strLen)  {
+    char const* limit = str + strLen - subStrLen;   // до куда искать
     while (strPtr <= limit) {                       // поиск
-      if(_strCompareFixLen(strPtr, subStr, subStr_len))
+      if(_strCompareFixLen(strPtr, subStr, subStrLen))
           return (strPtr - str);                    // нашли
       strPtr++;
     }
   }
   return -1;                                        // не нашли
 }
-
 
 // возвращает длину слова от начала str
 unsigned int _strFirstWordLen(char const* str) {
@@ -224,20 +227,20 @@ unsigned int _strCountSymbols(char const* str) {
   return counter;
 }
 
-// считает вхождение в строку символа X
-unsigned int _strCountChar(char const* str, char x) {
-  unsigned int counter = 0;
-  while (*str)
-    if(x == (*str++)) counter++;
-  return counter;
-}
-
-
 // возвращает количество НЕбукв в str
 unsigned int _strCountSeparators(char const* str) {
   unsigned int counter = 0;
   while (*str)
     counter += _charIsAlNum(*str++) ? 0 : 1;
+  return counter;
+}
+
+// считает вхождение в строку символа X
+unsigned int _strCountChar(char const* str, char x) {
+  unsigned int counter = 0;
+  while (*str)
+    if(x == (*str++)) 
+      counter++;
   return counter;
 }
 
@@ -251,7 +254,7 @@ char* _strAllocate(unsigned int size) {
 
 // Создаёт новую строку == str
 char* _strCopyString(char const* str) { 
-  unsigned int str_size = StrLenght(str);
+  unsigned int str_size = _strLenght(str);
   char* new_str = (char*)malloc(str_size + 1);
   if (NULL != new_str) {
     char const* pOrigin = str;
@@ -274,9 +277,8 @@ char* _strNewSubStr(char const* str, int start, int end) {
     char const* pEnd = str + end;
     char* pNew = new_str;
     // копируем, последний скопированный будет конец строки '\0'
-    while (pOrigin <= pEnd && *pOrigin) { // копируем кусок [start..end] или до конца '\0'
+    while (pOrigin <= pEnd && *pOrigin)  // копируем кусок [start..end] или до конца '\0'
       *(pNew++) = *(pOrigin++); 
-    }
     pNew = '\0';   // конец строки
   }
   return new_str;
@@ -285,33 +287,31 @@ char* _strNewSubStr(char const* str, int start, int end) {
 // Создаёт новую строку == str, несколько пробелов подряд заменяются на один
 // В начале строки пробелы удаляются
 char* _strOnlyOneSpace(char const* str) { 
-  unsigned int str_size = StrLenght(str);
+  unsigned int strSize = _strLenght(str);
   // выделяю место по длнине оригинала
-  char* new_str = (char*)malloc(str_size + 1);
-  if (NULL != new_str) {
+  char* newStr = (char*)malloc(strSize + 1);
+  if (NULL != newStr) {
     char const* pOrigin = str;
-    char* pNew = new_str;
-    int isPredSpase = 1;     // считаю, что пробелы в начале строки не нужны
+    char* pNew = newStr;
+    int isPredSpase = 1;      // считаю, что пробелы в начале строки не нужны
     do {
-      if (*pOrigin == ' ') { // найден пробел
-        if (!isPredSpase) {  // пробел копируем только если перед ним был НЕпробел
+      if (*pOrigin == ' ') {  // найден пробел
+        if (!isPredSpase)     // пробел копируем только если перед ним был НЕпробел
           *(pNew++) = *(pOrigin++); 
-        }
-        else { 
-          pOrigin++; 
-        }    // был пробел => не копируем, просто сдвигаем указатель
-        isPredSpase = 1;    // запомнить, что был пробел
+        else  
+          pOrigin++;          // был пробел => не копируем, просто сдвигаем указатель
+        isPredSpase = 1;      // запомнить, что был пробел
       }
       else {
         *(pNew++) = *(pOrigin++);  // копируем не пробел
-        isPredSpase = 0;  // запомнить, что был не пробел
+        isPredSpase = 0;      // запомнить, что был не пробел
       }
-    } while (*pOrigin);   // копируем, пока не конец строки
-    *pNew = '\0';         // конец строки
+    } while (*pOrigin);       // копируем, пока не конец строки
+    *pNew = '\0';             // конец строки
   }
   // строка возможно сократилась, перераспределить память ? или не надо ?? не буду
-  // new_str = (char*)realloc(new_str, StrLenght(new_str) + 1);
-  return new_str;
+  // newStr = (char*)realloc(newStr, _strLenght(newStr) + 1);
+  return newStr;
 }
 
 // копирует символы в строках strFrom -> strTo, в количестве number
@@ -330,43 +330,31 @@ unsigned int DstInputStr(char** str, char const* text) {
   
   while (1) { // считываем строку порциями размера DST_BUFFER_SIZE
     // fgets читает на 1 символ меньше, так как в конце всегда добавляет '\0'
-    unsigned int input_len = StrLenght(fgets(buffer, DST_BUFFER_SIZE + 1, stdin));
+    unsigned int input_len = _strLenght(fgets(buffer, DST_BUFFER_SIZE + 1, stdin));
 
 #ifdef DEBUG    
-    printf("\nПрочитано %u символов ", input_len);
+    printf("\nПрочитано %u [%s]", input_len, buffer);
 #endif
 
-    if (buffer[input_len - 1] == '\n') {
+    if (buffer[input_len - 1] == '\n')
       buffer[--input_len] = '\0';  // заменяем '\n' -> '\0', уменьшаем длину
-#ifdef DEBUG
-      printf(" {CR найден [%u], удалён} ", input_len);
-#endif
-    }
 
-#ifdef DEBUG
-    printf("\"%s\"\n", buffer); 
-#endif
-    // просим новый кусок памяти
     char * new_str = (char*)realloc(result_str, str_len + input_len + 1);
-    
     if (NULL == new_str)  { // выделение памяти не удалось, возвращаем что есть
       printf("No more memory\n");
       break;
     }
     else {
-      result_str = new_str;                   //  результат возможно уже в другом месте
+      result_str = new_str;                       //  результат возможно уже в другом месте
       // первые ячейки уже заполнены, сместиться на длину имеющейся строки 
       char* res_pointer = result_str + str_len;  
       char* in_pointer = buffer;                  // добавляем очередную порцию из buffer
       while (*res_pointer++ = *in_pointer++) {
       };  // копируем пока не '\0' в конце buffer
 
-      str_len += input_len;  // новая длина строки
-#ifdef DEBUG
-      printf("Пока введено %u символов, \"%s\"\n", str_len, result_str);
-#endif
-      // использован не весь входной буфер => ввод закончен
-      if (input_len < DST_BUFFER_SIZE)
+      str_len += input_len;                       // новая длина строки
+      
+      if (input_len < DST_BUFFER_SIZE)            // использован не весь входной буфер => ввод закончен
         break;
     }
   }
@@ -379,16 +367,15 @@ unsigned int DstInputStr(char** str, char const* text) {
 // separator добавляется только если str не пустая
 // возвращает длину добавленного
 int StrJointSeparStr(char** str, char const* separator, char const* appendStr) { 
-  unsigned int originLen = StrLenght(*str);
-  unsigned int separatorLen = StrLenght(separator);
-  unsigned int appendLen = StrLenght(appendStr);
-  unsigned int new_len = 
-     (originLen ? originLen + separatorLen : 0) + appendLen + 1;
-  char* new_memory = (char*)realloc(*str, new_len);
-  if (NULL == new_memory)
+  unsigned int originLen = _strLenght(*str);
+  unsigned int separatorLen = _strLenght(separator);
+  unsigned int appendLen = _strLenght(appendStr);
+  unsigned int newLen =  (originLen ? originLen + separatorLen : 0) + appendLen + 1;
+  char* newMemory = (char*)realloc(*str, newLen);
+  if (NULL == newMemory)
     return 0;
-  *str = new_memory;   // возможно указатель изменился
-  char* strPtr = new_memory + originLen;  // добавляем от конца имеющегося
+  *str = newMemory;   // возможно указатель изменился
+  char* strPtr = newMemory + originLen;  // добавляем от конца имеющегося
 
   if (originLen)      //  для непустой строки вставляем разделители
     while (*separator)
@@ -401,7 +388,6 @@ int StrJointSeparStr(char** str, char const* separator, char const* appendStr) {
   return (originLen ? separatorLen : 0) + appendLen;
 }
 
-
 // из str выдаёт первое слово в новую созданную строку, или NULL
 char* _strGetFirstWord(char const* str) { 
   char* wordPtr = _strFindNextWord(str);
@@ -411,19 +397,18 @@ char* _strGetFirstWord(char const* str) {
   unsigned int wordLen = wordEnd - wordPtr;
 
   char* newString = (char*)malloc(wordLen + 1);   // выделние памяти
-  if (NULL == newString)         // выделение памяти не удалось
+  if (NULL == newString)          // выделение памяти не удалось
     return NULL;
 
-  char* newStrPtr = newString; // копирование
+  char* newStrPtr = newString;    // копирование
   while (wordLen--)
     *(newStrPtr++) = *(wordPtr++);
-  *newStrPtr = '\0';            //  конец строки
+  *newStrPtr = '\0';              //  конец строки
   return newString;
 }
 
 // из str выдаёт только буквы в новую созданную строку
-char* StrGetOnlyLetters(char const* str)
-{ 
+char* StrGetOnlyLetters(char const* str) { 
   unsigned int letters = _strCountSymbols(str);
 
   char* newString = (char*)malloc(letters + 1);
@@ -433,7 +418,7 @@ char* StrGetOnlyLetters(char const* str)
   char* newStrPtr = newString;    // копирование
   char const* oldStrPtr = str;
   while (*oldStrPtr)              // пока не конец строки
-    if (_charIsAlNum(*oldStrPtr))  //   копируем только буквы
+    if (_charIsAlNum(*oldStrPtr)) //   копируем только буквы
       *(newStrPtr++) = *(oldStrPtr++);
     else
       oldStrPtr++;                // небуква - пропускаем
@@ -457,7 +442,7 @@ char* _strReverseInStr(char *str, int start, int end) {
 // Реверс строки
 char* _strReverseAllStr(char* str) { 
   char* p1 = str;
-  char* p2 = str + StrLenght(str) - 1;
+  char* p2 = str + _strLenght(str) - 1;
   while (p1 < p2)
   {
     char temp = *p1;
@@ -469,19 +454,18 @@ char* _strReverseAllStr(char* str) {
 
 // XXXXXXXXXXXXXXXXX   ЗАДАНИЯ     XXXXXXXXXXXXXXXXXXXXXXXX
 
-char* ExtractLetters(char const* str, char const* newSeparator)
-{ // новая строка, БУКВЫ из str разделены новым разделителем
-  unsigned int sepLenght = StrLenght(newSeparator);
+// новая строка, БУКВЫ из str разделены новым разделителем
+char* ExtractLetters(char const* str, char const* newSeparator){ 
+  unsigned int sepLenght = _strLenght(newSeparator);
   int symbols = _strCountSymbols(str);
-  unsigned int new_string_size = symbols ? (symbols + (symbols - 1) * sepLenght) : 0;
-  char* result = _strAllocate(new_string_size);
+  unsigned int newStringSize = symbols ? (symbols + (symbols - 1) * sepLenght) : 0;
+  char* result = _strAllocate(newStringSize);
   if (NULL == result)  // выделение памяти не удалось
     return result;
   char* resultPtr = result;
   int wasFirstWord = 0;
 
-  while (*str)
-  {
+  while (*str) {
     if (_charIsAlNum(*str)) {
       if (wasFirstWord++) { // разделителя не будет только перед первым словом
         _strCopySymbols(newSeparator, resultPtr, sepLenght);
@@ -501,9 +485,8 @@ char* ExtractWords(char const* str, char const* newSeparator) {
   char* nextWord = NULL; // очередное слово (выделено отдельно)
   char* result = _strAllocate(0);    // тут накапливаем результат
  
-  while (nextWord = _strGetFirstWord(strPtr))
-  {
-    unsigned int nextWordLen = StrLenght(nextWord);
+  while (nextWord = _strGetFirstWord(strPtr)) {
+    unsigned int nextWordLen = _strLenght(nextWord);
     int added = StrJointSeparStr(&result, newSeparator, nextWord);
 
     free(nextWord);      // удаляем слово, оно уже не нужно
@@ -515,15 +498,15 @@ char* ExtractWords(char const* str, char const* newSeparator) {
   return result;
 }
 
+
 // новая строка, УНИКАЛЬНЫЕ СЛОВА из str разделены новым разделителем
 char* ExtractUniqueWords(char const* str, char const* newSeparator) { 
   char const* strPtr = str;
   char* nextWord = NULL; // очередное слово (выделено отдельно)
   char* result = _strAllocate(0);    // тут накапливаем результат
 
-  while (nextWord = _strGetFirstWord(strPtr))
-  {
-    unsigned int nextWordLen = StrLenght(nextWord);
+  while (nextWord = _strGetFirstWord(strPtr)) {
+    unsigned int nextWordLen = _strLenght(nextWord);
 
     if (_strFindWord(result, nextWord, 0) == -1) { // слова ещё не было в строке
       int added = StrJointSeparStr(&result, newSeparator, nextWord);
@@ -546,8 +529,7 @@ char* ExtractUniqueLetters(char const* str, char const* newSeparator) {
   char* result = _strAllocate(0);    // тут накапливаем результат
   char letter[] = "x";    // не создаём каждый раз строку, используем эту
 
-  while (*(strPtr = _strFindNextWord(strPtr)))
-  {
+  while (*(strPtr = _strFindNextWord(strPtr))) {
     letter[0] = *strPtr; // строка из одной буквы
     if (_strFindWord(result, letter, 0) == -1) { // слова ещё не было в строке
       int added = StrJointSeparStr(&result, newSeparator, letter);
@@ -568,22 +550,22 @@ char* FindMirrors(char const* str, char const* newSeparator) {
   char* strSyms = StrGetOnlyLetters(str);  // тут только буквы
   if (NULL == strSyms)                      // букв нет
     return result;
-  unsigned int symsLen = StrLenght(strSyms);
+  unsigned int symsLen = _strLenght(strSyms);
   // не буду создавать каждый раз новые строки в цикле
   char* buff = _strAllocate(symsLen);
 
   char* strPtr = strSyms; // начнём с первого символа
   
-  while (symsLen) { // будем уменьшать оставшуюся длину
+  while (symsLen) {       // будем уменьшать оставшуюся длину
     // создаём подстроки начиная от strPtr и до конца строки длиной > 1
-    for (unsigned int i = 2; i <= symsLen; i++) {
-      _strCopySymbols(strPtr, buff, i);                // скопировали в buff
-      _strReverseInStr(buff, 0, i - 1);             // отзеркалили
-      *(buff + i) = '\0';                           // конец строки
+    for (unsigned int len = 2; len <= symsLen; ++len) {
+      _strCopySymbols(strPtr, buff, len);           // скопировали в buff
+      _strReverseInStr(buff, 0, len - 1);           // отзеркалили
+      *(buff + len) = '\0';                         // конец строки
 
-      if (_strFindSubStr(strSyms, buff, 0) != -1) {  // ищем во всей строке символов
+      if (_strFindSubStr(strSyms, buff, 0) != -1) { // ищем во всей строке символов
        // нашли, проверим, может слово уже есть в строке результата
-        _strReverseInStr(buff, 0, i - 1);           // отзеркалили обратно
+        _strReverseInStr(buff, 0, len - 1);         // отзеркалили обратно
         if (_strFindWord(result, buff, 0) == -1)    // это новое слово
           if (!StrJointSeparStr(&result, newSeparator, buff)) {
             // сбой формирования результата, вернуть что есть
@@ -609,7 +591,7 @@ char* FindMaskWords(char const* str, char const* mask, char const* newSeparator)
   char* result = _strAllocate(0);    // тут накапливаем результат
 
   while (nextWord = _strGetFirstWord(strPtr)) {
-    unsigned int nextwordLen = StrLenght(nextWord);
+    unsigned int nextwordLen = _strLenght(nextWord);
     if (_strCompareWithMask(nextWord, mask))    // подходит по маске ?
       if (! StrJointSeparStr(&result, newSeparator, nextWord)) {
         // добавление не удалось, возвращаем всё что есть
@@ -628,17 +610,17 @@ char* FindMaskWords(char const* str, char const* mask, char const* newSeparator)
 // по правилам - ПРИКАЗ МИД РФ от 29 марта 2016 г. N 4271
 char* ConvertRussian(char const* str) { 
   char const* strPtr = str;
-  char* result = _strAllocate(0);    // тут накапливаем результат
-  char letter[5] = { 0 };    // не создаём каждый раз строку, используем эту
+  char* result = _strAllocate(0);     // тут накапливаем результат
+  char letter[5] = { 0 };             // не создаём каждый раз строку, используем эту
 
   while (*strPtr) {
-    letter[0] = *strPtr; // строка из одной буквы
+    letter[0] = *strPtr;              // строка из одной буквы
     letter[1] = '\0';
     _charTransliterate(letter);
     int added = StrJointSeparStr(&result, "", letter);
-    if (!added)  // добавление не удалось, возвращаем всё что есть
+    if (!added)                       // добавление не удалось, возвращаем всё что есть
       break;
-    strPtr++;    // смещаем указатель - на следующую букву
+    strPtr++;                         // смещаем указатель - на следующую букву
   }
   return result;
 }
@@ -646,8 +628,8 @@ char* ConvertRussian(char const* str) {
 // пытается состыковать слова для FindChains, иначе NULL
 char* _strTryMakeChain(char * firstWord, char * secondWord) { 
   char* result = NULL;
-  unsigned int f_len = StrLenght(firstWord);
-  unsigned int s_len = StrLenght(secondWord);
+  unsigned int f_len = _strLenght(firstWord);
+  unsigned int s_len = _strLenght(secondWord);
    
   // будем проверять слова на совпадение, постепенно сдвигая второе слово вправо
   // сдвигать, пока хотябы 2 символа перекрываются - максимально (f_len - 2)
@@ -684,29 +666,28 @@ char* _strTryMakeChain(char * firstWord, char * secondWord) {
 // новая строка, задание Поиск цепочек - склеивает слова
 // если 2 слова совпадают конец одного и начало другого (более 1 символа)
 char* FindChains(char const* str, char const* newSeparator) { 
-  char* firstWord = NULL;   // очередное слово (выделено отдельно)
-  char* secondWord = NULL;  // очередное слово (выделено отдельно)
-  char* nextWord = NULL;    // новое составное слово (выделено отдельно)
-  char* result = _strAllocate(0);    // тут накапливаем результат
+  char* firstWord = NULL;           // очередное слово (выделено отдельно)
+  char* secondWord = NULL;          // очередное слово (выделено отдельно)
+  char* nextWord = NULL;            // новое составное слово (выделено отдельно)
+  char* result = _strAllocate(0);   // тут накапливаем результат
 
-  // тут будут слова из строки
-  char* words = ExtractWords(str, newSeparator);
+  char* words = ExtractWords(str, newSeparator);    // выделим слова из строки
 
   // Просто проверю каждый с каждым :-)
   char* firstPtr = words;
   unsigned firstIndex = 0; // будем считать слова, чтобы не соединять слово само с собой
   while (firstWord = _strGetFirstWord(firstPtr)) {
-    firstIndex++; // новое первое слово
-    unsigned int firstWordLen = StrLenght(firstWord);
-    if (firstWordLen > 1) {
+    firstIndex++;                                   // новое первое слово
+    unsigned int firstWordLen = _strLenght(firstWord);
+    if (firstWordLen > 1) {                         // однобуквенные слова не участвуют
       // тут цикл проверка сочетания со всеми остальными
       char* secondPtr = words;
       unsigned secondIndex = 0;
       while (secondWord = _strGetFirstWord(secondPtr)) {
         secondIndex++;
-        unsigned int secondwordLen = StrLenght(secondWord);
+        unsigned int secondwordLen = _strLenght(secondWord);
         if (secondwordLen > 1) {
-          if (firstIndex != secondIndex) { // не проверяем слово само с собой
+          if (firstIndex != secondIndex) {          // не проверяем слово само с собой
 #ifdef DEBUG
             printf("\n[%s] + [%s]", firstWord, secondWord);
 #endif // DEBUG
@@ -744,40 +725,38 @@ char* FindChains(char const* str, char const* newSeparator) {
 // несколько пробелов подряд заменяются на один пробел, выравнование - влево
 // между строками - \n, если слово > width, оно разбивается на куски
 char* StrJustifyLeft(char* str, unsigned width) { 
-  char* cropSP = _strOnlyOneSpace(str); // сокращаю подряд идущие пробелы
-  char* result = NULL;
-  char* resultPtr = result;
-  unsigned resultLen = 0;
+  char* cropSP = _strOnlyOneSpace(str);       // сокращаю подряд идущие пробелы
   char* ptr = cropSP;
-  unsigned countInLine = 0;
+  char* result = NULL;                        // параграф - строки разделённые \n
+  char* resultPtr = result;   
+  unsigned resultLen = 0;                     // счётчик символов в параграфе (с \n)
+  unsigned countInLine = 0;                   // счётчик символов в каждой строке текста
  
-  while (*ptr) // до конца строки
-  {
+  while (*ptr) {                              // до конца строки
     char* nextWord = _strFindNextWord(ptr);   // следующее слово
     unsigned sepWidth = nextWord - ptr;       // символов до слова
-    if (sepWidth) // есть разделители
-    {
+    if (sepWidth) {                           // есть разделители
       // надо добавить это + возможно несколько '\n'
       unsigned addLength = sepWidth + (countInLine + sepWidth) / width;
       unsigned countAdded = 0;
       char* newResult = (char*)realloc(result, resultLen + addLength + 1);
-      if (NULL == newResult) break;
-      
+      if (NULL == newResult) 
+        break;
+
       result = newResult;
       resultPtr = result + resultLen;
 
-      for (int i = sepWidth; i; i--) { // копируем разделители
-        if (countInLine == 0 && *ptr == ' ') // если пробел попал в начало строки не добавлять его
+      for (int i = sepWidth; i; i--) {        // копируем разделители
+        if (countInLine == 0 && *ptr == ' ')  // если пробел попал в начало строки не добавлять его
           ptr++;
         else {
-          *resultPtr++ = *ptr++;        // тут копирование символа
+          *resultPtr++ = *ptr++;              // тут копирование символа
           countAdded++;
-          if (++countInLine >= width) { // увеличиваем счётчик символов в строке
-            // если в конце строчки был пробел удалить его
-            if (*(resultPtr - 1) == ' ')
+          if (++countInLine >= width) {       // увеличиваем счётчик символов в строке
+            if (*(resultPtr - 1) == ' ')      // если в конце строчки был пробел удалить его
               *(resultPtr - 1) = '\n';
             else {
-              *resultPtr++ = '\n';       // начать новую строку
+              *resultPtr++ = '\n';            // начать новую строку
               countAdded++;
             }
             countInLine = 0;
@@ -792,13 +771,12 @@ char* StrJustifyLeft(char* str, unsigned width) {
       char* nextSepar = _strFindNextSeparator(ptr);
       unsigned wordLen = nextSepar - ptr;
       
-      // слово не помещается в строке 
-      if (countInLine + wordLen > width)
-        if (wordLen < width)     //слово меньше ширины строки, 
-          // ставим счётчик символов в строке на конец строки,
-          countInLine = width;
-      // иначе, либо слово помещается, очень хорошо
-      // либо слово шире строки, будем его разбивать
+      if (countInLine + wordLen > width)  // 1. слово не помещается в строке 
+        if (wordLen < width)              // слово меньше ширины строки 
+          countInLine = width;            // ставим счётчик символов в строке на конец строки,
+
+      // 2. иначе, либо слово помещается, очень хорошо
+      // 3. либо слово шире строки - разбивать надо в любом случае, начнём на этой строке
 
       unsigned addLength = wordLen + (countInLine + wordLen) / width;
       char* newResult = (char*)realloc(result, resultLen + addLength + 1);
@@ -808,19 +786,18 @@ char* StrJustifyLeft(char* str, unsigned width) {
       resultPtr = result + resultLen;
       unsigned countAdded = 0;
       
-      for (int i = wordLen; i; i--) { // копируем 
-        if (countInLine == width)  {  // конец строки
-          // если в конце строчки был пробел удалить его
-          if (*(resultPtr - 1) == ' ')
+      for (int i = wordLen; i; i--) {     // копируем 
+        if (countInLine == width) {       // конец строки
+          if (*(resultPtr - 1) == ' ')    // если в конце строчки был пробел удалить его
             *(resultPtr - 1) = '\n';
           else {
-            *resultPtr++ = '\n';       // начать новую строку
+            *resultPtr++ = '\n';          // начать новую строку
             countAdded++;
           }
           countInLine = 0;
         }
         countInLine++;
-        *resultPtr++ = *ptr++;       // тут копирование символа
+        *resultPtr++ = *ptr++;            // тут копирование символа
         countAdded++;
       }
       resultLen += countAdded;
@@ -836,18 +813,18 @@ char* StrJustifyLeft(char* str, unsigned width) {
 // выравнивание- по ширине, изменяя количество пробелов
 // между строками - \n, если слово > width, оно разбивается на куски
 char* StrJustifyWidth(char* str, unsigned width) { 
-  char* cropSP = _strOnlyOneSpace(str);   // сокращу пробелы, чтоб не мешались
+  char* cropSP = _strOnlyOneSpace(str);       // сокращу пробелы, чтоб не мешались
   if (NULL == cropSP) 
     return NULL;
 
-  char* buffer = (char*)malloc(width + 2);   // тут буду формировать очередную строчку
+  char* buffer = (char*)malloc(width + 2);    // тут буду формировать очередную строчку
   if (NULL == buffer) 
     return NULL;    // +1 для '\n'   и   +1 для '\0'
 
   // сначала разобью на строчки с выравниванием влево, 
   // потом выравняю по ширине каждую строчку
   char* strJistifiedLeft = StrJustifyLeft(cropSP, width);
-  free(cropSP);                       // это уже не нужно
+  free(cropSP);                               // это уже не нужно
   if (NULL == strJistifiedLeft) 
     return NULL;
   
@@ -883,31 +860,31 @@ char* StrJustifyWidth(char* str, unsigned width) {
     if (lineLen < width) {                  // строку надо расширить
       unsigned int countSpace = _strCountChar(buffer, ' '); // считаем пробелы в этой строке
       unsigned delta = width - lineLen;                // сколько всего добавить пробелов
+      
       if (countSpace) { // в строке есть пробелы, будем их увеличивать
         unsigned plusSP = delta / countSpace;      // сколько добавить к каждому имеющемуся пробелу
         unsigned plusSP_special = delta - plusSP * countSpace; // это остаток, добавлять не к каждому
         int countInLine = 0;
+
         for (unsigned indexInLine = 0; indexInLine < lineLen; ++indexInLine) {
           if (buffer[indexInLine] != ' ') {
             *(resultPtr++) = buffer[indexInLine];
 #ifdef DEBUG
-              printf("%c", buffer[i]);
+              printf("%c", buffer[indexInLine]);
 #endif // DEBUG
             
           }
-          else
-          { 
-            countInLine++;                    // считаем промежутки
-            for (unsigned j = 0; j <= plusSP; j++)   // в этом промежутке пробел стал больше
-            { *(resultPtr++) = ' ';
+          else { 
+            countInLine++;                            // считаем промежутки
+            for (unsigned j = 0; j <= plusSP; j++) {  // в этом промежутке пробел стал больше
+              *(resultPtr++) = ' ';
 #ifdef DEBUG
                 printf("#"); // добавлен пробел из числа "как у всех промежутков"
 #endif // DEBUG                
                
             }
             // вот тут раскидываются пробелы неравномерно, не в каждый промежуток
-            if (plusSP_special && countInLine * plusSP_special % countSpace == 0)
-            {
+            if (plusSP_special && countInLine * plusSP_special % countSpace == 0) {
 #ifdef DEBUG
                 printf("*");   // этот пробел "особенный, не как все"
 #endif // DEBUG                         
@@ -929,19 +906,19 @@ char* StrJustifyWidth(char* str, unsigned width) {
 #endif // DEBUG
       }
     }
-    else  { // в буфере строка нужной длины, но без \n \0
-      _strCopySymbols(buffer, resultPtr, width); // в резалт её
-      resultPtr += width;                    // сдвину указатель в резалт
+    else  {   // в буфере строка нужной длины, но без \n \0
+      _strCopySymbols(buffer, resultPtr, width);  // в резалт её
+      resultPtr += width;                         // сдвину указатель в резалт
 #ifdef DEBUG
         printf("\nBUFFER [%s] do nothing", buffer);
 #endif // DEBUG
     }        
-    *(resultPtr++) = '\n';                 // добавить перевод строки
-    ptr += lineLen;      // сдвинуть указатель в исходной строке
-    if (*ptr == '\n')     // сдвинуть ещё, если там \n
+    *(resultPtr++) = '\n';                        // добавить перевод строки
+    ptr += lineLen;                               // сдвинуть указатель в исходной строке
+    if (*ptr == '\n')                             // сдвинуть ещё, если там \n
       ptr++;
   }
    free(strJistifiedLeft);
-  *resultPtr = '\0';  // добавить конец строки
+  *resultPtr = '\0';  
   return result;
 }
