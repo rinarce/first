@@ -36,8 +36,8 @@ const integer_t s_bitMask86 = (integer_t)0b0100000001000000010000000100000001000
 const integer_t s_bitMask87 = (integer_t)0b1000000010000000100000001000000010000000100000001000000010000000;
 
 // вводит положительное число, преобразует его к типу integer_t
-integer_t BitInputTestNumber()
-{ MaxInt input_data;
+integer_t BitInputTestNumber() { 
+  MaxInt input_data;
   printf("   Введите число : ");
   scanf("%llu", &input_data);
 
@@ -48,20 +48,19 @@ integer_t BitInputTestNumber()
 }
 
 // ? сколько цифр понадобится для 10го представления Х
-unsigned int BitCountDecimalDigits(integer_t x)
-{ 
+unsigned int BitCountDecimalDigits(integer_t x) { 
   unsigned int dec_width = 1;  // 1 в любом случае
   while (x /= 10)              // пока от деления на 10 получаем не 0
     dec_width++;               // значит нужны ещё позиции для 10 записи числа
   return dec_width;
 }
 
-unsigned int Max2Uns(unsigned int x1, unsigned int x2)    // находит максимальное значение 
-{   return (x1 > x2) ? x1 : x2;   }
+unsigned int Max2Uns(unsigned int x1, unsigned int x2) {   // находит максимальное значение 
+  return (x1 > x2) ? x1 : x2;   
+}
 
 // печатает Х в разных представлениях по условию задачи
-// text - пояснительный текст до числа
-  // decimalWidth - получает извне, остальные рассчитывает
+// text - пояснительный текст до числа, decimalWidth - получает извне, остальные рассчитывает
 void BitPrint(const char text[], integer_t x, unsigned int decimalWidth) { 
   // пример 163 = 0xA3 = 10100011         ДЕС = НЕХ = БИН
   const int sizeBytes = sizeof(integer_t);
@@ -86,14 +85,14 @@ void BitPrint(const char text[], integer_t x, unsigned int decimalWidth) {
 integer_t _bit1Reverse(integer_t x) { 
   integer_t maskHigh = s_bitMaskHigh;   // выделяет левый бит  (старший)
   integer_t maskLow = s_bitMaskLow;     // выделяет правый бит (младший)
-  integer_t result = 0;                  // для накопления результата
-  while (maskHigh > maskLow) {         // пока маски не пересекли друг друга
+  integer_t result = 0;                 // для накопления результата
+  while (maskHigh > maskLow) {          // пока маски не пересекли друг друга
 
     integer_t newBitsLow = (x & maskHigh) ? maskLow : 0;  // выделяем 2 бита
     integer_t newBitsHight = (x & maskLow) ? maskHigh : 0;
                                                
     result = result | newBitsHight | newBitsLow;    // формируем результат
-                                         // сдвигаем маски навстречу, к середине числа
+                                        // сдвигаем маски навстречу, к середине числа
     maskHigh >>= 1;                     // левую - вправо
     maskLow <<= 1;                      // правую - влево
   }
@@ -168,10 +167,10 @@ integer_t _bitSwap2(integer_t x) {
   integer_t bits0 = x & s_bitMask20;       // тут  чётные биты Х
   integer_t bits1 = x & s_bitMask21;       // тут нечётные биты Х
   
-  integer_t new_bits1 = bits0 << 1;        // чётные биты стали нечётными
-  integer_t new_bits0 = bits1 >> 1;        // и наоборот, нечет -> чет
+  integer_t newBits1 = bits0 << 1;        // чётные биты стали нечётными
+  integer_t newBits0 = bits1 >> 1;        // и наоборот, нечет -> чет
   
-  integer_t newX = new_bits1 | new_bits0; // сливаем их вместе
+  integer_t newX = newBits1 | newBits0; // сливаем их вместе
 
   return newX;
 }
@@ -184,13 +183,13 @@ integer_t _bitSwap4(integer_t x)
   integer_t bits2 = x & s_bitMask42;
   integer_t bits3 = x & s_bitMask43;
 
-  integer_t new_bits0 = bits3 >> 3;     // меняем местами (пока только сдвигаю)
-  integer_t new_bits1 = bits2 >> 1;     // 3 <-> 0    2<->1
-  integer_t new_bits2 = bits1 << 1;
-  integer_t new_bits3 = bits0 << 3;
+  integer_t newBits0 = bits3 >> 3;     // меняем местами (пока только сдвигаю)
+  integer_t newBits1 = bits2 >> 1;     // 3 <-> 0    2<->1
+  integer_t newBits2 = bits1 << 1;
+  integer_t newBits3 = bits0 << 3;
 
   // биты на своём месте, можно их соединить в новое число
-  integer_t newX = new_bits3 | new_bits2 | new_bits1 | new_bits0;
+  integer_t newX = newBits3 | newBits2 | newBits1 | newBits0;
 
   return newX;
 }
@@ -249,8 +248,7 @@ integer_t BitCycleLeft(integer_t x, unsigned int shift) {
 // циклический сдвиг ---> вправо --->
 integer_t BitCycleRight(integer_t x, unsigned int shift) { 
   // shift по модулю количества битов, иначе тормозит на больших shift
-  shift %= (sizeof(integer_t) * 8);
-  for (; shift > 0; shift--)  {                       
+  for (shift %= (sizeof(integer_t) * 8); shift > 0; shift--)  {                       
     // запомним удаляемый младший бит0
     integer_t bit = (x & s_bitMaskLow) ? s_bitMaskHigh : 0;
     x = (x >> 1) | bit;   // сдвиг на 1 и добавка запомненого в старший бит
@@ -261,17 +259,16 @@ integer_t BitCycleRight(integer_t x, unsigned int shift) {
 // циклический сдвиг <---  влево <--- (в каждом байте отдельно)
 integer_t BitCycleInBytesLeft(integer_t x, unsigned int shift) { 
   // shift по модулю 8, иначе тормозит на больших shift
-  shift %= 8; // циклический сдвиг байта на 8 не изменяет число
-  
+  shift %= 8;   
   // маска для обнуления выделенных ранее битов в числе Х
   // иначе, они, сдвинувшись, займут чужое место в соседнем байте
   integer_t clearMask = ~s_bitMask87;
   while (shift) {
-    // выделяем нужные биты и срузу их сдвигаем на новую позицию
+                      // выделяем нужные биты и срузу их сдвигаем на новую позицию
     integer_t bits7to0 = (x & s_bitMask87) >> 7;
-    x &= clearMask;  // обнуляем эти биты, теперь там нули, можно записывать сохранённые ранее
+    x &= clearMask;   // обнуляем эти биты, теперь там нули, можно записывать сохранённые ранее
     x <<= 1;          // сдвигаем Х
-    x |= bits7to0; // выделеные ранее биты (они уже в новой позиции) сливаем (суммируем) с Х
+    x |= bits7to0;    // выделеные ранее биты (они уже в новой позиции) сливаем (суммируем) с Х
     shift--;
   }
   return x;
@@ -279,19 +276,17 @@ integer_t BitCycleInBytesLeft(integer_t x, unsigned int shift) {
 
 // циклический сдвиг ---> вправо ---> (в каждом байте отдельно)
 integer_t BitCycleInBytesRight(integer_t x, unsigned int shift) { 
-  // shift по модулю 8, иначе тормозит на больших shift
   shift %= 8; // циклический сдвиг байта на 8 не изменяет число
 
   // маска для обнуления выделенных ранее битов в числе Х
   // иначе, они, сдвинувшись, займут чужое место в соседнем байте
   integer_t clearMask = ~s_bitMask80;
-  
   while (shift) {
-    // выделяем нужные биты и срузу их сдвигаем на новую позицию
+                      // выделяем нужные биты и срузу их сдвигаем на новую позицию
     integer_t bits0to7 = (x & s_bitMask80) << 7;
-    x &= clearMask;       // обнуляем эти биты, теперь там нули, можно записывать сохранённые ранее
-    x >>= 1;              // сдвигаем Х туда ->
-    x |= bits0to7;     // выделеные ранее биты (они уже в новой позиции) сливаем (суммируем) с Х
+    x &= clearMask;   // обнуляем эти биты, теперь там нули, можно записывать сохранённые ранее
+    x >>= 1;          // сдвигаем Х туда ->
+    x |= bits0to7;    // выделеные ранее биты (они уже в новой позиции) сливаем (суммируем) с Х
     shift--;
   }
   return x;
