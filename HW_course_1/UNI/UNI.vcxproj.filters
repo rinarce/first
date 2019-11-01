@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="UNI.cpp">
+    <ClCompile Include="UNI.c">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
