@@ -12,15 +12,18 @@
 
 #include <stdio.h>
 
+
 // длина строки до '\0'
-int StrLenght(char str[]) {  
-  int len = 0;
-  while (str[len]) len++;
-  return len;
-}
+int StrLenght(char const * str) {  
+    int len = 0;
+    if (NULL != str)          // проверка, что указатель корректен
+      while (*str++) ++len;
+    return len;
+  }
+
 
 // превращает символ char '0'-'9A'-'Z'  ->  в число char 0-35
-char convert_36_10(char sym) {  
+char convert_36_10(char const sym) {  
   static char convertTable[] =  // static - не создавать каждый раз
   { -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,    // 0-15
     -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,    // 16-31
@@ -52,22 +55,22 @@ void convertToBig(char array[], int len) {
 // в массиве array длинное число от младших разрядов к старшим
 // преобразуем цифры 0--35 в символы 0..9A..Z и перевернём порядок цифр 
 void printBig(char array[], int len) {
- char digits36[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  int pos = len - 1;
+  char digits36[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  int digitIndex = len - 1;  // старшие разряды в конце 
 
-  while (pos > 0 && !array[pos])
-    pos--;                            // избавимся от ведущих нулей, кроме последнего (если == 0)
+  while (digitIndex > 0 && array[digitIndex] == 0)
+    --digitIndex;                     // избавимся от ведущих нулей, кроме последнего (если == 0)
 
-  for (; pos >= 0; pos--)             // печатаем число
-    printf("%c", digits36[array[pos]]);
+  for (; digitIndex >= 0; --digitIndex)             // печатаем число
+    printf("%c", digits36[array[digitIndex]]);
 }
 
 // если длинное число в массиве меньше X => то возвращает его значение [0...X)
 // иначе -1
 int isBigNum_lessThan(char array[], int len, int NS, int x) { 
   int bigValue = 0;
-  for (int i = len - 1; i >= 0; i--) {     // формула Горнера
-    bigValue = bigValue * NS + array[i];
+  for (int digitIndex = len - 1; digitIndex >= 0; --digitIndex) {     // формула Горнера
+    bigValue = bigValue * NS + array[digitIndex];
     if (bigValue >= x) return -1;
   }
   return bigValue;
@@ -79,9 +82,9 @@ int isBigNum_lessThan(char array[], int len, int NS, int x) {
 // возвращает остаток от деления
 int BigDivide(char a[], int a_len, int NS, int divisor) { 
   int rest = 0;
-  for (int i = a_len - 1; i >= 0; i--) { // школьное деление, от старших разрядов
-    int cur = rest * NS + a[i];
-    a[i] = cur / divisor;
+  for (int digitIndex = a_len - 1; digitIndex >= 0; --digitIndex) { // школьное деление, от старших разрядов
+    int cur = rest * NS + a[digitIndex];
+    a[digitIndex] = cur / divisor;
     rest = cur % divisor;
   }
   return rest;
@@ -114,7 +117,7 @@ int main() {
     // при деление число уменьшается, образуются ведущие нули
     // избавляемся от них (кроме последнего)
     while (a_len > 1 && a_input[a_len - 1] == 0)
-      a_len--;
+      --a_len;
 
   } while (isBigNum_lessThan(a_input, a_len, NS_From, NS_To));
   // если == 0  -- всё, число закончилось
