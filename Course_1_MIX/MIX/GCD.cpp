@@ -9,6 +9,7 @@ int main() {
         return 1;
     }
 
+
     while (b) {
         t = a % b;
         a = b;
