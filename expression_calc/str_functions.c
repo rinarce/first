@@ -155,7 +155,7 @@ void _strRemoveSubstr(char str[], int start, int end) {
 // (!!! заменяется не больше сиимволов чем длина word !)
 // т.е. строка str - может только сокращаться (простой сдвиг конца строки)
 // но не удлиняться. Возврат - количество замен
-int StrReplaceAll(char str[], char word[], char replace[]) {
+int StrReplaceAll(char str[], char const word[], char const replace[]) {
   int replaced = 0,                   // количество произведённых замен
        wordLen = StrLenght(word), 
     replaceLen = StrLenght(replace);

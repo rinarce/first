@@ -10,6 +10,7 @@
 
 #include "common_defs.h"
 #include "str_functions.h"
+#include "calc_variables.h"
 
 // -- Логика приоритетов операций --------------------------------------------
 
@@ -56,6 +57,7 @@ typedef enum operator_t {      // типы операций, OK - реализо
   CALC_ACOS,        // arccos()
   CALC_ATAN,        // arctg()
   CALC_LN,          // ln()
+  CALC_RAND,        // rand(x)  - случайное целое число от (0 до Х) 
   CALC_ROUND,       // round()  - округление к ближайшему
   CALC_FLOUR,       // flour()  - округление вниз
   CALC_CEIL,        // ceil()   - округление вверх
@@ -304,16 +306,19 @@ static calc_err_t _calcTree(p_tree_t tree, double* result) {
     case CALC_MUL:      
       *result = valueLeft * valueRight;
       return CALC_OK;
+    
     case CALC_DIV:                        // Проверим на деление на 0
       if (valueRight == 0)                
         return CALC_ERR_ZERO_DIV;         
       *result = valueLeft / valueRight;   
       return CALC_OK;
+    
     case CALC_MOD:                        // Проверим на деление на 0
       if (valueRight == 0)                
         return CALC_ERR_ZERO_DIV;
       *result = fmod(valueLeft, valueRight);
       return CALC_OK;
+    
     case CALC_POWER:                      // Проверить на ошибки уже результат
       *result = pow(valueLeft, valueRight);   
       if (isnan(*result))                 // Получено не число NaN (Not a Number)
@@ -321,11 +326,13 @@ static calc_err_t _calcTree(p_tree_t tree, double* result) {
       if (isinf(*result))                 // Получена бесконечность Inf
         return CALC_ERR_INF;              // скорее всего - 0 в отрицательной степени
       return CALC_OK;
+    
     case CALC_SQRT:                       // Проверим на отрицательность
       if (valueRight < 0)                    
         return CALC_ERR_SQRT_N;           
       *result = sqrt(valueRight);         
       return CALC_OK;
+    
     case CALC_SIGN:     
       if (valueRight == 0)     
         *result =  0;
@@ -334,6 +341,7 @@ static calc_err_t _calcTree(p_tree_t tree, double* result) {
       else if (valueRight > 0) 
         *result =  1;
       return CALC_OK;
+
     case CALC_ABS:      
       if (valueRight < 0)      
         *result = -valueRight;
