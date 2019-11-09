@@ -586,9 +586,8 @@ static calc_err_t _makeTree(char const str[], int first, int last, p_tree_t * re
 calc_err_t ProcessLine(char const* str, double* result) {
   int error = 0;
   *result = 0;
-  
   // явные ошибки и особые случаи
-  if (StrLenght(str))           
+  if (StrLenght(str) == 0)           
     return CALC_LINE_EMPTY;
   if (IsComment(str))        
     return CALC_LINE_COMMENT;
