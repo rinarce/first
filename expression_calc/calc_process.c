@@ -233,7 +233,7 @@ static int _getPriority(char const* ptr, int *operLen, operator_t* operType) {
 // Шестнадцатеричные переводит, двоичные - ДА. Возврат - код ошибки (0 - ОК)
 static calc_err_t _calcEvaluate(char const* str, int symbols, double * result) {
   if (symbols < 0) 
-    return CALC_ERR_ALGO; // ASSERT
+    return CALC_ERR_ALGO; // ASSERT - количество символов отрицательно - не порядок
 
   if (symbols == 0) { // всё пустое считаем за 0 - прощаем некоторые спорные случаи 3+ или ()
     *result = 0;      // так же для унарных операций, вызовов функций - слева ничего нет
@@ -286,13 +286,15 @@ static calc_err_t _calcTree(p_tree_t tree, double* result) {
   // 2. вычисляем поддеревья
   if (NULL != tree->left)  {
     error = _calcTree(tree->left, &valueLeft);
+    _deleteTree(tree->left);  // поддерево вычислено, уже не нужно
     if (error)  
-      return error;    // если ошибка - дальше не вычислять
+      return error;           // если ошибка - дальше не вычислять
   }
   if (NULL != tree->right) {
     error = _calcTree(tree->right, &valueRight);
+    _deleteTree(tree->right); // поддерево вычислено, уже не нужно
     if (error)  
-      return error;    // если ошибка - дальше не вычислять
+      return error;           // если ошибка - дальше не вычислять
   }
 
   // 3. выполняем операцию
@@ -373,7 +375,7 @@ static calc_err_t _calcTree(p_tree_t tree, double* result) {
       return CALC_ERR_ALGO;   // неизвестная операция - таких не должно быть
   }
   
-  return CALC_ERR_ALGO;       // Unreacheble
+  return CALC_ERR_ALGO;       // Сюда попасть невозможно наверное
 }
 
 
@@ -542,7 +544,7 @@ static calc_err_t _makeTree(char const str[], int first, int last, p_tree_t * re
 // вычисляет строку выражений, возвращает тип строки (ок или ошибка) и *result
 calc_err_t ProcessLine(char const* str, double* result) {
   int error = 0;
-  *result = 0;
+  
   // явные ошибки и особые случаи
   if (StrLenght(str) == 0)           
     return CALC_LINE_EMPTY;
@@ -553,8 +555,7 @@ calc_err_t ProcessLine(char const* str, double* result) {
   if (IsBracketError(str))  
     return CALC_ERR_BRACKETS;
   
-  // тут обработка
-  
+  // тут предобработка строки
   char* strForProcess = _prepareLine(str);
   if (NULL == strForProcess)  
     return CALC_ERR_MEMORY;
@@ -566,7 +567,7 @@ calc_err_t ProcessLine(char const* str, double* result) {
   // разбор выражения, построение дерева
   error = _makeTree(strForProcess, 0, StrLenght(strForProcess) - 1, &tree);
 
-  if (!error)             // вычислять дерево только если не было ошибок в разборе
+  if (error == 0)         // вычислять дерево только если не было ошибок в разборе
     error = _calcTree(tree, result);
     
   _deleteTree(tree);      // удалить дерево 
