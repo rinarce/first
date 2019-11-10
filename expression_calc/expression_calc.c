@@ -1,7 +1,7 @@
 ﻿// This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 
-// expression_calc.cpp
+// expression_calc.c
 
 #include <stdio.h>
 #include <locale.h>               // для русских букв
@@ -12,7 +12,7 @@
 
 int main(int arg_count, char* arg_values[]) { 
   
-  setlocale(LC_ALL, "Russian");   // для русских букв
+  setlocale(LC_ALL, "Russian");   // для русских букв и запятая вместо десятичной точки
   SetConsoleCP(1251);
   SetConsoleOutputCP(1251);
 

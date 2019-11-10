@@ -14,8 +14,7 @@
 // ---------------------------------------------------------------------------
 // ВНУТРЕННЯЯ РЕАЛИЗАЦИЯ - 3 связных списка
 
-typedef struct list_node_t  
-{
+typedef struct list_node_t {
   double value;             // значение
   char* varName;            // имя переменной
   struct list_node_t* next; // указатель на следующий узел (NULL у последнего)
@@ -41,8 +40,7 @@ p_list_node_t  s_varsGlobal = &s_headGlobal;
 p_list_node_t s_varsDefined = &s_headDefined;
 
 // удалить узел списка и все узлы за ним
-static void _listDeleteTail (p_list_node_t node)
-{ 
+static void _listDeleteTail (p_list_node_t node) { 
   p_list_node_t next;           // Избавимся от рекурсии
   while (NULL != node) {
     next = node->next;          // запомнить, ведь node удалится
@@ -55,7 +53,7 @@ static void _listDeleteTail (p_list_node_t node)
 // указанный узел связного списка очистить, следующие - удалить
 static void _listClear(p_list_node_t list) {
   _listDeleteTail(list->next);  // удалить все после указанного узла
-  free(list->varName);          // возможно вызов не из головы списка
+  free(list->varName);          // 
   list->value   = 0;            // себя обнулить, не удалять
   list->next    = NULL;  
   list->varName = NULL;
@@ -67,7 +65,7 @@ static calc_err_t _listAdd(p_list_node_t list, char const* varName, double const
     return CALC_ERR_ALGO;   //вызвано для несуществующего списка
   
 // для упрощения 
-// 1 - не проверять наличие (возможно переопределение), добавлять в начало списка
+// 1 - не проверять наличие (возможно переопределение переменных), добавлять в начало списка
 //     тогда ранние определения будут дальше и при поиске не найдутся
 // 2 - имя не проверяется, считаем что ПРАВИЛ ДЛЯ ИМЁН переменных НЕТ
 //     тогда возможно переопределение числовых констант, и прочее
