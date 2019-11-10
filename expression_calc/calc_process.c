@@ -287,13 +287,13 @@ static calc_err_t _calcTree(p_tree_t tree, double* result) {
   if (NULL != tree->left)  {
     error = _calcTree(tree->left, &valueLeft);
     _deleteTree(tree->left);  // поддерево вычислено, уже не нужно
-    if (error)  
+    if (error != CALC_OK)
       return error;           // если ошибка - дальше не вычислять
   }
   if (NULL != tree->right) {
     error = _calcTree(tree->right, &valueRight);
     _deleteTree(tree->right); // поддерево вычислено, уже не нужно
-    if (error)  
+    if (error != CALC_OK)
       return error;           // если ошибка - дальше не вычислять
   }
 
