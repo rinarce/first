@@ -2,7 +2,7 @@
 #include <stdlib.h> 
 #include "DST_functions.h"
           
-//#define DEBUG                 // Отладка
+#define DEBUG                 // Отладка
 #define DST_BUFFER_SIZE 10     // порции считывания строки
 
 // длина строки до '\0'
@@ -78,8 +78,8 @@ void _charTransliterate(char* str) {
   case 'ё': str[0] = 'e'; str[1] = '\0'; break;
   case 'Е': 
   case 'Ё': str[0] = 'E'; str[1] = '\0'; break;
-  case 'ж': str[0] = 'z'; str[1] = 'h'; break; str[2] = '\0'; break;
-  case 'Ж': str[0] = 'Z'; str[1] = 'h'; break; str[2] = '\0'; break;
+  case 'ж': str[0] = 'z'; str[1] = 'h'; str[2] = '\0'; break;
+  case 'Ж': str[0] = 'Z'; str[1] = 'h'; str[2] = '\0'; break;
   case 'з': str[0] = 'z'; str[1] = '\0'; break;
   case 'З': str[0] = 'Z'; str[1] = '\0'; break;
   case 'и':
