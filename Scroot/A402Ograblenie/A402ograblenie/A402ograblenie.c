@@ -113,10 +113,10 @@ int main()
       }
     }
   }
-  DEBUG_PRINT(printf("\n\n--- KEY ---\n[%s]\n\n --- RESULT ---\n\n", key);)
+  DEBUG_PRINT(printf("\n\n--- KEY ---\n\n[%s]\n\n--- RESULT ---\n\n", key);)
   // --- ВЫВОД ----------------------------------------------------------------
   FOR_ALL_KEY
-    printf("%X", key[key_i]);                     // Ключ в 16ричном
+    printf("%2X", key[key_i]);                    // Ключ в 16ричном
   printf("\n");                                   // конец ключа 
   
   FOR_ALL_LINES {                                 // Расшифровать все строки
