@@ -43,14 +43,20 @@ int main()
   static char    buffer[MAX_LINE_LEN * 2] = { 0 };  // буфер для 16ричных кодированных строк
   int nLines = 0;                                   // число строк
   int messageLen = 0;                               // длина одного сообщения
-  int line_i, buff_i, sym_i, key_i, index, goodKey; // это i для циклов и прочие вспомогательные  
+  int line_i, buff_i, sym_i, key_i, line_2i, goodKey;  // это i для циклов и прочие вспомогательные  
   char keySymbol;
-  
+// макроподстановки циклов 
+#define  FOR_ALL_LINES    for (line_i  = 0;  line_i < nLines;     ++line_i)
+#define  FOR_ALL_LINES_2  for (line_2i = 0; line_2i < nLines;     ++line_2i)
+#define  FOR_ALL_SYM      for (sym_i   = 0;   sym_i < messageLen; ++sym_i)
+#define  FOR_ALL_KEY      for (key_i   = 0;   key_i < messageLen; ++key_i)
+
+
   // --- ВВОД -----------------------------------------------------------------
   scanf("%d%d", &nLines, &messageLen);
   
   // ввод строк с кодом
-  for (line_i = 0; line_i < nLines; ++line_i) {
+  FOR_ALL_LINES {
     scanf("%s", &buffer);
     // каждые 2 символа кода 16ричного вида -> 1 символ байт
     for (buff_i = 0; buffer[buff_i] < messageLen * 2; buff_i += 2)   // сдвиг индекса по 2
@@ -58,16 +64,16 @@ int main()
   }
 
   // ввод оригиналов строк с затёртыми смиволами
-  for (line_i = 0; line_i < nLines; ++line_i)
+  FOR_ALL_LINES
     scanf("%s", &text[line_i].origin);
 
 
   // --- РАСШИФРОВКА ----------------------------------------------------------
   DEBUG_PRINT (printf("\n\n Step 1 \n");)
   // вычисление ключа в позициях где известны исходные символы
-  for (line_i = 0; line_i < nLines; ++line_i) {
+  FOR_ALL_LINES {
     DEBUG_PRINT (printf("\n%.2d > %s\n     ", line_i, text[line_i].origin);)
-    for (sym_i = 0; sym_i < messageLen; ++sym_i) {
+    FOR_ALL_SYM {
       if (text[line_i].origin[sym_i] != '*')  // не звёздочка, можно вычислить ключ
         key[sym_i] = text[line_i].origin[sym_i] ^ text[line_i].coded[sym_i];
       DEBUG_PRINT(printf("%c", key[sym_i]);)
@@ -82,19 +88,18 @@ int main()
   // 4. Посмотрю, даёт ли этот вариант со всеми другими строками допустимые символы
   // 5. Если да - ключ найден, нет - предполагаю что пробел в другой строке
 
-  for (key_i = 0; key_i < messageLen; ++key_i) {
+  FOR_ALL_KEY {
     if (key[key_i] == 0) {          // ключ в этой позиции не определён ранее
       DEBUG_PRINT(printf("\nFinding key[%2d]", key_i);)
-                                    // предположим пробел в какой-то строке line_i по очереди
-      for (line_i = 0; line_i < nLines; ++line_i) {
+      FOR_ALL_LINES {               // предположим пробел в какой-то строке line_i по очереди
                                     // если пробел в этой строке, то ключ будет вот такой
         keySymbol = ' ' ^ text[line_i].coded[key_i];
         DEBUG_PRINT(printf("\nLine [%d] give key[%c] decode ->", line_i, keySymbol);)
         
         goodKey = 1;                // проверим все остальные строки ;-) используя этот ключ
-        for (index = 0; index < nLines; ++index) {
-          DEBUG_PRINT(printf("[%c]", text[index].coded[key_i] ^ keySymbol);)
-          if (!_isLetterOrSpace(text[index].coded[key_i] ^ keySymbol)) {
+        FOR_ALL_LINES_2 {
+          DEBUG_PRINT(printf("[%c]", text[line_2i].coded[key_i] ^ keySymbol);)
+          if (!_isLetterOrSpace(text[line_2i].coded[key_i] ^ keySymbol)) {
             goodKey = 0;            // если хоть в одной строке даст неправильную расшифровку
             DEBUG_PRINT(printf(" xxx bad!");)
             break;                  // дальше не проверять
@@ -110,12 +115,12 @@ int main()
   }
   DEBUG_PRINT(printf("\n\n--- KEY ---\n[%s]\n\n --- RESULT ---\n\n", key);)
   // --- ВЫВОД ----------------------------------------------------------------
-  for (key_i = 0; key_i < messageLen; ++key_i)   
+  FOR_ALL_KEY
     printf("%X", key[key_i]);                     // Ключ в 16ричном
   printf("\n");                                   // конец ключа 
   
-  for (line_i = 0; line_i < nLines; ++line_i) {   // Расшифровать все строки
-    for (sym_i = 0; sym_i < messageLen; ++sym_i) 
+  FOR_ALL_LINES {                                 // Расшифровать все строки
+    FOR_ALL_SYM
       printf("%c", text[line_i].coded[sym_i] ^ key[sym_i]);
     printf("\n");                                 // конец каждой строки 
   }
