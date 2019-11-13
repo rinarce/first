@@ -139,31 +139,50 @@ void _charTransliterate(char* str) {
 // сравнивает строку с маской, возврат 1 если подходит, 0 иначе
 // пробую рекурсию ? - любой символ, * - любая группа символов или ничего
 int _strCompareWithMask(char const* str, char const* mask) {
-  if (*str == 0 && *mask == 0)
+  if (*str == 0 && *mask == 0) {
+    DEBUG_PRINT(printf("M: str==0 && mask==0 --- OK FOUND\n");)    
     return 1;                 // одновременно дошли до конца обоих строк
-  if (*str == 0) {            // строка закончилась, шанс есть только для '*'
-    if (*mask == '*')
-      return _strCompareWithMask(str, mask + 1);  // укорачиваем маску на *
-    else
-      return 0;
   }
-  else if (*mask == '?' || *mask == *str)     // символы совпали или шаблон '?'
+  if (*str == 0) {            // строка закончилась, шанс есть только для '*'
+    if (*mask == '*') {
+      DEBUG_PRINT(printf("M: str==0  mask [%s] --- >> try more  0 +1\n", mask);)
+      return _strCompareWithMask(str, mask + 1);  // укорачиваем маску на *
+    }
+    else {
+      DEBUG_PRINT(printf("M: str==0  mask [%s] --- >> XXX empty STR but have MASK \n", mask);)
+      return 0;
+    }
+      
+  }
+  else if (*mask == '?' || *mask == *str) {     // символы совпали или шаблон '?'
+    DEBUG_PRINT(printf("M: str [%s]  mask [%s] --- >> equal first syms >> try more +1 +1\n", str, mask);)
     return _strCompareWithMask(str + 1, mask + 1);  // укорачиваем обе строки
+  }
   else if (*mask == '*') {
     // тут анализ шаблона '*' проверяем варианты, если срабытывает, то сразу возврат
-    // вариант 1 - продвигаем только строку, шаблон остаётся на '*'
-    if (_strCompareWithMask(str + 1, mask))
-      return 1;
 
     // вариант 2 - продвигаем обе строки
+    DEBUG_PRINT(printf("M: str [%s]\n  m*sk [%s] --- >> try +1 +1\n", str, mask);)
     if (_strCompareWithMask(str + 1, mask + 1))
       return 1;
-
-    // вариант 3 - продвигаем маску, сразу возвращаем результат
-    return _strCompareWithMask(str, mask + 1);
+ 
+    // вариант 1 - продвигаем только строку, шаблон остаётся на '*'
+    DEBUG_PRINT(printf("M: str [%s]\n  m*sk [%s] --- >> try +1  0\n", str, mask);)
+    if (_strCompareWithMask(str + 1, mask))
+      return 1;    
+       
+    // вариант 3 - продвигаем маску 
+    DEBUG_PRINT(printf("M: str [%s]\n  m*sk [%s] --- >> try  0 +1\n", str, mask);)
+    if(_strCompareWithMask(str, mask + 1))
+      return 1;
+    
+    DEBUG_PRINT(printf("M: str [%s]\n  m*sk [%s] --- >> GAME OVER 3 cases * lost\n", str, mask);)
+    return 0;
   }
-  else
+  else {
+    DEBUG_PRINT(printf("M: str [%s]\n  mask [%s] --- XXX return\n", str, mask);)
     return 0; // не совпали символы, или закончилась маска, а строка нет
+  }
 }
 
 // ищет в строке str с позиции pos слово word
@@ -332,11 +351,13 @@ unsigned int DstInputStr(char** str, char const* text) {
   while (1) { // считываем строку порциями размера DST_BUFFER_SIZE
     // fgets читает на 1 символ меньше, так как в конце всегда добавляет '\0'
     unsigned int input_len = _strLenght(fgets(buffer, DST_BUFFER_SIZE + 1, stdin));
-    DEBUG_PRINT(printf("\nПрочитано %u [%s]", input_len, buffer);)
 
-      if (buffer[input_len - 1] == '\n')
-        buffer[--input_len] = '\0';  // заменяем '\n' -> '\0', уменьшаем длину
-
+    if (buffer[input_len - 1] == '\n') {
+      buffer[--input_len] = '\0';  // заменяем '\n' -> '\0', уменьшаем длину
+      DEBUG_PRINT (printf("found <CR> at [%d]\n", input_len);)
+    }
+    DEBUG_PRINT (printf("Прочитано %3u [%s]\n", input_len, buffer);)
+    
     char* new_str = (char*)realloc(result_str, str_len + input_len + 1);
     if (NULL == new_str) { // выделение памяти не удалось, возвращаем что есть
       printf("No more memory\n");
@@ -582,6 +603,7 @@ char* FindMaskWords(char const* str, char const* mask, char const* newSeparator)
 
   while (nextWord = _strGetFirstWord(strPtr)) {
     unsigned int nextwordLen = _strLenght(nextWord);
+    DEBUG_PRINT(printf("\nM: BEGIN COMPARE [%s]\n", nextWord);)
     if (_strCompareWithMask(nextWord, mask))    // подходит по маске ?
       if (!StrJointSeparStr(&result, newSeparator, nextWord)) {
         // добавление не удалось, возвращаем всё что есть
@@ -697,6 +719,7 @@ char* FindChains(char const* str, char const* newSeparator) {
     // смещаем указатель - находим начало слова, от него - конец слова
     firstPtr = _strFindNextWord(firstPtr) + firstWordLen;
   }
+  DEBUG_PRINT (printf("\n");)
   return result;
 }
 
