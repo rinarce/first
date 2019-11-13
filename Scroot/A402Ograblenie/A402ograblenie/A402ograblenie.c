@@ -25,7 +25,7 @@ char _convert0F(char x) {
   if      ('0' <= x && x <= '9')   return x - '0';
   else if ('A' <= x && x <= 'F')   return x - 'A' + 10;
   else if ('a' <= x && x <= 'f')   return x - 'a' + 10;
-  return 0; // верну хоть что-то
+  else                             return 0;  // верну хоть что-то
 }
 
 // в строке 2 первых символа 16ричные символы, возврат - char байт из них
@@ -53,8 +53,8 @@ int main()
   for (line_i = 0; line_i < nLines; ++line_i) {
     scanf("%s", &buffer);
     // каждые 2 символа кода 16ричного вида -> 1 символ байт
-    for (buff_i = 0; buffer[buff_i] < messageLen * 2; buff_i += 2)   // сдвиг индекса по 2
-      text[line_i].coded[buff_i / 2] = _convert2Hex(&buffer[buff_i]);
+    for (buff_i = 0; buff_i < messageLen * 2; buff_i += 2)            // сдвиг индекса по 2
+      text[line_i].coded[buff_i / 2] = _convert2Hex(&buffer[buff_i]); // а тут делим на 2
   }
 
   // ввод оригиналов строк с затёртыми смиволами
