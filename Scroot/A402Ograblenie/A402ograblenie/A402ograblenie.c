@@ -46,11 +46,11 @@ int main()
   int line_i, buff_i, sym_i, key_i, line_2i, goodKey;  // это i для циклов и прочие вспомогательные  
   char keySymbol;
 // макроподстановки циклов 
-#define  FOR_ALL_LINES    for (line_i  = 0;  line_i < nLines;     ++line_i)
-#define  FOR_ALL_LINES_2  for (line_2i = 0; line_2i < nLines;     ++line_2i)
-#define  FOR_ALL_SYM      for (sym_i   = 0;   sym_i < messageLen; ++sym_i)
-#define  FOR_ALL_KEY      for (key_i   = 0;   key_i < messageLen; ++key_i)
-
+#define  FOR_ALL_LINES      FOR_ALL (line_i, nLines)
+#define  FOR_ALL_LINES_2    FOR_ALL (line_2i, nLines)
+#define  FOR_ALL_SYM        FOR_ALL (sym_i, messageLen)
+#define  FOR_ALL_KEY        FOR_ALL (key_i, messageLen)
+#define  FOR_ALL(i, limit)  for (i = 0; i < limit; ++i)
 
   // --- ВВОД -----------------------------------------------------------------
   scanf("%d%d", &nLines, &messageLen);
@@ -59,7 +59,7 @@ int main()
   FOR_ALL_LINES {
     scanf("%s", &buffer);
     // каждые 2 символа кода 16ричного вида -> 1 символ байт
-    for (buff_i = 0; buffer[buff_i] < messageLen * 2; buff_i += 2)   // сдвиг индекса по 2
+    for (buff_i = 0; buff_i < messageLen * 2; buff_i += 2)   // сдвиг индекса по 2
       text[line_i].coded[buff_i / 2] = _convert2Hex(&buffer[buff_i]);
   }
 
