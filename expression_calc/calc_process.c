@@ -109,11 +109,11 @@ static char* _prepareLine(char const* str) {
 // ---------------------------------------------------------------------------
 // удаляет узел дерева и все его дочерние узлы
 void _deleteTree(p_tree_t tree) {
-  if (tree != NULL) {
-    _deleteTree(tree->left);
-    _deleteTree(tree->right);
-    free(tree);                 // удалить себя
-  }
+  if (tree == NULL)  
+    return;
+  _deleteTree(tree->left);
+  _deleteTree(tree->right);
+  free(tree);                 // удалить себя
 }
 
 // ---------------------------------------------------------------------------
@@ -165,7 +165,7 @@ static int _getPriority(char const* ptr, int *operLen, operator_t* operType) {
 
   if (*ptr == '(')  { // выражение в скобках - как единый операнд
     // выделим кусок до следующей скобки парной этой
-    int nested = 0;                           // счётчик открытых скобок
+    int nested = 0;                            // счётчик открытых скобок
     char const* findPairBracket = ptr;
     do { 
       if (*findPairBracket == '(')        
@@ -173,9 +173,9 @@ static int _getPriority(char const* ptr, int *operLen, operator_t* operType) {
       else if (*findPairBracket == ')')   
         --nested;  
       ++findPairBracket;
-    } while (nested != 0);                    // ищем только парную скобку
+    } while (nested != 0);                     // ищем только парную скобку
 
-    *operLen  = findPairBracket - ptr;        // длина участка вместе со скобками
+    *operLen  = findPairBracket - ptr;
     *operType = CALC_BRACKETS;
     return PRIORITY_BRACKETS;
   }
@@ -233,7 +233,7 @@ static int _getPriority(char const* ptr, int *operLen, operator_t* operType) {
 // Шестнадцатеричные переводит, двоичные - ДА. Возврат - код ошибки (0 - ОК)
 static calc_err_t _calcEvaluate(char const* str, int symbols, double * result) {
   if (symbols < 0) 
-    return CALC_ERR_ALGO; // ASSERT - количество символов отрицательно - не порядок
+    return CALC_ERR_ALGO; // ASSERT
 
   if (symbols == 0) { // всё пустое считаем за 0 - прощаем некоторые спорные случаи 3+ или ()
     *result = 0;      // так же для унарных операций, вызовов функций - слева ничего нет
@@ -286,15 +286,13 @@ static calc_err_t _calcTree(p_tree_t tree, double* result) {
   // 2. вычисляем поддеревья
   if (NULL != tree->left)  {
     error = _calcTree(tree->left, &valueLeft);
-    _deleteTree(tree->left);  // поддерево вычислено, уже не нужно
-    if (error != CALC_OK)
-      return error;           // если ошибка - дальше не вычислять
+    if (error)  
+      return error;    // если ошибка - дальше не вычислять
   }
   if (NULL != tree->right) {
     error = _calcTree(tree->right, &valueRight);
-    _deleteTree(tree->right); // поддерево вычислено, уже не нужно
-    if (error != CALC_OK)
-      return error;           // если ошибка - дальше не вычислять
+    if (error)  
+      return error;    // если ошибка - дальше не вычислять
   }
 
   // 3. выполняем операцию
@@ -375,7 +373,7 @@ static calc_err_t _calcTree(p_tree_t tree, double* result) {
       return CALC_ERR_ALGO;   // неизвестная операция - таких не должно быть
   }
   
-  return CALC_ERR_ALGO;       // Сюда попасть невозможно наверное
+  return CALC_ERR_ALGO;       // Unreacheble
 }
 
 
@@ -393,7 +391,7 @@ static calc_err_t _makeTree(char const str[], int first, int last, p_tree_t * re
   tree->left = NULL;
   tree->right = NULL;
   tree->value = 0;
-  *resultTree = tree; // сразу присоединим к существующему дереву, чтобы тут не освобождать в разных случаях ошибок
+  *resultTree = tree;
 
   // case 0 - в рассматриваемом куске строки 1 символ: число или переменная
   if (first == last) 
@@ -440,7 +438,7 @@ static calc_err_t _makeTree(char const str[], int first, int last, p_tree_t * re
       // case 1.0. - OK, всё выражение в скобках, избавимся от них в новом вызове
       p_tree_t temp;
       error = _makeTree(str, first + 1, last - 1, &temp);
-      if (error == CALC_OK)                       // разбор выражения прошёл успешно
+      if (error == 0)                             // разбор выражения прошёл успешно
         error = _calcTree(temp, &(tree->value));  // можно сразу вычислить это выражение
       _deleteTree(temp);                          // это поддерево вычислено и уже не нужно
       return error;
@@ -479,14 +477,14 @@ static calc_err_t _makeTree(char const str[], int first, int last, p_tree_t * re
 
     rightStart = leftEnd + 1;   // правый начинается сразу за левым
     error = _makeTree(str, leftStart, leftEnd, &(tree->left));
-    if (error != CALC_OK)
+    if (error) 
       return error; 
     return _makeTree(str, rightStart, rightEnd, &(tree->right));
   }
   
   // case 2 - операция в этом куске НЕ НАЙДЕНА, 
   if (minPriority == PRIORITY_MAX) 
-    // считаем что это - число или переменная - вычислим операнд прямо в tree->value
+    // считаем что это - число или переменная - вычислим операнд
     return _calcEvaluate(str + first, strLen, &(tree->value));
     
 
@@ -496,7 +494,7 @@ static calc_err_t _makeTree(char const str[], int first, int last, p_tree_t * re
   // case 3.1. - Это присваивание переменной
   // !! Тогда её надо вычислить тут же, возможно она будет использоваться в строке
   if (minPriorityOperator == CALC_LET || minPriorityOperator == CALC_LETGLOBAL) {
-    // считаем что всё слева от = имя переменной, справа значение
+    // считаем что всё слева = имя переменной, справа значение
     int varNameLen = minPriorityPtr - first;
     if (varNameLen == 0)             // переменная без имени (слева от = ничего нет)
       return CALC_ERR_VARZ;
@@ -509,10 +507,10 @@ static calc_err_t _makeTree(char const str[], int first, int last, p_tree_t * re
     p_tree_t temp;                       // Во временное дерево - всё что после = или :=
     error = _makeTree(str, minPriorityPtr + minPriorityOparandLen, last, &temp);
 
-    if (error == CALC_OK) {                     // удалось разобрать выражение
+    if (error == 0) {                           // удалось разобрать выражение
       error = _calcTree(temp, &(tree->value));  // вычислим значение для присваивания переменной
 
-      if (error == CALC_OK) {                   // удалось вычислить выражение - в узле дерева будет значение, без потомков
+      if (error == 0) {                         // удалось вычислить выражение - в узле дерева будет значение, без потомков
         // создать переменные (будет вызвана только 1 функция - локальные или глобальные переменные)
         if (minPriorityOperator == CALC_LET)
           error = VariableMake(varName, tree->value);
@@ -530,7 +528,7 @@ static calc_err_t _makeTree(char const str[], int first, int last, p_tree_t * re
   
   // от начала куска до символа операции не включая
   error = _makeTree(str, first, minPriorityPtr - 1, &(tree->left));
-  if (error != CALC_OK)
+  if (error)
     return error; 
  
   // от конца символа операции (возможно несколько символов) до конца куска строки
@@ -544,6 +542,7 @@ static calc_err_t _makeTree(char const str[], int first, int last, p_tree_t * re
 // вычисляет строку выражений, возвращает тип строки (ок или ошибка) и *result
 calc_err_t ProcessLine(char const* str, double* result) {
   int error = 0;
+  *result = 0;
   
   // явные ошибки и особые случаи
   if (StrLenght(str) == 0)           
@@ -555,7 +554,8 @@ calc_err_t ProcessLine(char const* str, double* result) {
   if (IsBracketError(str))  
     return CALC_ERR_BRACKETS;
   
-  // тут предобработка строки
+  // тут обработка
+  
   char* strForProcess = _prepareLine(str);
   if (NULL == strForProcess)  
     return CALC_ERR_MEMORY;
@@ -567,7 +567,7 @@ calc_err_t ProcessLine(char const* str, double* result) {
   // разбор выражения, построение дерева
   error = _makeTree(strForProcess, 0, StrLenght(strForProcess) - 1, &tree);
 
-  if (error == CALC_OK)   // вычислять дерево только если не было ошибок в разборе
+  if (!error)             // вычислять дерево только если не было ошибок в разборе
     error = _calcTree(tree, result);
     
   _deleteTree(tree);      // удалить дерево 
