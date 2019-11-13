@@ -2,8 +2,11 @@
 #include <stdlib.h> 
 #include "DST_functions.h"
           
-#define DEBUG                 // Отладка
-#define DST_BUFFER_SIZE 10     // порции считывания строки
+#define DEBUG                   // Отладка
+#define DEBUG_PRINT(x)  x       // исполнять то что в скобках (отладочную печать)
+//#define DEBUG_PRINT(x)          // игнорировать всё в скобках  (отладочную печать)
+
+#define DST_BUFFER_SIZE 10      // порции считывания строки
 
 // длина строки до '\0'
 unsigned int _strLenght(char const* str) {  
@@ -15,8 +18,7 @@ unsigned int _strLenght(char const* str) {
 }
 
 // находит вхождение в строку символа, или конец строки '\0'
-char* _strFindChar(char const* str, char symbol, int start) 
-{
+char* _strFindChar(char const* str, char symbol, int start) {
   str += start;                               // смещение от начала строки
   while (*str)
     if (symbol == (*str)) 
@@ -62,76 +64,75 @@ int _strCompareFixLen(char const* str1, char const* str2, unsigned int distance)
 // транслитерация 1 русского символа, в строке должно быть минимум 5 байта длины
 void _charTransliterate(char* str) {  
    // по правилам - ПРИКАЗ МИД РФ от 29 марта 2016 г. N 4271
-  switch (*str)
-  {
-  case 'а': str[0] = 'a'; str[1] = '\0'; break;
-  case 'А': str[0] = 'A'; str[1] = '\0'; break;
-  case 'б': str[0] = 'b'; str[1] = '\0'; break;
-  case 'Б': str[0] = 'B'; str[1] = '\0'; break;
-  case 'в': str[0] = 'v'; str[1] = '\0'; break;
-  case 'В': str[0] = 'V'; str[1] = '\0'; break;
-  case 'г': str[0] = 'g'; str[1] = '\0'; break;
-  case 'Г': str[0] = 'G'; str[1] = '\0'; break;
-  case 'д': str[0] = 'd'; str[1] = '\0'; break;
-  case 'Д': str[0] = 'D'; str[1] = '\0'; break;
-  case 'е':
-  case 'ё': str[0] = 'e'; str[1] = '\0'; break;
-  case 'Е': 
-  case 'Ё': str[0] = 'E'; str[1] = '\0'; break;
-  case 'ж': str[0] = 'z'; str[1] = 'h'; str[2] = '\0'; break;
-  case 'Ж': str[0] = 'Z'; str[1] = 'h'; str[2] = '\0'; break;
-  case 'з': str[0] = 'z'; str[1] = '\0'; break;
-  case 'З': str[0] = 'Z'; str[1] = '\0'; break;
-  case 'и':
-  case 'й': str[0] = 'i'; str[1] = '\0'; break;
-  case 'И':
-  case 'Й': str[0] = 'I'; str[1] = '\0'; break;
-  case 'к': str[0] = 'k'; str[1] = '\0'; break;
-  case 'К': str[0] = 'K'; str[1] = '\0'; break;
-  case 'л': str[0] = 'l'; str[1] = '\0'; break;
-  case 'Л': str[0] = 'L'; str[1] = '\0'; break;
-  case 'м': str[0] = 'm'; str[1] = '\0'; break;
-  case 'М': str[0] = 'M'; str[1] = '\0'; break;
-  case 'н': str[0] = 'n'; str[1] = '\0'; break;
-  case 'Н': str[0] = 'N'; str[1] = '\0'; break;
-  case 'о': str[0] = 'o'; str[1] = '\0'; break;
-  case 'О': str[0] = 'O'; str[1] = '\0'; break;
-  case 'п': str[0] = 'p'; str[1] = '\0'; break;
-  case 'П': str[0] = 'P'; str[1] = '\0'; break;
-  case 'р': str[0] = 'r'; str[1] = '\0'; break;
-  case 'Р': str[0] = 'R'; str[1] = '\0'; break;
-  case 'с': str[0] = 's'; str[1] = '\0'; break;
-  case 'С': str[0] = 'S'; str[1] = '\0'; break;
-  case 'т': str[0] = 't'; str[1] = '\0'; break;
-  case 'Т': str[0] = 'T'; str[1] = '\0'; break;
-  case 'у': str[0] = 'u'; str[1] = '\0'; break;
-  case 'У': str[0] = 'U'; str[1] = '\0'; break;
-  case 'ф': str[0] = 'f'; str[1] = '\0'; break;
-  case 'Ф': str[0] = 'F'; str[1] = '\0'; break;
-  case 'х': str[0] = 'k'; str[1] = 'h'; str[2] = '\0'; break;
-  case 'Х': str[0] = 'K'; str[1] = 'h'; str[2] = '\0'; break;
-  case 'ц': str[0] = 't'; str[1] = 's'; str[2] = '\0'; break;
-  case 'Ц': str[0] = 'T'; str[1] = 's'; str[2] = '\0'; break;
-  case 'ч': str[0] = 'c'; str[1] = 'h'; str[2] = '\0'; break;
-  case 'Ч': str[0] = 'C'; str[1] = 'h'; str[2] = '\0'; break;
-  case 'ш': str[0] = 's'; str[1] = 'h'; str[2] = '\0'; break;
-  case 'Ш': str[0] = 'S'; str[1] = 'h'; str[2] = '\0'; break;
-  case 'щ': str[0] = 's'; str[1] = 'h'; str[2] = 'c'; str[3] = 'h'; str[4] = '\0'; break;
-  case 'Щ': str[0] = 'S'; str[1] = 'h'; str[2] = 'c'; str[3] = 'h'; str[4] = '\0'; break;
-  case 'ы': str[0] = 'y'; str[1] = '\0'; break;
-  case 'Ы': str[0] = 'Y'; str[1] = '\0'; break;
-  case 'ъ': str[0] = 'i'; str[1] = 'e'; str[2] = '\0'; break;
-  case 'Ъ': str[0] = 'I'; str[1] = 'e'; str[2] = '\0'; break;
-  case 'ь': str[0] = '\''; str[1] = '\0'; break; // в приказе ьЬ не определены
-  case 'Ь': str[0] = '\''; str[1] = '\0'; break; // используем '
-  case 'э': str[0] = 'e'; str[1] = '\0'; break;
-  case 'Э': str[0] = 'E'; str[1] = '\0'; break;
-  case 'ю': str[0] = 'i'; str[1] = 'u'; str[2] = '\0'; break;
-  case 'Ю': str[0] = 'I'; str[1] = 'u'; str[2] = '\0'; break;
-  case 'я': str[0] = 'i'; str[1] = 'a'; str[2] = '\0'; break;
-  case 'Я': str[0] = 'I'; str[1] = 'a'; str[2] = '\0'; break;
-  default:
-    break;
+  switch (*str) {
+    case 'а': str[0] = 'a'; str[1] = '\0'; break;
+    case 'А': str[0] = 'A'; str[1] = '\0'; break;
+    case 'б': str[0] = 'b'; str[1] = '\0'; break;
+    case 'Б': str[0] = 'B'; str[1] = '\0'; break;
+    case 'в': str[0] = 'v'; str[1] = '\0'; break;
+    case 'В': str[0] = 'V'; str[1] = '\0'; break;
+    case 'г': str[0] = 'g'; str[1] = '\0'; break;
+    case 'Г': str[0] = 'G'; str[1] = '\0'; break;
+    case 'д': str[0] = 'd'; str[1] = '\0'; break;
+    case 'Д': str[0] = 'D'; str[1] = '\0'; break;
+    case 'е':
+    case 'ё': str[0] = 'e'; str[1] = '\0'; break;
+    case 'Е': 
+    case 'Ё': str[0] = 'E'; str[1] = '\0'; break;
+    case 'ж': str[0] = 'z'; str[1] = 'h'; str[2] = '\0'; break;
+    case 'Ж': str[0] = 'Z'; str[1] = 'h'; str[2] = '\0'; break;
+    case 'з': str[0] = 'z'; str[1] = '\0'; break;
+    case 'З': str[0] = 'Z'; str[1] = '\0'; break;
+    case 'и':
+    case 'й': str[0] = 'i'; str[1] = '\0'; break;
+    case 'И':
+    case 'Й': str[0] = 'I'; str[1] = '\0'; break;
+    case 'к': str[0] = 'k'; str[1] = '\0'; break;
+    case 'К': str[0] = 'K'; str[1] = '\0'; break;
+    case 'л': str[0] = 'l'; str[1] = '\0'; break;
+    case 'Л': str[0] = 'L'; str[1] = '\0'; break;
+    case 'м': str[0] = 'm'; str[1] = '\0'; break;
+    case 'М': str[0] = 'M'; str[1] = '\0'; break;
+    case 'н': str[0] = 'n'; str[1] = '\0'; break;
+    case 'Н': str[0] = 'N'; str[1] = '\0'; break;
+    case 'о': str[0] = 'o'; str[1] = '\0'; break;
+    case 'О': str[0] = 'O'; str[1] = '\0'; break;
+    case 'п': str[0] = 'p'; str[1] = '\0'; break;
+    case 'П': str[0] = 'P'; str[1] = '\0'; break;
+    case 'р': str[0] = 'r'; str[1] = '\0'; break;
+    case 'Р': str[0] = 'R'; str[1] = '\0'; break;
+    case 'с': str[0] = 's'; str[1] = '\0'; break;
+    case 'С': str[0] = 'S'; str[1] = '\0'; break;
+    case 'т': str[0] = 't'; str[1] = '\0'; break;
+    case 'Т': str[0] = 'T'; str[1] = '\0'; break;
+    case 'у': str[0] = 'u'; str[1] = '\0'; break;
+    case 'У': str[0] = 'U'; str[1] = '\0'; break;
+    case 'ф': str[0] = 'f'; str[1] = '\0'; break;
+    case 'Ф': str[0] = 'F'; str[1] = '\0'; break;
+    case 'х': str[0] = 'k'; str[1] = 'h'; str[2] = '\0'; break;
+    case 'Х': str[0] = 'K'; str[1] = 'h'; str[2] = '\0'; break;
+    case 'ц': str[0] = 't'; str[1] = 's'; str[2] = '\0'; break;
+    case 'Ц': str[0] = 'T'; str[1] = 's'; str[2] = '\0'; break;
+    case 'ч': str[0] = 'c'; str[1] = 'h'; str[2] = '\0'; break;
+    case 'Ч': str[0] = 'C'; str[1] = 'h'; str[2] = '\0'; break;
+    case 'ш': str[0] = 's'; str[1] = 'h'; str[2] = '\0'; break;
+    case 'Ш': str[0] = 'S'; str[1] = 'h'; str[2] = '\0'; break;
+    case 'щ': str[0] = 's'; str[1] = 'h'; str[2] = 'c'; str[3] = 'h'; str[4] = '\0'; break;
+    case 'Щ': str[0] = 'S'; str[1] = 'h'; str[2] = 'c'; str[3] = 'h'; str[4] = '\0'; break;
+    case 'ы': str[0] = 'y'; str[1] = '\0'; break;
+    case 'Ы': str[0] = 'Y'; str[1] = '\0'; break;
+    case 'ъ': str[0] = 'i'; str[1] = 'e'; str[2] = '\0'; break;
+    case 'Ъ': str[0] = 'I'; str[1] = 'e'; str[2] = '\0'; break;
+    case 'ь': str[0] = '\''; str[1] = '\0'; break; // в приказе ьЬ не определены
+    case 'Ь': str[0] = '\''; str[1] = '\0'; break; // используем '
+    case 'э': str[0] = 'e'; str[1] = '\0'; break;
+    case 'Э': str[0] = 'E'; str[1] = '\0'; break;
+    case 'ю': str[0] = 'i'; str[1] = 'u'; str[2] = '\0'; break;
+    case 'Ю': str[0] = 'I'; str[1] = 'u'; str[2] = '\0'; break;
+    case 'я': str[0] = 'i'; str[1] = 'a'; str[2] = '\0'; break;
+    case 'Я': str[0] = 'I'; str[1] = 'a'; str[2] = '\0'; break;
+    default:
+      break;
   }
 }
 
@@ -288,7 +289,7 @@ char* _strNewSubStr(char const* str, int start, int end) {
 // В начале строки пробелы удаляются
 char* _strOnlyOneSpace(char const* str) { 
   unsigned int strSize = _strLenght(str);
-  // выделяю место по длнине оригинала
+  // выделяю место по длине оригинала
   char* newStr = (char*)malloc(strSize + 1);
   if (NULL != newStr) {
     char const* pOrigin = str;
@@ -331,13 +332,10 @@ unsigned int DstInputStr(char** str, char const* text) {
   while (1) { // считываем строку порциями размера DST_BUFFER_SIZE
     // fgets читает на 1 символ меньше, так как в конце всегда добавляет '\0'
     unsigned int input_len = _strLenght(fgets(buffer, DST_BUFFER_SIZE + 1, stdin));
-
-#ifdef DEBUG    
-    printf("\nПрочитано %u [%s]", input_len, buffer);
-#endif
+    DEBUG_PRINT(printf("\nПрочитано %u [%s]", input_len, buffer);)
 
     if (buffer[input_len - 1] == '\n')
-      buffer[--input_len] = '\0';  // заменяем '\n' -> '\0', уменьшаем длину
+        buffer[--input_len]   =  '\0';  // заменяем '\n' -> '\0', уменьшаем длину
 
     char * new_str = (char*)realloc(result_str, str_len + input_len + 1);
     if (NULL == new_str)  { // выделение памяти не удалось, возвращаем что есть
@@ -385,7 +383,7 @@ int StrJointSeparStr(char** str, char const* separator, char const* appendStr) {
     *strPtr++ = *appendStr++;
   *strPtr = '\0';     // коней строки
 
-  return (originLen ? separatorLen : 0) + appendLen;
+  return (originLen ? separatorLen : 0) + appendLen; // сколько добавлено
 }
 
 // из str выдаёт первое слово в новую созданную строку, или NULL
@@ -441,15 +439,7 @@ char* _strReverseInStr(char *str, int start, int end) {
 
 // Реверс строки
 char* _strReverseAllStr(char* str) { 
-  char* p1 = str;
-  char* p2 = str + _strLenght(str) - 1;
-  while (p1 < p2)
-  {
-    char temp = *p1;
-    *(p1++) = *p2;
-    *(p2--) = temp;
-  }
-  return str;
+  return _strReverseInStr(str, 0, _strLenght(str) - 1);
 }
 
 // XXXXXXXXXXXXXXXXX   ЗАДАНИЯ     XXXXXXXXXXXXXXXXXXXXXXXX
@@ -648,9 +638,7 @@ char* _strTryMakeChain(char * firstWord, char * secondWord) {
 
     if ((*fPtr) == 0) { // достигнут конец первого слова, а не найдено различие
       // второе слово полностью, первое - только символы вначале, т.е. до second_shift
-#ifdef DEBUG
-      printf(" == shift >> [%d] ", second_shift);
-#endif // DEBUG
+      DEBUG_PRINT(printf(" == shift >> [%d] ", second_shift);)
       result = _strAllocate(s_len + second_shift);
       // первое слово - копируем то, что не входит во второе
       if (second_shift) 
@@ -675,27 +663,19 @@ char* FindChains(char const* str, char const* newSeparator) {
 
   // Просто проверю каждый с каждым :-)
   char* firstPtr = words;
-  unsigned firstIndex = 0; // будем считать слова, чтобы не соединять слово само с собой
   while (firstWord = _strGetFirstWord(firstPtr)) {
-    firstIndex++;                                   // новое первое слово
     unsigned int firstWordLen = _strLenght(firstWord);
     if (firstWordLen > 1) {                         // однобуквенные слова не участвуют
       // тут цикл проверка сочетания со всеми остальными
       char* secondPtr = words;
-      unsigned secondIndex = 0;
       while (secondWord = _strGetFirstWord(secondPtr)) {
-        secondIndex++;
         unsigned int secondwordLen = _strLenght(secondWord);
         if (secondwordLen > 1) {
-          if (firstIndex != secondIndex) {          // не проверяем слово само с собой
-#ifdef DEBUG
-            printf("\n[%s] + [%s]", firstWord, secondWord);
-#endif // DEBUG
+          if (firstPtr != secondPtr) {          // не проверяем слово само с собой
+            DEBUG_PRINT(printf("\n[%s] + [%s]", firstWord, secondWord);)
             if (NULL != (nextWord = _strTryMakeChain(firstWord, secondWord))) { 
               // удалось сделать цепочку
-#ifdef DEBUG
-              printf(" == FOUND [%s] ", nextWord);
-#endif // DEBUG
+              DEBUG_PRINT(printf(" == FOUND [%s] ", nextWord);)
               if (_strFindWord(result, nextWord, 0) == -1) { // слова ещё не было в строке
                 int added = StrJointSeparStr(&result, newSeparator, nextWord);
                 if (!added) { // добавление не удалось, возвращаем всё что есть
@@ -816,10 +796,10 @@ char* StrJustifyWidth(char* str, unsigned width) {
   char* cropSP = _strOnlyOneSpace(str);       // сокращу пробелы, чтоб не мешались
   if (NULL == cropSP) 
     return NULL;
-
+                                              // +1 для '\n'   и   +1 для '\0'
   char* buffer = (char*)malloc(width + 2);    // тут буду формировать очередную строчку
   if (NULL == buffer) 
-    return NULL;    // +1 для '\n'   и   +1 для '\0'
+    return NULL;    
 
   // сначала разобью на строчки с выравниванием влево, 
   // потом выравняю по ширине каждую строчку
@@ -852,10 +832,7 @@ char* StrJustifyWidth(char* str, unsigned width) {
     unsigned int lineLen = nextCR - ptr;
     _strCopySymbols(ptr, buffer, lineLen);     // скопирую в буфер очередную строку(без \n)
     *(buffer + lineLen) = '\0';            // дополню признаком конца строки
-
-#ifdef DEBUG
-      printf("\nBUFFER [%s] длина %d", buffer, lineLen);
-#endif // DEBUG
+    DEBUG_PRINT(printf("\nBUFFER [%s] длина %d", buffer, lineLen);)
 
     if (lineLen < width) {                  // строку надо расширить
       unsigned int countSpace = _strCountChar(buffer, ' '); // считаем пробелы в этой строке
@@ -869,26 +846,18 @@ char* StrJustifyWidth(char* str, unsigned width) {
         for (unsigned indexInLine = 0; indexInLine < lineLen; ++indexInLine) {
           if (buffer[indexInLine] != ' ') {
             *(resultPtr++) = buffer[indexInLine];
-#ifdef DEBUG
-              printf("%c", buffer[indexInLine]);
-#endif // DEBUG
-            
+            DEBUG_PRINT(printf("%c", buffer[indexInLine]);)
           }
           else { 
             countInLine++;                            // считаем промежутки
             for (unsigned j = 0; j <= plusSP; j++) {  // в этом промежутке пробел стал больше
               *(resultPtr++) = ' ';
-#ifdef DEBUG
-                printf("#"); // добавлен пробел из числа "как у всех промежутков"
-#endif // DEBUG                
-               
+              DEBUG_PRINT(printf("#");)     // добавлен пробел из числа "как у всех промежутков"
             }
             // вот тут раскидываются пробелы неравномерно, не в каждый промежуток
             if (plusSP_special && countInLine * plusSP_special % countSpace == 0) {
-#ifdef DEBUG
-                printf("*");   // этот пробел "особенный, не как все"
-#endif // DEBUG                         
-              *(resultPtr++) = ' '; // доплонительный пробел
+              DEBUG_PRINT(printf("*");)     // этот пробел "особенный, не как все"
+              *(resultPtr++) = ' ';         // доплонительный пробел
             }
           }
         }
@@ -901,17 +870,13 @@ char* StrJustifyWidth(char* str, unsigned width) {
         // в буфере строка, но без \n \0
         _strCopySymbols(buffer, resultPtr, width); // в резалт её
         resultPtr += width;                    // сдвину указатель в резалт
-#ifdef DEBUG
-          printf("\nBUFFER [%s] just add %d SP", buffer, width-lineLen);
-#endif // DEBUG
+        DEBUG_PRINT(printf("\nBUFFER [%s] just add %d SP", buffer, width-lineLen);)
       }
     }
     else  {   // в буфере строка нужной длины, но без \n \0
       _strCopySymbols(buffer, resultPtr, width);  // в резалт её
       resultPtr += width;                         // сдвину указатель в резалт
-#ifdef DEBUG
-        printf("\nBUFFER [%s] do nothing", buffer);
-#endif // DEBUG
+      DEBUG_PRINT(printf("\nBUFFER [%s] do nothing", buffer);)
     }        
     *(resultPtr++) = '\n';                        // добавить перевод строки
     ptr += lineLen;                               // сдвинуть указатель в исходной строке
