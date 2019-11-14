@@ -354,9 +354,9 @@ unsigned int DstInputStr(char** str, char const* text) {
 
     if (buffer[input_len - 1] == '\n') {
       buffer[--input_len] = '\0';  // заменяем '\n' -> '\0', уменьшаем длину
-      DEBUG_PRINT (printf("found <CR> at [%d]\n", input_len);)
+      DEBUG_PRINT (printf("found <\\n> at [%d]\n", input_len);)
     }
-    DEBUG_PRINT (printf("Прочитано %3u [%s]\n", input_len, buffer);)
+    DEBUG_PRINT (printf("Прочитано %3u [%s] = %u\n", input_len, buffer, str_len + input_len);)
     
     char* new_str = (char*)realloc(result_str, str_len + input_len + 1);
     if (NULL == new_str) { // выделение памяти не удалось, возвращаем что есть
@@ -642,31 +642,42 @@ char* _strTryMakeChain(char* firstWord, char* secondWord) {
   char* result = NULL;
   unsigned int f_len = _strLenght(firstWord);
   unsigned int s_len = _strLenght(secondWord);
-
+  if (f_len < 2 || s_len < 2)                   // минимальная длина по условиям задачи 2
+    return NULL;
   // будем проверять слова на совпадение, постепенно сдвигая второе слово вправо
   // сдвигать, пока хотябы 2 символа перекрываются - максимально (f_len - 2)
-  // первое слово должно дойти до конца, а второе - не закончится раньше первого
-  // 
+  // первое слово должно дойти в проверке до конца, а второе - не закончится раньше первого
   for (unsigned second_shift = 0; second_shift <= (f_len - 2); second_shift++)
   {
-    char* fPtr = firstWord + second_shift;  // сдвиг второго слова отражается на первом :-)
-    char* sPtr = secondWord;
+    char* fPtr = firstWord + second_shift;  // первое слово - с нарастающим отступом от начала
+    char* sPtr = secondWord;                // второе слово всегда проверяется со своего начала
 
-    // пока не кончилось первое слово И идёт совпадение
+    // пока не кончилось первое слово И идёт совпадение - сдвигаем оба указателя
     while (*fPtr && (*(fPtr) == *(sPtr))) {
-      fPtr++;
+      fPtr++;  
       sPtr++;
     }
 
-    if ((*fPtr) == 0) { // достигнут конец первого слова, а не найдено различие
-      // второе слово полностью, первое - только символы вначале, т.е. до second_shift
-      DEBUG_PRINT(printf(" == shift >> [%d] ", second_shift);)
-        result = _strAllocate(s_len + second_shift);
-      // первое слово - копируем то, что не входит во второе
-      if (second_shift)
-        _strCopySymbols(firstWord, result, second_shift);
-      _strCopySymbols(secondWord, result + second_shift, s_len + 1); // с концом строки 0
-      break; // дальше не искать, первым будет найдено самое длинное совпадение
+    if ((*fPtr) == 0) { // достигнут конец первого слова, а не найдено различие == ОК
+       DEBUG_PRINT(printf(" OK shift >> [%d] ", second_shift);)
+       if ((*sPtr) == 0 && second_shift == 0) { // оба слова полностью идентичны
+           // считаем, что слово + такое же слово не образуют цепочку, но возможно искать ещё
+           // примеры owoxowo owo owoxowo owo - искать дальше и найти со смещением 4 owoxowoxowo
+           DEBUG_PRINT(printf(" - ! the same", second_shift););
+         }
+       else {
+
+         // второе слово полностью, первое - только символы вначале, т.е. до second_shift
+         result = _strAllocate(s_len + second_shift);
+
+         // первое слово - копируем только то, что не входит во второе
+         if (second_shift)
+           _strCopySymbols(firstWord, result, second_shift);
+         // копируем второе слово полностью
+         _strCopySymbols(secondWord, result + second_shift, s_len + 1); // с концом строки 0
+         break; // дальше не искать, первым будет найдено самое длинное совпадение, 
+         // хотя возможны ещё варианты для слов xxxxxx xxxxxxxxxxxxx 
+       }
     }
   }
   return result;
@@ -681,9 +692,10 @@ char* FindChains(char const* str, char const* newSeparator) {
   char* nextWord = NULL;            // новое составное слово (выделено отдельно)
   char* result = _strAllocate(0);   // тут накапливаем результат
 
-  char* words = ExtractWords(str, newSeparator);    // выделим слова из строки
+  char* words = ExtractWords(str, newSeparator);    // выделим все слова из строки
 
-  // Просто проверю каждый с каждым :-)
+  // Просто проверю каждое слово с каждым исключая себя
+  // ? считать ли слово oXo образующее цепочку oXoXo само с собой ? считаем что нет
   char* firstPtr = words;
   while (firstWord = _strGetFirstWord(firstPtr)) {
     unsigned int firstWordLen = _strLenght(firstWord);
@@ -692,13 +704,14 @@ char* FindChains(char const* str, char const* newSeparator) {
       char* secondPtr = words;
       while (secondWord = _strGetFirstWord(secondPtr)) {
         unsigned int secondwordLen = _strLenght(secondWord);
-        if (secondwordLen > 1) {
-          if (firstPtr != secondPtr) {          // не проверяем слово само с собой
+        if (secondwordLen > 1) {                    // однобуквенные слова не участвуют
+          if (firstPtr != secondPtr) {              // не проверять слово само с собой 
             DEBUG_PRINT(printf("\n[%s] + [%s]", firstWord, secondWord);)
               if (NULL != (nextWord = _strTryMakeChain(firstWord, secondWord))) {
                 // удалось сделать цепочку
                 DEBUG_PRINT(printf(" == FOUND [%s] ", nextWord);)
                   if (_strFindWord(result, nextWord, 0) == -1) { // слова ещё не было в строке
+                    DEBUG_PRINT(printf(" ++");)
                     int added = StrJointSeparStr(&result, newSeparator, nextWord);
                     if (!added) { // добавление не удалось, возвращаем всё что есть
                       free(firstWord);
@@ -707,18 +720,22 @@ char* FindChains(char const* str, char const* newSeparator) {
                       break;
                     }
                   }
+                  else {
+                    DEBUG_PRINT(printf(" -- alredy was"););
+                  }
+
                 free(nextWord);
-              }
+              }           // удалось составить цепочку из данных слов
           }
-        }
+        }                 // конец if (secondWordLen > 1)
         free(secondWord);
         secondPtr = _strFindNextWord(secondPtr) + secondwordLen;
-      }
-    }
+      }                   // конец цикла по всем словам для secondWord
+    }                     // конец if (firstWordLen > 1)
     free(firstWord);      // удаляем слово, оно уже не нужно
-    // смещаем указатель - находим начало слова, от него - конец слова
+                          // смещаем указатель - находим начало слова, от него - конец слова
     firstPtr = _strFindNextWord(firstPtr) + firstWordLen;
-  }
+  }                       // конец цикла по всем словам для firstWord 
   DEBUG_PRINT (printf("\n");)
   return result;
 }
