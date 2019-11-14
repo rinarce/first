@@ -32,9 +32,9 @@ int main() {
     printf("DST–2      (Уникальные слова) : %s\n", result);
     free(result);
 
-    result = ExtractLetters(str, DST_SEPARATOR);
-    printf("DST–3            (Выбор букв) : %s\n", result);
-    free(result);
+    //result = ExtractLetters(str, DST_SEPARATOR);
+    //printf("DST–3            (Выбор букв) : %s\n", result);
+    //free(result);
 
     result = ExtractUniqueLetters(str, DST_SEPARATOR);
     printf("DST–4      (Уникальные буквы) : %s\n", result);
@@ -44,9 +44,9 @@ int main() {
     printf("DST–50         (Только буквы) : %s\n", result);
     free(result);
 
-    result = FindMirrors(str, DST_SEPARATOR);
-    printf("DST–51 (Зеркальные подстроки) : %s\n", result);
-    free(result);
+    //result = FindMirrors(str, DST_SEPARATOR);
+    //printf("DST–51 (Зеркальные подстроки) : %s\n", result);
+    //free(result);
 
     result = FindMaskWords(str, mask, DST_SEPARATOR);
     printf("DST–6-7      (Поиск по маске) : %s\n", result);
@@ -68,6 +68,7 @@ int main() {
     printf("\n");
   }
 
+  return 0;  // пока не запускать 11 и 12  
   { // Задания на выравнивание параграфа
     int width = 0;
     printf("\nDST-11/12       Ширина абзаца : ");

@@ -101,7 +101,7 @@ static void _printError(FILE* outputStream, char* line, calc_err_t error) {
   #ifdef MESSAGE_EN    
     char* messageText = s_defaultMessage.textEN;
   #else                
-    char* message_text = default_message.text_ru;
+    char* messageText = s_defaultMessage.textRU;
   #endif // MESSAGE_EN
   
   for (int typeIndex = 0; typeIndex < s_resultTypesCount; ++typeIndex) { 
@@ -109,7 +109,7 @@ static void _printError(FILE* outputStream, char* line, calc_err_t error) {
       #ifdef MESSAGE_EN    
         messageText = s_resultTypes[typeIndex].textEN;
       #else                
-        message_text = result_types[typeIndex].text_ru;
+        messageText = s_resultTypes[typeIndex].textRU;
       #endif // MESSAGE_EN
       break;
     }

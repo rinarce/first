@@ -4,6 +4,9 @@
 #include <time.h>
 #include "SOR.h"
 
+// !! закомментить после проверки корректности всех алгоритмов
+//#define CHECK_SORTED   // провер€ть массив после работы алгоритма?
+
 #define ARRAY_MIN_SIZE  100     // минимальный размер массива
 #define ARRAY_MAX_SIZE  77777   // максимальный
 #define ARRAY_SIZE_STEP 2019    // шаг приращени€ размера массива

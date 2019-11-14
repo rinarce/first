@@ -2,8 +2,7 @@
 #include <stdlib.h>
 #include "testing_system.h"
 
-// !! закомментить после проверки корректности всех алгоритмов
-#define CHECK_SORTED   // проверять массив после работы алгоритма?
+
 
 // для замеров времени
 // repo https://gist.github.com/Randl/45bcca59720f661fa033a67d5f44bff0 
